@@ -77,11 +77,10 @@ async function criarChamado() {
 
   salvarChamados();
   renderizarChamados();
-  limparFormularioChamado();
   atualizarPainelSeAberto();
 
-  alert("Chamado aberto com sucesso!");
-  openPage("chamados");
+  alert("Chamado enviado com sucesso!");
+  limparFormularioChamado();
 }
 
 function normalizarChamados() {
