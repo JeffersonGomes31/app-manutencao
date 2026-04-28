@@ -409,54 +409,29 @@
   <!-- FORMULÁRIO DE LOGIN / IDENTIFICAÇÃO -->
   <div class="form-card profile-form-card" id="areaFormularioPerfil">
     <label>
-      Nome
-      <input 
-        id="loginNomeUsuario" 
-        type="text" 
-        placeholder="Digite seu nome"
-      />
-    </label>
-
-    <label>
-      Setor
-      <input 
-        id="loginSetorUsuario" 
-        type="text" 
-        placeholder="Ex: Administração, Recepção, Manutenção..."
-      />
-    </label>
-
-    <label>
       E-mail
-      <input 
-        id="loginEmailUsuario" 
-        type="email" 
-        placeholder="usuario@email.com"
+      <input
+        id="loginEmailUsuario"
+        type="email"
+        autocomplete="email"
+        placeholder="usuario@senac.com"
       />
     </label>
 
     <label>
-      Unidade
-      <input 
-        id="loginUnidadeUsuario" 
-        type="text" 
-        value="Senac Campo Mourão" 
-        disabled
+      Senha
+      <input
+        id="loginSenhaUsuario"
+        type="password"
+        autocomplete="current-password"
+        placeholder="Digite sua senha"
       />
     </label>
 
-    <label>
-      Perfil de acesso
-      <select id="loginPerfilUsuario">
-        <option value="colaborador">Colaborador</option>
-        <option value="manutencao">Manutenção</option>
-      </select>
-    </label>
-
-    <button 
-      type="button" 
-      class="primary-button" 
-      onclick="salvarPerfilUsuario()"
+    <button
+      type="button"
+      class="primary-button"
+      onclick="entrarComFirebase(this)"
     >
       Entrar no app
     </button>
@@ -515,7 +490,7 @@
 
       <div class="profile-item">
         <span>E-mail</span>
-        <strong id="perfilEmailValor">usuario@email.com</strong>
+        <strong id="perfilEmailValor">usuario@senac.com</strong>
       </div>
     </div>
 
@@ -527,14 +502,6 @@
       Painel da manutenção
     </button>
 
-    <button 
-      id="botaoLimparDadosTeste"
-      type="button" 
-      class="danger-button" 
-      onclick="limparDadosTeste()"
-    >
-      Limpar chamados de teste
-    </button>
 
     <button 
       type="button" 
@@ -730,7 +697,11 @@
   </nav>
 
 
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
   <script src="js/state.js"></script>
+  <script src="js/firebase-service.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/navigation.js"></script>
   <script src="js/chamados.js"></script>

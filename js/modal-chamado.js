@@ -3,7 +3,7 @@
 ===================================================== */
 
 function abrirDetalhesChamado(id) {
-  const chamado = chamados.find(item => String(item.id) === String(id));
+  const chamado = chamados.find(item => idsIguais(item.id, id));
 
   if (!chamado) {
     alert("Chamado não encontrado.");
@@ -132,17 +132,17 @@ function chamadoPodeSerCancelado(chamado) {
   }
 
   if (usuarioAtual.perfil === "colaborador") {
-    return String(chamado.solicitanteId) === String(usuarioAtual.id);
+    return idsIguais(chamado.solicitanteId, usuarioAtual.id);
   }
 
   return false;
 }
 
 function obterChamadoSelecionado() {
-  return chamados.find(chamado => String(chamado.id) === String(chamadoSelecionadoId));
+  return chamados.find(chamado => idsIguais(chamado.id, chamadoSelecionadoId));
 }
 
-function cancelarChamadoAtual(botao) {
+async function cancelarChamadoAtual(botao) {
   const chamado = obterChamadoSelecionado();
 
   if (!chamado) {
@@ -162,43 +162,44 @@ function cancelarChamadoAtual(botao) {
     return;
   }
 
-  executarCancelamentoChamado(chamado.id, motivo.trim(), "Chamado cancelado pelo colaborador", botao);
+  await executarCancelamentoChamado(chamado.id, motivo.trim(), "Chamado cancelado pelo colaborador", botao);
 }
 
-function cancelarChamadoComMotivo(id, motivo, acaoHistorico) {
-  executarCancelamentoChamado(id, motivo, acaoHistorico, null);
+async function cancelarChamadoComMotivo(id, motivo, acaoHistorico) {
+  await executarCancelamentoChamado(id, motivo, acaoHistorico, null);
 }
 
-function executarCancelamentoChamado(id, motivo, acaoHistorico, botao) {
-  const chamado = chamados.find(item => String(item.id) === String(id));
+async function executarCancelamentoChamado(id, motivo, acaoHistorico, botao) {
+  const chamado = chamados.find(item => idsIguais(item.id, id));
 
   if (!chamado) {
     alert("Chamado não encontrado.");
     return;
   }
 
-  chamado.status = "CANCELADO";
-
-  if (!Array.isArray(chamado.historico)) {
-    chamado.historico = [];
-  }
-
-  chamado.historico.push({
+  const itemHistorico = {
     data: new Date().toLocaleString("pt-BR"),
     acao: acaoHistorico,
     descricao: motivo
-  });
+  };
 
-  salvarChamados();
-  renderizarChamados();
-  atualizarPainelSeAberto();
+  try {
+    await atualizarChamadoFirebase(id, {
+      status: "CANCELADO",
+      historico: adicionarItemArrayFirebase(itemHistorico)
+    });
 
-  if (botao) {
-    aplicarFeedbackSucesso(botao, "Cancelado", "Cancelar chamado");
+    if (botao) {
+      aplicarFeedbackSucesso(botao, "Cancelado", "Cancelar chamado");
+    }
+
+    fecharDetalhesChamado();
+    alert("Chamado cancelado com sucesso.");
+  } catch (erro) {
+    console.error("Erro ao cancelar chamado:", erro);
+    alert("Não foi possível cancelar o chamado no Firebase.");
   }
 
-  fecharDetalhesChamado();
-  alert("Chamado cancelado com sucesso.");
 }
 
 function renderizarFotoDetalhe(chamado) {

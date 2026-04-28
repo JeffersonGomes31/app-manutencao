@@ -7,13 +7,13 @@ function usuarioTemPerfilSalvo() {
 }
 
 function usuarioEhManutencaoAutorizada() {
-  return (
-    usuarioAtual &&
-    usuarioAtual.perfil === "manutencao" &&
-    usuarioAtual.manutencaoAutorizado === true &&
-    usuarioAtual.email &&
-    usuarioAtual.email.toLowerCase() === EMAIL_MANUTENCAO_AUTORIZADO.toLowerCase()
-  );
+  return usuarioTemPerfilSalvo()
+    && (usuarioAtual.perfil === "manutencao" || usuarioAtual.perfil === "admin")
+    && usuarioAtual.manutencaoAutorizado === true;
+}
+
+function usuarioEhAdmin() {
+  return usuarioTemPerfilSalvo() && usuarioAtual.perfil === "admin";
 }
 
 function aplicarPermissoesNaTela() {
@@ -40,7 +40,7 @@ function aplicarPermissoesNaTela() {
   if (perfilTextoOrientacao) {
     perfilTextoOrientacao.textContent = perfilSalvo
       ? "Dados do usuário e permissões de acesso."
-      : "Informe seus dados para acessar o app.";
+      : "Entre com o e-mail e senha cadastrados no Firebase.";
   }
 
   if (botaoPainel) {
@@ -68,7 +68,7 @@ function preencherResumoUsuarioNaTela() {
   const setor = usuarioAtual.setor || "Solicitante";
   const email = usuarioAtual.email || "Não informado";
   const unidade = usuarioAtual.unidade || "Senac Campo Mourão";
-  const perfilTextoFormatado = usuarioAtual.perfil === "manutencao" ? "Manutenção" : "Colaborador";
+  const perfilTextoFormatado = obterNomePerfilFormatado(usuarioAtual.perfil);
 
   setTextContent("perfilAcessoTexto", perfilTextoFormatado);
   setTextContent("perfilAvatar", gerarIniciaisUsuario(nome));
@@ -80,129 +80,78 @@ function preencherResumoUsuarioNaTela() {
   setTextContent("perfilUnidadeValor", unidade);
 }
 
-function preencherFormularioPerfil() {
-  const nomeInput = document.getElementById("loginNomeUsuario");
-  const setorInput = document.getElementById("loginSetorUsuario");
-  const emailInput = document.getElementById("loginEmailUsuario");
-  const unidadeInput = document.getElementById("loginUnidadeUsuario");
-  const perfilInput = document.getElementById("loginPerfilUsuario");
-  const perfilConfigurado = usuarioTemPerfilSalvo();
-
-  if (nomeInput) {
-    nomeInput.value = perfilConfigurado ? usuarioAtual.nome || "" : "";
-  }
-
-  if (setorInput) {
-    setorInput.value = perfilConfigurado ? usuarioAtual.setor || "" : "";
-  }
-
-  if (emailInput) {
-    emailInput.value = perfilConfigurado ? usuarioAtual.email || "" : "";
-  }
-
-  if (unidadeInput) {
-    unidadeInput.value = usuarioAtual.unidade || "Senac Campo Mourão";
-  }
-
-  if (perfilInput) {
-    perfilInput.value = usuarioAtual.perfil || "colaborador";
-  }
-}
-
-function salvarPerfilUsuario() {
-  const nomeInput = document.getElementById("loginNomeUsuario");
-  const setorInput = document.getElementById("loginSetorUsuario");
-  const emailInput = document.getElementById("loginEmailUsuario");
-  const perfilInput = document.getElementById("loginPerfilUsuario");
-
-  if (!nomeInput || !setorInput || !perfilInput) {
-    alert("Campos do perfil não encontrados. Verifique os IDs no HTML.");
-    return;
-  }
-
-  const nome = nomeInput.value.trim();
-  const setor = setorInput.value.trim();
-  const email = emailInput ? emailInput.value.trim() : "";
-  const perfil = perfilInput.value;
-
-  if (!nome || !setor || !perfil) {
-    alert("Preencha nome, setor e perfil de acesso.");
-    return;
-  }
-
-  const manutencaoAutorizado = validarAcessoManutencao(perfil, email);
-
-  if (manutencaoAutorizado === null) {
-    return;
-  }
-
-  usuarioAtual = {
-    id: gerarIdUsuario(email || `${nome}-${setor}`, perfil),
-    nome,
-    setor,
-    email,
-    unidade: "Senac Campo Mourão",
-    perfil,
-    manutencaoAutorizado,
-    perfilConfigurado: true
+function obterNomePerfilFormatado(perfil) {
+  const nomes = {
+    colaborador: "Colaborador",
+    manutencao: "Manutenção",
+    admin: "Administrador"
   };
 
-  localStorage.setItem(CHAVE_USUARIO_ATUAL, JSON.stringify(usuarioAtual));
-
-  preencherFormularioPerfil();
-  aplicarPermissoesNaTela();
-  renderizarChamados();
-
-  if (typeof renderizarComunicados === "function") {
-    renderizarComunicados();
-  }
-
-  atualizarPainelSeAberto();
-  alert("Perfil salvo com sucesso.");
+  return nomes[perfil] || "Colaborador";
 }
 
-function validarAcessoManutencao(perfil, email) {
-  if (perfil !== "manutencao") {
-    return false;
+function preencherFormularioPerfil() {
+  const emailInput = document.getElementById("loginEmailUsuario");
+  const senhaInput = document.getElementById("loginSenhaUsuario");
+
+  if (emailInput) {
+    emailInput.value = usuarioTemPerfilSalvo() ? usuarioAtual.email || "" : "";
   }
 
-  if (!email) {
-    alert("Para acessar como manutenção, informe o e-mail autorizado.");
-    return null;
+  if (senhaInput) {
+    senhaInput.value = "";
   }
-
-  if (email.toLowerCase() !== EMAIL_MANUTENCAO_AUTORIZADO.toLowerCase()) {
-    alert("Este e-mail não tem permissão para acessar o perfil de manutenção.");
-    return null;
-  }
-
-  const senhaInformada = prompt("Informe a senha de acesso da manutenção:");
-
-  if (senhaInformada !== SENHA_MANUTENCAO) {
-    alert("Senha incorreta. Acesso à manutenção negado.");
-    return null;
-  }
-
-  return true;
 }
 
-function sairDaConta() {
-  localStorage.removeItem(CHAVE_USUARIO_ATUAL);
+async function entrarComFirebase(botao) {
+  const emailInput = document.getElementById("loginEmailUsuario");
+  const senhaInput = document.getElementById("loginSenhaUsuario");
 
-  usuarioAtual = { ...USUARIO_PADRAO };
+  if (!emailInput || !senhaInput) {
+    alert("Campos de login não encontrados no HTML.");
+    return;
+  }
 
-  preencherFormularioPerfil();
-  aplicarPermissoesNaTela();
-  renderizarChamados();
-  fecharDetalhesChamado();
-  openPage("perfil");
+  const email = emailInput.value.trim();
+  const senha = senhaInput.value;
 
-  alert("Sessão encerrada. O app voltou para a tela de identificação.");
+  if (!email || !senha) {
+    alert("Informe e-mail e senha para entrar.");
+    return;
+  }
+
+  try {
+    if (botao) {
+      botao.disabled = true;
+      botao.textContent = "Entrando...";
+    }
+
+    await autenticarUsuario(email, senha);
+  } catch (erro) {
+    console.error("Erro de login:", erro);
+    alert("Não foi possível entrar. Confira o e-mail e a senha cadastrados no Firebase.");
+  } finally {
+    if (botao) {
+      botao.disabled = false;
+      botao.textContent = "Entrar no app";
+    }
+  }
+}
+
+async function sairDaConta() {
+  try {
+    await encerrarSessaoFirebase();
+    fecharDetalhesChamado();
+    alert("Sessão encerrada.");
+  } catch (erro) {
+    console.error("Erro ao sair:", erro);
+    alert("Não foi possível sair da conta.");
+  }
 }
 
 function atualizarResumoPerfil() {
   const totalChamados = chamados.length;
-  const meusChamados = chamados.filter(chamado => String(chamado.solicitanteId) === String(usuarioAtual.id)).length;
+  const meusChamados = chamados.filter(chamado => idsIguais(chamado.solicitanteId, usuarioAtual.id)).length;
   const chamadosAbertos = chamados.filter(chamado => !statusFinalizado(chamado.status)).length;
   const chamadosCancelados = chamados.filter(chamado => chamado.status === "CANCELADO").length;
 

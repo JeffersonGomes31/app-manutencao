@@ -48,7 +48,6 @@ async function criarChamado() {
   }
 
   const novoChamado = {
-    id: Date.now(),
     descricao,
     local,
     setor,
@@ -58,12 +57,14 @@ async function criarChamado() {
     prioridade,
     status: "ABERTO",
     data: dataAtual,
-    criadoEm: agora.toISOString(),
     foto: fotoNome,
     fotoNome,
     fotoData: fotoBase64,
     solicitanteId: usuarioAtual.id,
     solicitanteNome: usuarioAtual.nome,
+    criadoPorUid: usuarioAtual.id,
+    criadoPorNome: usuarioAtual.nome,
+    justificativaAguardando: "",
     historico: [
       {
         data: dataAtual,
@@ -73,68 +74,14 @@ async function criarChamado() {
     ]
   };
 
-  chamados.unshift(novoChamado);
-
-  salvarChamados();
-  renderizarChamados();
-  atualizarPainelSeAberto();
-
-  alert("Chamado enviado com sucesso!");
-  limparFormularioChamado();
-}
-
-function normalizarChamados() {
-  chamados = chamados.map(chamado => {
-    const chamadoAtualizado = { ...chamado };
-
-    if (!chamadoAtualizado.criadoEm) {
-      chamadoAtualizado.criadoEm = converterDataBRParaISO(chamadoAtualizado.data);
-    }
-
-    if (!chamadoAtualizado.solicitanteId) {
-      chamadoAtualizado.solicitanteId = "colaborador-001";
-    }
-
-    if (!chamadoAtualizado.solicitanteNome) {
-      chamadoAtualizado.solicitanteNome = "Colaborador";
-    }
-
-    if (!chamadoAtualizado.fotoNome) {
-      chamadoAtualizado.fotoNome = chamadoAtualizado.foto || "";
-    }
-
-    if (!chamadoAtualizado.fotoData) {
-      chamadoAtualizado.fotoData = String(chamadoAtualizado.foto || "").startsWith("data:image")
-        ? chamadoAtualizado.foto
-        : "";
-    }
-
-    if (!Array.isArray(chamadoAtualizado.historico)) {
-      chamadoAtualizado.historico = [
-        {
-          data: chamadoAtualizado.data || new Date().toLocaleDateString("pt-BR"),
-          acao: "Chamado registrado",
-          descricao: "Chamado existente importado para o novo formato."
-        }
-      ];
-    }
-
-    if (!chamadoAtualizado.setor) {
-      chamadoAtualizado.setor = "Não informado";
-    }
-
-    if (!chamadoAtualizado.horario) {
-      chamadoAtualizado.horario = "Não informado";
-    }
-
-    if (!chamadoAtualizado.precisaAcompanhamento) {
-      chamadoAtualizado.precisaAcompanhamento = "Não informado";
-    }
-
-    return chamadoAtualizado;
-  });
-
-  salvarChamados();
+  try {
+    await criarChamadoFirebase(novoChamado);
+    alert("Chamado enviado com sucesso!");
+    limparFormularioChamado();
+  } catch (erro) {
+    console.error("Erro ao enviar chamado:", erro);
+    alert("Não foi possível enviar o chamado para o Firebase.");
+  }
 }
 
 function limparFormularioChamado() {
@@ -248,7 +195,7 @@ function criarCardChamado(chamado) {
     : `${sla.texto} • vence em ${formatarVencimentoSLA(chamado)}`;
 
   return `
-    <div class="ticket" onclick="abrirDetalhesChamado(${chamado.id})">
+    <div class="ticket" onclick="abrirDetalhesChamado(${formatarParametroJS(chamado.id)})">
       <div class="ticket-icon ${iconeClasse}">
         ${pegarIconeCategoria(chamado.categoria)}
       </div>
@@ -526,24 +473,3 @@ function selecionarCategoriaRapida(categoria, botao) {
   }
 }
 
-function limparDadosTeste() {
-  const confirmar = confirm("Deseja apagar todos os chamados e comunicados salvos neste navegador?");
-
-  if (!confirmar) {
-    return;
-  }
-
-  chamados = [];
-  comunicados = [];
-
-  salvarChamados();
-  salvarComunicados();
-  renderizarChamados();
-
-  if (typeof renderizarComunicados === "function") {
-    renderizarComunicados();
-  }
-
-  atualizarPainelSeAberto();
-  alert("Dados de teste removidos com sucesso.");
-}

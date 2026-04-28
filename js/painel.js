@@ -150,7 +150,7 @@ function criarCardPainel(chamado) {
       </div>
 
       <div class="admin-actions">
-        <button class="admin-action-button admin-secondary-action" onclick="abrirDetalhesChamado(${chamado.id})">
+        <button class="admin-action-button admin-secondary-action" onclick="abrirDetalhesChamado(${formatarParametroJS(chamado.id)})">
           Ver detalhes
         </button>
       </div>
@@ -181,7 +181,7 @@ function criarControleStatusPainel(chamado, chamadoFinalizado) {
           <option value="CANCELADO" ${chamado.status === "CANCELADO" ? "selected" : ""}>Cancelado</option>
         </select>
 
-        <button type="button" class="admin-action-button blue" onclick="salvarStatusPainel(${chamado.id}, this)">
+        <button type="button" class="admin-action-button blue" onclick="salvarStatusPainel(${formatarParametroJS(chamado.id)}, this)">
           Salvar status
         </button>
       </div>
@@ -189,7 +189,7 @@ function criarControleStatusPainel(chamado, chamadoFinalizado) {
   `;
 }
 
-function salvarStatusPainel(id, botao) {
+async function salvarStatusPainel(id, botao) {
   if (!usuarioEhManutencaoAutorizada()) {
     alert("Somente a manutenção autorizada pode alterar o status do chamado.");
     return;
@@ -203,7 +203,7 @@ function salvarStatusPainel(id, botao) {
   }
 
   const novoStatus = selectStatus.value;
-  const chamadoAtual = chamados.find(chamado => Number(chamado.id) === Number(id));
+  const chamadoAtual = chamados.find(chamado => idsIguais(chamado.id, id));
 
   if (!chamadoAtual) {
     alert("Chamado não encontrado.");
@@ -221,20 +221,20 @@ function salvarStatusPainel(id, botao) {
   }
 
   if (novoStatus === "CANCELADO") {
-    cancelarChamado(id, botao);
+    await cancelarChamado(id, botao);
     return;
   }
 
-  alterarStatusPainel(id, novoStatus, botao);
+  await alterarStatusPainel(id, novoStatus, botao);
 }
 
-function alterarStatusPainel(id, novoStatus, botao) {
+async function alterarStatusPainel(id, novoStatus, botao) {
   if (!usuarioEhManutencaoAutorizada()) {
     alert("Somente a manutenção autorizada pode alterar o status do chamado.");
     return;
   }
 
-  const chamadoAtual = chamados.find(chamado => Number(chamado.id) === Number(id));
+  const chamadoAtual = chamados.find(chamado => idsIguais(chamado.id, id));
 
   if (!chamadoAtual) {
     alert("Chamado não encontrado.");
@@ -252,7 +252,7 @@ function alterarStatusPainel(id, novoStatus, botao) {
   }
 
   if (novoStatus === "CANCELADO") {
-    cancelarChamado(id, botao);
+    await cancelarChamado(id, botao);
     return;
   }
 
@@ -264,29 +264,26 @@ function alterarStatusPainel(id, novoStatus, botao) {
   }
 
   const statusAnterior = chamadoAtual.status;
-
-  chamadoAtual.status = novoStatus;
-
-  if (!Array.isArray(chamadoAtual.historico)) {
-    chamadoAtual.historico = [];
-  }
-
-  chamadoAtual.historico.push({
+  const itemHistorico = {
     data: new Date().toLocaleString("pt-BR"),
     acao: "Status alterado pelo painel",
     descricao: montarDescricaoAlteracaoStatus(statusAnterior, novoStatus, justificativaAguardando)
-  });
+  };
 
-  salvarChamados();
-  renderizarChamados();
-  renderizarPainelManutencao();
+  try {
+    await atualizarChamadoFirebase(id, {
+      status: novoStatus,
+      justificativaAguardando,
+      historico: adicionarItemArrayFirebase(itemHistorico)
+    });
 
-  if (typeof atualizarResumoPerfil === "function") {
-    atualizarResumoPerfil();
+    aplicarFeedbackSucesso(botao, "Status salvo", "Salvar status");
+    alert(`Status atualizado para: ${novoStatus}`);
+  } catch (erro) {
+    console.error("Erro ao alterar status:", erro);
+    alert("Não foi possível alterar o status no Firebase.");
   }
 
-  aplicarFeedbackSucesso(botao, "Status salvo", "Salvar status");
-  alert(`Status atualizado para: ${novoStatus}`);
 }
 
 function obterJustificativaAguardando(novoStatus) {
@@ -314,8 +311,8 @@ function montarDescricaoAlteracaoStatus(statusAnterior, novoStatus, justificativ
   return `${descricaoBase} Justificativa: ${justificativaAguardando}`;
 }
 
-function cancelarChamado(id, botao) {
-  const chamado = chamados.find(item => Number(item.id) === Number(id));
+async function cancelarChamado(id, botao) {
+  const chamado = chamados.find(item => idsIguais(item.id, id));
 
   if (!chamado) {
     alert("Chamado não encontrado.");
@@ -327,7 +324,7 @@ function cancelarChamado(id, botao) {
     return;
   }
 
-  if (!chamadoPodeSerCancelado(chamado)) {
+  if (statusFinalizado(chamado.status)) {
     alert("Este chamado não pode ser cancelado, pois já está concluído ou cancelado.");
     return;
   }
@@ -339,6 +336,6 @@ function cancelarChamado(id, botao) {
     return;
   }
 
-  cancelarChamadoComMotivo(id, motivo.trim(), "Chamado cancelado pela manutenção");
+  await cancelarChamadoComMotivo(id, motivo.trim(), "Chamado cancelado pela manutenção");
   aplicarFeedbackSucesso(botao, "Cancelado", "Salvar status");
 }

@@ -17,12 +17,12 @@ function escaparHTML(texto) {
     .replaceAll("'", "&#039;");
 }
 
-function salvarChamados() {
-  localStorage.setItem(CHAVE_CHAMADOS, JSON.stringify(chamados));
+function formatarParametroJS(valor) {
+  return JSON.stringify(String(valor));
 }
 
-function salvarComunicados() {
-  localStorage.setItem(CHAVE_COMUNICADOS, JSON.stringify(comunicados));
+function idsIguais(idA, idB) {
+  return String(idA) === String(idB);
 }
 
 function aplicarFeedbackSucesso(botao, textoSucesso, textoOriginal) {
@@ -81,15 +81,6 @@ function obterDataValida(dataISO, dataReservaBR) {
   }
 
   return data;
-}
-
-function gerarIdUsuario(email, perfil) {
-  return `${perfil}-${email}`
-    .toLowerCase()
-    .trim()
-    .replaceAll(" ", "")
-    .replaceAll("@", "-")
-    .replaceAll(".", "-");
 }
 
 function gerarIniciaisUsuario(nome) {

@@ -2,7 +2,7 @@
    COMUNICADOS
 ===================================================== */
 
-function criarComunicado() {
+async function criarComunicado() {
   if (!usuarioEhManutencaoAutorizada()) {
     alert("Somente a manutenção autorizada pode publicar comunicados.");
     return;
@@ -27,21 +27,22 @@ function criarComunicado() {
   }
 
   const novoComunicado = {
-    id: Date.now(),
     titulo,
     texto,
     origem,
     data: new Date().toLocaleDateString("pt-BR"),
-    autor: usuarioAtual.nome
+    autor: usuarioAtual.nome,
+    autorUid: usuarioAtual.id
   };
 
-  comunicados.unshift(novoComunicado);
-
-  salvarComunicados();
-  renderizarComunicados();
-  limparFormularioComunicado(tituloInput, textoInput, origemInput);
-
-  alert("Comunicado publicado com sucesso.");
+  try {
+    await criarComunicadoFirebase(novoComunicado);
+    limparFormularioComunicado(tituloInput, textoInput, origemInput);
+    alert("Comunicado publicado com sucesso.");
+  } catch (erro) {
+    console.error("Erro ao publicar comunicado:", erro);
+    alert("Não foi possível publicar o comunicado no Firebase.");
+  }
 }
 
 function limparFormularioComunicado(tituloInput, textoInput, origemInput) {
@@ -72,7 +73,7 @@ function renderizarComunicados() {
 function criarCardComunicado(comunicado, mostrarAcao) {
   const botaoExcluir = usuarioEhManutencaoAutorizada() && mostrarAcao
     ? `
-      <button type="button" class="notice-delete-button" onclick="excluirComunicado(${comunicado.id})">
+      <button type="button" class="notice-delete-button" onclick="excluirComunicado(${formatarParametroJS(comunicado.id)})">
         Excluir
       </button>
     `
@@ -82,7 +83,7 @@ function criarCardComunicado(comunicado, mostrarAcao) {
     <div class="notice-card">
       <div class="notice-icon orange-bg">
         <svg viewBox="0 0 24 24" fill="none">
-          <path d="M4 14h3l8 4V6l-8 4H4v4Z" stroke="currentColor" stroke-linejoin="round" />
+          <path d="M4 14h3l8 4V6L7 10H4v4Z" stroke="currentColor" stroke-linejoin="round" />
           <path d="M18 9a4 4 0 0 1 0 6M21 7a7 7 0 0 1 0 10" stroke="currentColor" stroke-linecap="round" />
         </svg>
       </div>
@@ -104,7 +105,7 @@ function criarCardComunicado(comunicado, mostrarAcao) {
   `;
 }
 
-function excluirComunicado(id) {
+async function excluirComunicado(id) {
   if (!usuarioEhManutencaoAutorizada()) {
     alert("Somente a equipe de manutenção pode excluir comunicados.");
     return;
@@ -116,10 +117,11 @@ function excluirComunicado(id) {
     return;
   }
 
-  comunicados = comunicados.filter(comunicado => Number(comunicado.id) !== Number(id));
-
-  salvarComunicados();
-  renderizarComunicados();
-
-  alert("Comunicado excluído com sucesso.");
+  try {
+    await excluirComunicadoFirebase(id);
+    alert("Comunicado excluído com sucesso.");
+  } catch (erro) {
+    console.error("Erro ao excluir comunicado:", erro);
+    alert("Não foi possível excluir o comunicado no Firebase.");
+  }
 }
