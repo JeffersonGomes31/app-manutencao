@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-manutencao-v5-firebase-emails";
+const CACHE_NAME = "app-manutencao-v6-firebase-acoes";
 
 const FILES_TO_CACHE = [
   "./",

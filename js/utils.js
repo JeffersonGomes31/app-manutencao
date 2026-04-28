@@ -18,8 +18,21 @@ function escaparHTML(texto) {
 }
 
 function formatarParametroJS(valor) {
-  return JSON.stringify(String(valor));
+  const textoSeguro = String(valor)
+    .replaceAll("\\", "\\\\")
+    .replaceAll("'", "\\'")
+    .replaceAll("\n", "\\n")
+    .replaceAll("\r", "\\r")
+    .replaceAll("\u2028", "\\u2028")
+    .replaceAll("\u2029", "\\u2029");
+
+  return `'${textoSeguro}'`
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 }
+
 
 function idsIguais(idA, idB) {
   return String(idA) === String(idB);
