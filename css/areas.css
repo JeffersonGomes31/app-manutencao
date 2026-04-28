@@ -1,0 +1,48 @@
+/* ===================== ABA ÁREAS E SERVIÇOS ===================== */
+
+.services-grid {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.service-card {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  box-shadow: 0 7px 16px rgba(20, 40, 80, 0.07);
+  padding: 15px;
+  display: grid;
+  grid-template-columns: 55px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+
+.service-icon {
+  width: 51px;
+  height: 51px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+}
+
+.service-icon svg {
+  width: 29px;
+  height: 29px;
+  stroke-width: 2.4;
+}
+
+.service-info h3 {
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 850;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.service-info p {
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--text-muted);
+  font-weight: 500;
+}

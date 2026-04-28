@@ -1,0 +1,35 @@
+/* ===================== BASE: VARIÁVEIS, RESET E CORPO ===================== */
+
+* {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+:root {
+  --blue: #1f6fe5;
+      --dark-blue: #1e477f;
+      --text-dark: #151f3a;
+      --text-muted: #737d96;
+      --bg: #f5f7fc;
+      --card: #ffffff;
+      --border: #edf1f7;
+      --green: #17a66b;
+      --orange: #e58a00;
+      --purple: #7257e8;
+    }
+
+html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text-dark);
+      overflow-x: hidden;
+    }
+
+body {
+      display: flex;
+      justify-content: center;
+    }

@@ -1,0 +1,170 @@
+/* ===================== ABA PERFIL: LOGIN, DADOS SALVOS E RESUMO ===================== */
+
+.profile-card {
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 7px 16px rgba(20, 40, 80, 0.07);
+      padding: 24px 16px;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+.avatar {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 27px;
+      font-weight: 900;
+      margin: 0 auto 14px;
+      box-shadow: 0 8px 18px rgba(31, 111, 229, 0.25);
+    }
+
+.profile-card h2 {
+      font-size: 21px;
+      font-weight: 850;
+      margin-bottom: 5px;
+      color: var(--text-dark);
+    }
+
+.profile-card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+.profile-menu {
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 7px 16px rgba(20, 40, 80, 0.07);
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+.profile-item {
+      padding: 15px;
+      border-bottom: 1px solid #edf0f6;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: center;
+    }
+
+.profile-item:last-child {
+      border-bottom: none;
+    }
+
+.profile-item span {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+.profile-item strong {
+      font-size: 13px;
+      color: var(--text-dark);
+      font-weight: 850;
+      text-align: right;
+    }
+
+.logout-button {
+      width: 100%;
+      height: 50px;
+      border: 1px solid #ffd1d1;
+      border-radius: 15px;
+      background: #fff2f2;
+      color: #d93030;
+      font-size: 15px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+.logout-button {
+  margin-top: 12px;
+}
+
+.role-test {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.role-test button {
+  height: 44px;
+  border: 1px solid #dfe6f3;
+  border-radius: 13px;
+  background: #fff;
+  color: var(--text-dark);
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.role-test button:hover {
+  background: #f8faff;
+}
+
+.profile-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.profile-summary-card {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  box-shadow: 0 7px 16px rgba(20, 40, 80, 0.07);
+  padding: 16px 14px;
+}
+
+.profile-summary-card span {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.profile-summary-card strong {
+  display: block;
+  font-size: 27px;
+  line-height: 1;
+  color: var(--text-dark);
+  font-weight: 900;
+}
+
+.profile-actions-title {
+  margin: 20px 0 10px;
+}
+
+.profile-actions-title h2 {
+  font-size: 18px;
+  font-weight: 850;
+  color: var(--text-dark);
+  margin-bottom: 5px;
+}
+
+.profile-actions-title p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.35;
+  font-weight: 600;
+}
+
+.profile-form-card {
+  margin-bottom: 18px;
+}
+
+.profile-form-card input:disabled {
+  background: #f2f5fa;
+  color: var(--text-muted);
+  cursor: not-allowed;
+}

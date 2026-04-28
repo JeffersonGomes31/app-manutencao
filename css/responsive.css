@@ -1,0 +1,56 @@
+/* ===================== RESPONSIVIDADE ===================== */
+
+@media (max-width: 390px) {
+      .phone-screen {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .header h1 { font-size: 26px; }
+
+      .hero-text {
+        width: 60%;
+        padding-left: 18px;
+      }
+
+      .hero-building {
+        width: 60%;
+        right: 0;
+      }
+
+      .quick-grid { gap: 7px; }
+      .quick-card h3 { font-size: 11px; }
+      .quick-card p { font-size: 10px; }
+
+      .ticket {
+        grid-template-columns: 52px minmax(0, 1fr);
+      }
+
+      .status {
+        grid-column: 2;
+        justify-self: start;
+        margin-top: 3px;
+      }
+    }
+
+@media (max-width: 340px) {
+      .quick-grid { grid-template-columns: repeat(2, 1fr); }
+      .quick-card { height: 105px; }
+      .hero { height: 170px; }
+      .hero-text { width: 68%; }
+      .hero-building {
+        width: 55%;
+        opacity: 0.9;
+      }
+    }
+
+@media (max-width: 390px) {
+  .detail-photo {
+    max-width: 100%;
+    text-align: left;
+  }
+
+  .foto-preview-wrapper {
+    justify-items: start;
+  }
+}

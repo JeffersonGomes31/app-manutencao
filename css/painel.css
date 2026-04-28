@@ -1,0 +1,239 @@
+/* ===================== PAINEL DA MANUTENÇÃO: DASHBOARD, FILTROS E CARDS ADMIN ===================== */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.dashboard-card {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  box-shadow: 0 7px 16px rgba(20, 40, 80, 0.07);
+  padding: 17px 14px;
+}
+
+.dashboard-card span {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.dashboard-card strong {
+  font-size: 28px;
+  line-height: 1;
+  color: var(--text-dark);
+  font-weight: 900;
+}
+
+.admin-list {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.admin-card {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  box-shadow: 0 7px 16px rgba(20, 40, 80, 0.07);
+  padding: 15px;
+}
+
+.admin-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.admin-card-header h3 {
+  font-size: 15.5px;
+  line-height: 1.25;
+  font-weight: 850;
+  color: var(--text-dark);
+  margin-bottom: 5px;
+}
+
+.admin-card-header p {
+  font-size: 12.5px;
+  line-height: 1.3;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.admin-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.admin-action-button {
+  height: 40px;
+  border: 1px solid #dfe6f3;
+  border-radius: 12px;
+  background: #f8faff;
+  color: var(--text-dark);
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.admin-action-button.blue {
+  background: #eaf2ff;
+  color: var(--blue);
+  border-color: #bcd5ff;
+}
+
+.admin-action-button.orange {
+  background: #fff3df;
+  color: var(--orange);
+  border-color: #ffdca5;
+}
+
+.admin-action-button.green {
+  background: #e8f8ef;
+  color: var(--green);
+  border-color: #c7eedb;
+}
+
+.admin-action-button.red {
+  background: #fff2f2;
+  color: #d93030;
+  border-color: #ffd1d1;
+}
+
+.admin-card-critical {
+  border-color: #ffd1d1;
+  box-shadow: 0 8px 18px rgba(217, 48, 48, 0.12);
+}
+
+.admin-card-critical::before {
+  content: "Atenção prioritária";
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 6px 9px;
+  border-radius: 8px;
+  background: #fff2f2;
+  color: #d93030;
+  border: 1px solid #ffd1d1;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.admin-controls {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.admin-controls input,
+.admin-controls select {
+  width: 100%;
+  height: 46px;
+  border: 1px solid #dfe6f3;
+  background: #fff;
+  border-radius: 14px;
+  padding: 0 13px;
+  font-size: 13px;
+  color: var(--text-dark);
+  outline: none;
+  font-family: inherit;
+  font-weight: 700;
+  box-shadow: 0 5px 12px rgba(20, 40, 80, 0.05);
+}
+
+.admin-controls input::placeholder {
+  color: #98a1b3;
+  font-weight: 600;
+}
+
+.admin-controls input:focus,
+.admin-controls select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(31, 111, 229, 0.12);
+}
+
+.admin-clear-button {
+  height: 44px;
+  margin-top: 0;
+}
+
+.admin-card-body {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0;
+}
+
+.admin-card-body p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.35;
+  font-weight: 650;
+}
+
+.admin-card-body strong {
+  color: var(--text-dark);
+  font-weight: 850;
+}
+
+.admin-action-button.disabled,
+.admin-action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.admin-secondary-action {
+  background: #f5f8ff;
+  color: var(--blue);
+  border-color: #d8e6ff;
+}
+
+.admin-status-control {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.admin-status-control label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.admin-status-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-status-select {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--text-dark);
+  font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .admin-status-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-status-row button {
+    width: 100%;
+  }
+}

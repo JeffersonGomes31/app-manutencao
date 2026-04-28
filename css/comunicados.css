@@ -1,0 +1,78 @@
+/* ===================== ABA COMUNICADOS: AVISOS E COMUNICADOS DINÂMICOS ===================== */
+
+.notice-card {
+      background: #fff;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 7px 16px rgba(20, 40, 80, 0.07);
+      display: grid;
+      grid-template-columns: 55px minmax(0, 1fr) 18px;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 13px 16px 12px;
+    }
+
+.notice-icon {
+      width: 51px;
+      height: 51px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+    }
+
+.notice-icon svg {
+      width: 29px;
+      height: 29px;
+      stroke-width: 2.4;
+    }
+
+.notice-info h3 {
+      font-size: 15.7px;
+      line-height: 1.25;
+      font-weight: 850;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+    }
+
+.notice-info p {
+      font-size: 13.3px;
+      line-height: 1.35;
+      color: #5f6980;
+      font-weight: 500;
+      margin-bottom: 7px;
+    }
+
+.notice-info small {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+.arrow {
+      color: #687184;
+      font-size: 32px;
+      line-height: 1;
+      font-weight: 300;
+    }
+
+.notice-list {
+      display: grid;
+      gap: 14px;
+    }
+
+#areaNovoComunicado {
+  margin-bottom: 18px;
+}
+
+.notice-delete-button {
+  margin-top: 10px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid #ffd1d1;
+  border-radius: 10px;
+  background: #fff2f2;
+  color: #d93030;
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+}

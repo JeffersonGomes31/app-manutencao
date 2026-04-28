@@ -1,0 +1,22 @@
+{
+  "name": "App Manutenção Predial",
+  "short_name": "Manutenção",
+  "description": "Aplicativo para abertura e controle de chamados de manutenção predial.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f7fc",
+  "theme_color": "#1f6fe5",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
