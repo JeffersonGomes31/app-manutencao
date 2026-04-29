@@ -28,6 +28,16 @@ function configurarEventosGlobais() {
       }
     });
   }
+
+  const modalFoto = document.getElementById("modalFotoChamado");
+
+  if (modalFoto) {
+    modalFoto.addEventListener("click", evento => {
+      if (evento.target === modalFoto) {
+        fecharVisualizacaoFoto();
+      }
+    });
+  }
 }
 
 function prepararTelaSemSessao() {
@@ -83,7 +93,7 @@ async function processarEstadoAutenticacao(usuarioFirebase) {
 }
 
 function normalizarUsuarioLogado(usuarioFirebase, perfil) {
-  const tipoPerfil = perfil.perfil || "colaborador";
+  const tipoPerfil = normalizarPerfilUsuario(perfil.perfil);
 
   return {
     id: usuarioFirebase.uid,
@@ -95,6 +105,24 @@ function normalizarUsuarioLogado(usuarioFirebase, perfil) {
     manutencaoAutorizado: tipoPerfil === "manutencao" || tipoPerfil === "admin",
     perfilConfigurado: true
   };
+}
+
+function normalizarPerfilUsuario(perfil) {
+  const perfilTexto = String(perfil || "colaborador")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  if (perfilTexto === "manutencao") {
+    return "manutencao";
+  }
+
+  if (perfilTexto === "admin" || perfilTexto === "administrador") {
+    return "admin";
+  }
+
+  return "colaborador";
 }
 
 function iniciarMonitoresDeDados() {

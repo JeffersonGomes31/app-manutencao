@@ -78,6 +78,8 @@ async function criarChamado() {
     await criarChamadoFirebase(novoChamado);
     alert("Chamado enviado com sucesso!");
     limparFormularioChamado();
+    prepararAbaChamadosAposEnvio();
+    openPage("chamados");
   } catch (erro) {
     console.error("Erro ao enviar chamado:", erro);
     alert("Não foi possível enviar o chamado para o Firebase.");
@@ -116,6 +118,27 @@ function limparFormularioChamado() {
   document.querySelectorAll(".category-fast-button").forEach(botao => {
     botao.classList.remove("active");
   });
+}
+
+function prepararAbaChamadosAposEnvio() {
+  filtroStatusAtual = "TODOS";
+  termoBuscaChamados = "";
+
+  const buscaChamados = document.getElementById("buscaChamados");
+
+  if (buscaChamados) {
+    buscaChamados.value = "";
+  }
+
+  const filtros = document.querySelectorAll("#filtrosChamados .filter");
+
+  filtros.forEach(botao => {
+    botao.classList.remove("active");
+  });
+
+  if (filtros[0]) {
+    filtros[0].classList.add("active");
+  }
 }
 
 function obterChamadosVisiveis() {

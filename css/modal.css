@@ -220,6 +220,13 @@
   justify-items: end;
 }
 
+.foto-preview-button {
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
 .foto-preview {
   max-width: 130px;
   max-height: 95px;
@@ -230,14 +237,32 @@
 }
 
 .foto-preview-link {
+  padding: 0;
+  border: none;
+  background: transparent;
   color: var(--blue);
   font-size: 12px;
   font-weight: 800;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .foto-preview-link:hover {
   text-decoration: underline;
+}
+
+.image-modal-card {
+  max-width: 760px;
+}
+
+.image-modal-preview {
+  width: 100%;
+  max-height: 68vh;
+  object-fit: contain;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: #f8faff;
+  margin-bottom: 14px;
 }
 
 #areaControleColaborador {

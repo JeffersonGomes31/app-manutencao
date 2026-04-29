@@ -656,6 +656,26 @@
     </div>
   </div>
 
+  <!-- MODAL DE VISUALIZAÇÃO DA FOTO -->
+  <div class="modal-overlay" id="modalFotoChamado">
+    <div class="modal-card image-modal-card">
+      <div class="modal-header">
+        <div>
+          <h2>Foto anexada</h2>
+          <p id="tituloFotoChamado">Foto do chamado</p>
+        </div>
+
+        <button type="button" class="modal-close" onclick="fecharVisualizacaoFoto()">×</button>
+      </div>
+
+      <img id="imagemFotoChamado" class="image-modal-preview" alt="" />
+
+      <button type="button" class="secondary-button" onclick="fecharVisualizacaoFoto()">
+        Fechar foto
+      </button>
+    </div>
+  </div>
+
   <!-- MENU INFERIOR -->
   <nav class="bottom-nav">
     <div class="nav-item active" onclick="openPage('inicio', this)">

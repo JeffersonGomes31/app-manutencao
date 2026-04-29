@@ -25,11 +25,13 @@ service cloud.firestore {
     }
 
     function ehAdmin() {
-      return estaAtivo() && usuarioAtual().perfil == "admin";
+      return estaAtivo()
+        && usuarioAtual().perfil in ["admin", "Admin", "administrador", "Administrador"];
     }
 
     function ehManutencao() {
-      return estaAtivo() && usuarioAtual().perfil == "manutencao";
+      return estaAtivo()
+        && usuarioAtual().perfil in ["manutencao", "manutenção", "Manutenção", "MANUTENCAO", "MANUTENÇÃO"];
     }
 
     function ehManutencaoOuAdmin() {
@@ -42,6 +44,28 @@ service cloud.firestore {
           request.resource.data.justificativaAguardando is string
           && request.resource.data.justificativaAguardando.size() > 0
         );
+    }
+
+    function chamadoPertenceAoUsuario() {
+      return resource.data.criadoPorUid == request.auth.uid
+        || resource.data.solicitanteId == request.auth.uid;
+    }
+
+    function chamadoNaoFinalizado() {
+      return resource.data.status != "CONCLUÍDO"
+        && resource.data.status != "CANCELADO";
+    }
+
+    function alterouSomenteCancelamentoColaborador() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(["status", "historico", "atualizadoEm"]);
+    }
+
+    function colaboradorPodeCancelarChamado() {
+      return chamadoPertenceAoUsuario()
+        && chamadoNaoFinalizado()
+        && request.resource.data.status == "CANCELADO"
+        && alterouSomenteCancelamentoColaborador();
     }
 
     match /usuarios/{userId} {
@@ -57,6 +81,7 @@ service cloud.firestore {
       allow read: if estaAtivo()
         && (
           resource.data.criadoPorUid == request.auth.uid
+          || resource.data.solicitanteId == request.auth.uid
           || ehManutencaoOuAdmin()
         );
 
@@ -64,11 +89,7 @@ service cloud.firestore {
         && aguardandoTemJustificativa()
         && (
           ehManutencaoOuAdmin()
-          || (
-            resource.data.criadoPorUid == request.auth.uid
-            && resource.data.status == "ABERTO"
-            && request.resource.data.status == "CANCELADO"
-          )
+          || colaboradorPodeCancelarChamado()
         );
 
       allow delete: if ehAdmin();

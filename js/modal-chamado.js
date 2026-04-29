@@ -132,7 +132,8 @@ function chamadoPodeSerCancelado(chamado) {
   }
 
   if (usuarioAtual.perfil === "colaborador") {
-    return idsIguais(chamado.solicitanteId, usuarioAtual.id);
+    return idsIguais(chamado.solicitanteId, usuarioAtual.id)
+      || idsIguais(chamado.criadoPorUid, usuarioAtual.id);
   }
 
   return false;
@@ -209,10 +210,13 @@ function renderizarFotoDetalhe(chamado) {
   if (fotoBase64 && String(fotoBase64).startsWith("data:image")) {
     return `
       <div class="foto-preview-wrapper">
-        <a href="${fotoBase64}" target="_blank" rel="noopener noreferrer">
+        <button type="button" class="foto-preview-button" onclick="abrirFotoChamadoAtual()">
           <img class="foto-preview" src="${fotoBase64}" alt="${escaparHTML(nomeFoto)}" />
-        </a>
+        </button>
         <small>${escaparHTML(nomeFoto)}</small>
+        <button type="button" class="foto-preview-link" onclick="abrirFotoChamadoAtual()">
+          Visualizar foto
+        </button>
       </div>
     `;
   }
@@ -222,4 +226,51 @@ function renderizarFotoDetalhe(chamado) {
   }
 
   return "Nenhuma";
+}
+
+function abrirFotoChamadoAtual() {
+  const chamado = obterChamadoSelecionado();
+
+  if (!chamado) {
+    alert("Nenhum chamado selecionado.");
+    return;
+  }
+
+  const fotoBase64 = chamado.fotoData || chamado.foto || "";
+
+  if (!fotoBase64 || !String(fotoBase64).startsWith("data:image")) {
+    alert("Este chamado não possui uma foto disponível para visualização.");
+    return;
+  }
+
+  abrirVisualizacaoFoto(fotoBase64, chamado.fotoNome || "Foto anexada");
+}
+
+function abrirVisualizacaoFoto(fotoBase64, nomeFoto) {
+  const modalFoto = document.getElementById("modalFotoChamado");
+  const imagemFoto = document.getElementById("imagemFotoChamado");
+  const tituloFoto = document.getElementById("tituloFotoChamado");
+
+  if (!modalFoto || !imagemFoto || !tituloFoto) {
+    return;
+  }
+
+  imagemFoto.src = fotoBase64;
+  imagemFoto.alt = nomeFoto;
+  tituloFoto.textContent = nomeFoto;
+  modalFoto.classList.add("active");
+}
+
+function fecharVisualizacaoFoto() {
+  const modalFoto = document.getElementById("modalFotoChamado");
+  const imagemFoto = document.getElementById("imagemFotoChamado");
+
+  if (modalFoto) {
+    modalFoto.classList.remove("active");
+  }
+
+  if (imagemFoto) {
+    imagemFoto.removeAttribute("src");
+    imagemFoto.removeAttribute("alt");
+  }
 }
