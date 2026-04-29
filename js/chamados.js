@@ -62,8 +62,10 @@ async function criarChamado() {
     fotoData: fotoBase64,
     solicitanteId: usuarioAtual.id,
     solicitanteNome: usuarioAtual.nome,
+    solicitanteEmail: usuarioAtual.email,
     criadoPorUid: usuarioAtual.id,
     criadoPorNome: usuarioAtual.nome,
+    criadoPorEmail: usuarioAtual.email,
     justificativaAguardando: "",
     historico: [
       {

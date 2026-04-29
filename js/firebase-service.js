@@ -129,8 +129,13 @@ function normalizarChamadoFirebase(documento) {
     fotoData: dados.fotoData || "",
     solicitanteId: dados.solicitanteId || dados.criadoPorUid || "",
     solicitanteNome: dados.solicitanteNome || dados.criadoPorNome || "Não informado",
+    solicitanteEmail: dados.solicitanteEmail || dados.criadoPorEmail || "",
     criadoPorUid: dados.criadoPorUid || dados.solicitanteId || "",
     criadoPorNome: dados.criadoPorNome || dados.solicitanteNome || "Não informado",
+    criadoPorEmail: dados.criadoPorEmail || dados.solicitanteEmail || "",
+    canceladoPorUid: dados.canceladoPorUid || "",
+    canceladoPorNome: dados.canceladoPorNome || "",
+    canceladoMotivo: dados.canceladoMotivo || "",
     justificativaAguardando: dados.justificativaAguardando || "",
     historico
   };

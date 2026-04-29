@@ -187,7 +187,11 @@ async function executarCancelamentoChamado(id, motivo, acaoHistorico, botao) {
   try {
     await atualizarChamadoFirebase(id, {
       status: "CANCELADO",
-      historico: adicionarItemArrayFirebase(itemHistorico)
+      historico: adicionarItemArrayFirebase(itemHistorico),
+      canceladoPorUid: usuarioAtual.id,
+      canceladoPorNome: usuarioAtual.nome,
+      canceladoMotivo: motivo,
+      canceladoEmISO: new Date().toISOString()
     });
 
     if (botao) {
@@ -198,6 +202,12 @@ async function executarCancelamentoChamado(id, motivo, acaoHistorico, botao) {
     alert("Chamado cancelado com sucesso.");
   } catch (erro) {
     console.error("Erro ao cancelar chamado:", erro);
+
+    if (erro && erro.code === "permission-denied") {
+      alert("Não foi possível cancelar o chamado no Firebase. Verifique se as regras do Firestore desta versão foram publicadas no Firebase Console.");
+      return;
+    }
+
     alert("Não foi possível cancelar o chamado no Firebase.");
   }
 

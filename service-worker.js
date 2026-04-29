@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-manutencao-v7-firebase-fluxo-foto-cancelamento";
+const CACHE_NAME = "app-manutencao-v9-banner-senac";
 
 const FILES_TO_CACHE = [
   "./",

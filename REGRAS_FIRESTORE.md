@@ -48,7 +48,9 @@ service cloud.firestore {
 
     function chamadoPertenceAoUsuario() {
       return resource.data.criadoPorUid == request.auth.uid
-        || resource.data.solicitanteId == request.auth.uid;
+        || resource.data.solicitanteId == request.auth.uid
+        || resource.data.criadoPorEmail == request.auth.token.email
+        || resource.data.solicitanteEmail == request.auth.token.email;
     }
 
     function chamadoNaoFinalizado() {
@@ -58,13 +60,24 @@ service cloud.firestore {
 
     function alterouSomenteCancelamentoColaborador() {
       return request.resource.data.diff(resource.data).affectedKeys()
-        .hasOnly(["status", "historico", "atualizadoEm"]);
+        .hasOnly([
+          "status",
+          "historico",
+          "atualizadoEm",
+          "canceladoPorUid",
+          "canceladoPorNome",
+          "canceladoMotivo",
+          "canceladoEmISO"
+        ]);
     }
 
     function colaboradorPodeCancelarChamado() {
       return chamadoPertenceAoUsuario()
         && chamadoNaoFinalizado()
         && request.resource.data.status == "CANCELADO"
+        && request.resource.data.canceladoPorUid == request.auth.uid
+        && request.resource.data.canceladoMotivo is string
+        && request.resource.data.canceladoMotivo.size() > 0
         && alterouSomenteCancelamentoColaborador();
     }
 
