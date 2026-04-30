@@ -21,6 +21,14 @@
 <body>
     <main class="phone-screen">
 
+    <button type="button" id="botaoNotificacoes" class="notifications-button" onclick="abrirPainelNotificacoes()" aria-label="Abrir notificações">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M10 21h4" stroke-linecap="round" />
+      </svg>
+      <span id="contadorNotificacoes" class="notifications-badge">0</span>
+    </button>
+
     <!-- ABA INÍCIO -->
     <section class="page active" id="inicio">
       <header class="header">
@@ -676,6 +684,36 @@
     </div>
   </div>
 
+
+
+  <!-- MODAL DE NOTIFICAÇÕES INTERNAS -->
+  <div class="modal-overlay" id="modalNotificacoes">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h2>Notificações</h2>
+          <p>Atualizações recentes dos chamados.</p>
+        </div>
+
+        <button type="button" class="modal-close" onclick="fecharPainelNotificacoes()">×</button>
+      </div>
+
+      <p class="notifications-help-text">As notificações ficam marcadas como lidas apenas para o usuário atual.</p>
+
+      <div class="notifications-list" id="listaNotificacoes">
+        <!-- Notificações carregadas pelo JavaScript -->
+      </div>
+
+      <button type="button" id="botaoMarcarTodasNotificacoes" class="secondary-button" onclick="marcarTodasNotificacoesComoLidas()">
+        Marcar todas como lidas
+      </button>
+
+      <button type="button" class="secondary-button" onclick="fecharPainelNotificacoes()">
+        Fechar
+      </button>
+    </div>
+  </div>
+
   <!-- MENU INFERIOR -->
   <nav class="bottom-nav">
     <div class="nav-item active" onclick="openPage('inicio', this)">
@@ -724,6 +762,7 @@
   <script src="js/firebase-service.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/navigation.js"></script>
+  <script src="js/notificacoes.js"></script>
   <script src="js/chamados.js"></script>
   <script src="js/modal-chamado.js"></script>
   <script src="js/painel.js"></script>

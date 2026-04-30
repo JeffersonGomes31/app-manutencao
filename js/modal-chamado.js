@@ -194,6 +194,10 @@ async function executarCancelamentoChamado(id, motivo, acaoHistorico, botao) {
       canceladoEmISO: new Date().toISOString()
     });
 
+    if (typeof registrarNotificacaoCancelamentoChamado === "function") {
+      await registrarNotificacaoCancelamentoChamado(chamado, motivo);
+    }
+
     if (botao) {
       aplicarFeedbackSucesso(botao, "Cancelado", "Cancelar chamado");
     }

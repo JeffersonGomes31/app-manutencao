@@ -142,6 +142,11 @@ async function sairDaConta() {
   try {
     await encerrarSessaoFirebase();
     fecharDetalhesChamado();
+
+    if (typeof fecharPainelNotificacoes === "function") {
+      fecharPainelNotificacoes();
+    }
+
     alert("Sessão encerrada.");
   } catch (erro) {
     console.error("Erro ao sair:", erro);

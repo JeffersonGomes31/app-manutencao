@@ -277,6 +277,10 @@ async function alterarStatusPainel(id, novoStatus, botao) {
       historico: adicionarItemArrayFirebase(itemHistorico)
     });
 
+    if (typeof registrarNotificacaoStatusChamado === "function") {
+      await registrarNotificacaoStatusChamado(chamadoAtual, novoStatus, justificativaAguardando);
+    }
+
     aplicarFeedbackSucesso(botao, "Status salvo", "Salvar status");
     alert(`Status atualizado para: ${novoStatus}`);
   } catch (erro) {

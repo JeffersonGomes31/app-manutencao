@@ -38,16 +38,31 @@ function configurarEventosGlobais() {
       }
     });
   }
+
+  const modalNotificacoes = document.getElementById("modalNotificacoes");
+
+  if (modalNotificacoes) {
+    modalNotificacoes.addEventListener("click", evento => {
+      if (evento.target === modalNotificacoes) {
+        fecharPainelNotificacoes();
+      }
+    });
+  }
 }
 
 function prepararTelaSemSessao() {
   usuarioAtual = { ...USUARIO_PADRAO };
   chamados = [];
   comunicados = [];
+  notificacoes = [];
 
   preencherFormularioPerfil();
   aplicarPermissoesNaTela();
   renderizarChamados();
+
+  if (typeof renderizarNotificacoes === "function") {
+    renderizarNotificacoes();
+  }
 
   if (typeof renderizarComunicados === "function") {
     renderizarComunicados();
@@ -145,6 +160,17 @@ function iniciarMonitoresDeDados() {
     console.error("Erro ao carregar comunicados:", erro);
     alert("Não foi possível carregar os comunicados do Firebase.");
   });
+
+  monitorNotificacoes = observarNotificacoesFirebase(usuarioAtual, lista => {
+    notificacoes = lista;
+
+    if (typeof renderizarNotificacoes === "function") {
+      renderizarNotificacoes();
+    }
+  }, erro => {
+    console.error("Erro ao carregar notificações:", erro);
+    alert("Não foi possível carregar as notificações do Firebase.");
+  });
 }
 
 function encerrarMonitoresDeDados() {
@@ -156,5 +182,10 @@ function encerrarMonitoresDeDados() {
   if (typeof monitorComunicados === "function") {
     monitorComunicados();
     monitorComunicados = null;
+  }
+
+  if (typeof monitorNotificacoes === "function") {
+    monitorNotificacoes();
+    monitorNotificacoes = null;
   }
 }

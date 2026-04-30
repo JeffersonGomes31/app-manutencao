@@ -77,12 +77,14 @@ function observarComunicadosFirebase(callback, callbackErro) {
 async function criarChamadoFirebase(chamado) {
   const agora = new Date();
 
-  await firebaseDb.collection("chamados").add({
+  const documento = await firebaseDb.collection("chamados").add({
     ...chamado,
     criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
     criadoEmISO: agora.toISOString(),
     atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
   });
+
+  return documento.id;
 }
 
 async function atualizarChamadoFirebase(id, dados) {
@@ -105,6 +107,38 @@ async function criarComunicadoFirebase(comunicado) {
 
 async function excluirComunicadoFirebase(id) {
   await firebaseDb.collection("comunicados").doc(String(id)).delete();
+}
+
+
+function observarNotificacoesFirebase(usuario, callback, callbackErro) {
+  let consulta = firebaseDb.collection("notificacoes");
+
+  if (usuario.perfil === "colaborador") {
+    consulta = consulta.where("destinatarioUid", "==", usuario.id);
+  } else {
+    consulta = consulta.where("destinatarioPerfil", "==", "manutencao");
+  }
+
+  return consulta.onSnapshot(snapshot => {
+    const lista = snapshot.docs.map(documento => normalizarNotificacaoFirebase(documento));
+    callback(ordenarNotificacoesPorData(lista));
+  }, callbackErro);
+}
+
+async function criarNotificacaoFirebase(notificacao) {
+  await firebaseDb.collection("notificacoes").add({
+    ...notificacao,
+    lidaPorUids: Array.isArray(notificacao.lidaPorUids) ? notificacao.lidaPorUids : [],
+    criadaEm: firebase.firestore.FieldValue.serverTimestamp(),
+    atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+async function marcarNotificacaoComoLidaFirebase(id, uid) {
+  await firebaseDb.collection("notificacoes").doc(String(id)).update({
+    lidaPorUids: firebase.firestore.FieldValue.arrayUnion(uid),
+    atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+  });
 }
 
 function normalizarChamadoFirebase(documento) {
@@ -153,6 +187,42 @@ function normalizarComunicadoFirebase(documento) {
     data: dados.data || criadoEm.toLocaleDateString("pt-BR"),
     autor: dados.autor || "Não informado"
   };
+}
+
+
+
+function normalizarNotificacaoFirebase(documento) {
+  const dados = documento.data();
+  const criadaEm = converterTimestampParaData(dados.criadaEm) || new Date(dados.criadaEmISO || Date.now());
+
+  return {
+    id: documento.id,
+    titulo: dados.titulo || "Notificação",
+    mensagem: dados.mensagem || "",
+    tipo: dados.tipo || "info",
+    chamadoId: dados.chamadoId || "",
+    chamadoDescricao: dados.chamadoDescricao || "",
+    destinatarioUid: dados.destinatarioUid || "",
+    destinatarioPerfil: dados.destinatarioPerfil || "",
+    criadaPorUid: dados.criadaPorUid || "",
+    criadaPorNome: dados.criadaPorNome || "Sistema",
+    criadaPorPerfil: dados.criadaPorPerfil || "",
+    criadaEmISO: dados.criadaEmISO || criadaEm.toISOString(),
+    data: criadaEm.toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    }),
+    lidaPorUids: Array.isArray(dados.lidaPorUids) ? dados.lidaPorUids : []
+  };
+}
+
+function ordenarNotificacoesPorData(lista) {
+  return lista.sort((a, b) => {
+    return new Date(b.criadaEmISO).getTime() - new Date(a.criadaEmISO).getTime();
+  });
 }
 
 function converterTimestampParaData(valor) {

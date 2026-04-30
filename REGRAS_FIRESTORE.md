@@ -81,6 +81,38 @@ service cloud.firestore {
         && alterouSomenteCancelamentoColaborador();
     }
 
+    function podeLerNotificacao() {
+      return resource.data.destinatarioUid == request.auth.uid
+        || (resource.data.destinatarioPerfil == "manutencao" && ehManutencaoOuAdmin())
+        || (resource.data.destinatarioPerfil == "admin" && ehAdmin());
+    }
+
+    function notificacaoCriadaCorretamente() {
+      return request.resource.data.criadaPorUid == request.auth.uid
+        && request.resource.data.titulo is string
+        && request.resource.data.titulo.size() > 0
+        && request.resource.data.mensagem is string
+        && request.resource.data.tipo is string
+        && request.resource.data.lidaPorUids is list
+        && request.resource.data.lidaPorUids.size() == 0
+        && (
+          (
+            request.resource.data.destinatarioUid is string
+            && request.resource.data.destinatarioUid.size() > 0
+          )
+          || request.resource.data.destinatarioPerfil in ["manutencao", "admin"]
+        );
+    }
+
+    function marcouSomenteLeituraNotificacao() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(["lidaPorUids", "atualizadoEm"])
+        && resource.data.lidaPorUids is list
+        && request.resource.data.lidaPorUids is list
+        && request.resource.data.lidaPorUids.hasAll(resource.data.lidaPorUids)
+        && request.auth.uid in request.resource.data.lidaPorUids;
+    }
+
     match /usuarios/{userId} {
       allow read: if estaAtivo() && (request.auth.uid == userId || ehManutencaoOuAdmin());
       allow create, update, delete: if ehAdmin();
@@ -111,6 +143,15 @@ service cloud.firestore {
     match /comunicados/{comunicadoId} {
       allow read: if estaAtivo();
       allow create, update, delete: if ehManutencaoOuAdmin();
+    }
+
+    match /notificacoes/{notificacaoId} {
+      allow read: if estaAtivo() && podeLerNotificacao();
+      allow create: if estaAtivo() && notificacaoCriadaCorretamente();
+      allow update: if estaAtivo()
+        && podeLerNotificacao()
+        && marcouSomenteLeituraNotificacao();
+      allow delete: if ehAdmin();
     }
 
     match /{document=**} {

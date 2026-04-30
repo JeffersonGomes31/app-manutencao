@@ -1,9 +1,8 @@
-const CACHE_NAME = "app-manutencao-v9-banner-senac";
+const CACHE_NAME = "app-manutencao-v10-notificacoes-internas";
 
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
-  "./index-corrigido.html",
   "./manifest.json",
   "./css/style.css",
   "./css/base.css",
@@ -15,12 +14,14 @@ const FILES_TO_CACHE = [
   "./css/painel.css",
   "./css/perfil.css",
   "./css/comunicados.css",
+  "./css/notificacoes.css",
   "./css/areas.css",
   "./css/responsive.css",
   "./js/state.js",
   "./js/firebase-service.js",
   "./js/utils.js",
   "./js/navigation.js",
+  "./js/notificacoes.js",
   "./js/chamados.js",
   "./js/modal-chamado.js",
   "./js/painel.js",

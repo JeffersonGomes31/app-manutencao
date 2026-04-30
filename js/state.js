@@ -12,6 +12,7 @@ const USUARIO_PADRAO = {
 let usuarioAtual = { ...USUARIO_PADRAO };
 let chamados = [];
 let comunicados = [];
+let notificacoes = [];
 
 let filtroStatusAtual = "TODOS";
 let chamadoSelecionadoId = null;
@@ -23,3 +24,4 @@ let filtroPainelPrioridadeAtual = "TODAS";
 
 let monitorChamados = null;
 let monitorComunicados = null;
+let monitorNotificacoes = null;

@@ -77,7 +77,12 @@ async function criarChamado() {
   };
 
   try {
-    await criarChamadoFirebase(novoChamado);
+    const chamadoId = await criarChamadoFirebase(novoChamado);
+
+    if (typeof registrarNotificacaoNovoChamado === "function") {
+      await registrarNotificacaoNovoChamado(chamadoId, novoChamado);
+    }
+
     alert("Chamado enviado com sucesso!");
     limparFormularioChamado();
     prepararAbaChamadosAposEnvio();
