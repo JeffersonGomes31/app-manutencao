@@ -52,13 +52,54 @@ function aplicarFeedbackSucesso(botao, textoSucesso, textoOriginal) {
   }, 1200);
 }
 
+const LIMITE_FOTOS_CHAMADO = 3;
+const TAMANHO_MAXIMO_FOTO_CHAMADO = 1280;
+const QUALIDADE_FOTO_CHAMADO = 0.74;
+
 function converterFotoParaBase64(arquivo) {
+  return converterImagemParaBase64Reduzida(
+    arquivo,
+    TAMANHO_MAXIMO_FOTO_CHAMADO,
+    QUALIDADE_FOTO_CHAMADO
+  );
+}
+
+function converterImagemParaBase64Reduzida(arquivo, tamanhoMaximo, qualidade) {
   return new Promise((resolve, reject) => {
+    if (!arquivo || !String(arquivo.type || "").startsWith("image/")) {
+      reject(new Error("Arquivo de imagem inválido."));
+      return;
+    }
+
     const leitor = new FileReader();
 
-    leitor.onload = () => resolve(leitor.result);
-    leitor.onerror = () => reject(new Error("Não foi possível ler a imagem."));
+    leitor.onload = () => {
+      const imagem = new Image();
 
+      imagem.onload = () => {
+        const maiorLado = Math.max(imagem.width, imagem.height);
+        const escala = maiorLado > tamanhoMaximo ? tamanhoMaximo / maiorLado : 1;
+        const largura = Math.max(1, Math.round(imagem.width * escala));
+        const altura = Math.max(1, Math.round(imagem.height * escala));
+        const canvas = document.createElement("canvas");
+        const contexto = canvas.getContext("2d");
+
+        if (!contexto) {
+          reject(new Error("Não foi possível preparar a imagem."));
+          return;
+        }
+
+        canvas.width = largura;
+        canvas.height = altura;
+        contexto.drawImage(imagem, 0, 0, largura, altura);
+        resolve(canvas.toDataURL("image/jpeg", qualidade));
+      };
+
+      imagem.onerror = () => reject(new Error("Não foi possível carregar a imagem."));
+      imagem.src = leitor.result;
+    };
+
+    leitor.onerror = () => reject(new Error("Não foi possível ler a imagem."));
     leitor.readAsDataURL(arquivo);
   });
 }

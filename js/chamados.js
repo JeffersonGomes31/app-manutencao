@@ -24,27 +24,26 @@ async function criarChamado() {
   const categoria = categoriaInput.value;
   const prioridade = prioridadeInput.value;
   const descricao = descricaoInput.value.trim();
-  const foto = fotoInput && fotoInput.files.length > 0 ? fotoInput.files[0] : null;
+  const arquivosFotos = obterArquivosFotosChamado(fotoInput);
 
   if (!local || !setor || !horario || !categoria || !descricao) {
     alert("Preencha local, setor, melhor horário, categoria e descrição do problema.");
     return;
   }
 
+  if (arquivosFotos.length > LIMITE_FOTOS_CHAMADO) {
+    alert(`Selecione no máximo ${LIMITE_FOTOS_CHAMADO} imagens por chamado.`);
+    return;
+  }
+
   const agora = new Date();
   const dataAtual = agora.toLocaleDateString("pt-BR");
+  const resultadoFotos = await converterArquivosFotosChamado(arquivosFotos);
+  const fotosAnexadas = resultadoFotos.fotos;
+  const fotoPrincipal = fotosAnexadas[0] || null;
 
-  let fotoBase64 = "";
-  let fotoNome = "";
-
-  if (foto) {
-    try {
-      fotoBase64 = await converterFotoParaBase64(foto);
-      fotoNome = foto.name;
-    } catch (erro) {
-      alert("Não foi possível anexar a foto. O chamado será criado sem imagem.");
-      console.warn(erro);
-    }
+  if (resultadoFotos.falhas > 0) {
+    alert("Uma ou mais imagens não puderam ser anexadas. O chamado será criado com as imagens válidas.");
   }
 
   const novoChamado = {
@@ -57,9 +56,10 @@ async function criarChamado() {
     prioridade,
     status: "ABERTO",
     data: dataAtual,
-    foto: fotoNome,
-    fotoNome,
-    fotoData: fotoBase64,
+    foto: fotosAnexadas.map(foto => foto.nome).join(", "),
+    fotoNome: fotoPrincipal ? fotoPrincipal.nome : "",
+    fotoData: fotoPrincipal ? fotoPrincipal.data : "",
+    fotos: fotosAnexadas,
     solicitanteId: usuarioAtual.id,
     solicitanteNome: usuarioAtual.nome,
     solicitanteEmail: usuarioAtual.email,
@@ -92,6 +92,37 @@ async function criarChamado() {
     alert("Não foi possível enviar o chamado para o Firebase.");
   }
 }
+
+function obterArquivosFotosChamado(fotoInput) {
+  if (!fotoInput || !fotoInput.files) {
+    return [];
+  }
+
+  return Array.from(fotoInput.files).filter(arquivo => {
+    return arquivo && String(arquivo.type || "").startsWith("image/");
+  });
+}
+
+async function converterArquivosFotosChamado(arquivos) {
+  const fotos = [];
+  let falhas = 0;
+
+  for (const arquivo of arquivos) {
+    try {
+      const data = await converterFotoParaBase64(arquivo);
+      fotos.push({
+        nome: arquivo.name,
+        data
+      });
+    } catch (erro) {
+      falhas += 1;
+      console.warn("Não foi possível converter uma imagem do chamado:", erro);
+    }
+  }
+
+  return { fotos, falhas };
+}
+
 
 function limparFormularioChamado() {
   const campos = [

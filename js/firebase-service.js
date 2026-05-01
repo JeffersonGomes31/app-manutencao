@@ -146,6 +146,8 @@ function normalizarChamadoFirebase(documento) {
   const criadoEm = converterTimestampParaData(dados.criadoEm) || new Date(dados.criadoEmISO || Date.now());
   const historico = Array.isArray(dados.historico) ? dados.historico : [];
 
+  const fotos = normalizarFotosChamadoFirebase(dados);
+
   return {
     id: documento.id,
     descricao: dados.descricao || "Sem descrição",
@@ -158,9 +160,10 @@ function normalizarChamadoFirebase(documento) {
     status: dados.status || "ABERTO",
     data: dados.data || criadoEm.toLocaleDateString("pt-BR"),
     criadoEm: dados.criadoEmISO || criadoEm.toISOString(),
-    foto: dados.foto || "",
-    fotoNome: dados.fotoNome || dados.foto || "",
-    fotoData: dados.fotoData || "",
+    foto: dados.foto || fotos.map(foto => foto.nome).join(", "),
+    fotoNome: dados.fotoNome || (fotos[0] ? fotos[0].nome : ""),
+    fotoData: dados.fotoData || (fotos[0] ? fotos[0].data : ""),
+    fotos,
     solicitanteId: dados.solicitanteId || dados.criadoPorUid || "",
     solicitanteNome: dados.solicitanteNome || dados.criadoPorNome || "Não informado",
     solicitanteEmail: dados.solicitanteEmail || dados.criadoPorEmail || "",
@@ -173,6 +176,32 @@ function normalizarChamadoFirebase(documento) {
     justificativaAguardando: dados.justificativaAguardando || "",
     historico
   };
+}
+
+function normalizarFotosChamadoFirebase(dados) {
+  const fotos = Array.isArray(dados.fotos)
+    ? dados.fotos
+        .map(foto => ({
+          nome: foto && foto.nome ? String(foto.nome) : "Foto anexada",
+          data: foto && foto.data ? String(foto.data) : ""
+        }))
+        .filter(foto => foto.data.startsWith("data:image"))
+    : [];
+
+  if (fotos.length > 0) {
+    return fotos;
+  }
+
+  if (dados.fotoData && String(dados.fotoData).startsWith("data:image")) {
+    return [
+      {
+        nome: dados.fotoNome || dados.foto || "Foto anexada",
+        data: dados.fotoData
+      }
+    ];
+  }
+
+  return [];
 }
 
 function normalizarComunicadoFirebase(documento) {

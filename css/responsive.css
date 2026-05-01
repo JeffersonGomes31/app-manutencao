@@ -50,6 +50,7 @@
     text-align: left;
   }
 
+  .foto-preview-grid,
   .foto-preview-wrapper {
     justify-items: start;
   }

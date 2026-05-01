@@ -218,31 +218,62 @@ async function executarCancelamentoChamado(id, motivo, acaoHistorico, botao) {
 }
 
 function renderizarFotoDetalhe(chamado) {
-  const fotoBase64 = chamado.fotoData || chamado.foto || "";
-  const nomeFoto = chamado.fotoNome || "Foto anexada";
+  const fotos = obterFotosDoChamado(chamado);
 
-  if (fotoBase64 && String(fotoBase64).startsWith("data:image")) {
-    return `
-      <div class="foto-preview-wrapper">
-        <button type="button" class="foto-preview-button" onclick="abrirFotoChamadoAtual()">
-          <img class="foto-preview" src="${fotoBase64}" alt="${escaparHTML(nomeFoto)}" />
-        </button>
-        <small>${escaparHTML(nomeFoto)}</small>
-        <button type="button" class="foto-preview-link" onclick="abrirFotoChamadoAtual()">
-          Visualizar foto
-        </button>
-      </div>
-    `;
+  if (fotos.length === 0) {
+    if (chamado.fotoNome) {
+      return escaparHTML(`${chamado.fotoNome} (prévia indisponível)`);
+    }
+
+    return "Nenhuma";
   }
 
-  if (chamado.fotoNome) {
-    return escaparHTML(`${chamado.fotoNome} (prévia indisponível)`);
-  }
-
-  return "Nenhuma";
+  return `
+    <div class="foto-preview-grid">
+      ${fotos.map((foto, indice) => `
+        <div class="foto-preview-wrapper">
+          <button type="button" class="foto-preview-button" onclick="abrirFotoChamadoAtual(${indice})">
+            <img class="foto-preview" src="${foto.data}" alt="${escaparHTML(foto.nome)}" />
+          </button>
+          <small>${escaparHTML(`${indice + 1}/${fotos.length} • ${foto.nome}`)}</small>
+          <button type="button" class="foto-preview-link" onclick="abrirFotoChamadoAtual(${indice})">
+            Visualizar foto
+          </button>
+        </div>
+      `).join("")}
+    </div>
+  `;
 }
 
-function abrirFotoChamadoAtual() {
+function obterFotosDoChamado(chamado) {
+  if (!chamado) {
+    return [];
+  }
+
+  if (Array.isArray(chamado.fotos) && chamado.fotos.length > 0) {
+    return chamado.fotos
+      .map(foto => ({
+        nome: foto && foto.nome ? String(foto.nome) : "Foto anexada",
+        data: foto && foto.data ? String(foto.data) : ""
+      }))
+      .filter(foto => foto.data.startsWith("data:image"));
+  }
+
+  const fotoBase64 = chamado.fotoData || chamado.foto || "";
+
+  if (fotoBase64 && String(fotoBase64).startsWith("data:image")) {
+    return [
+      {
+        nome: chamado.fotoNome || "Foto anexada",
+        data: fotoBase64
+      }
+    ];
+  }
+
+  return [];
+}
+
+function abrirFotoChamadoAtual(indiceFoto = 0) {
   const chamado = obterChamadoSelecionado();
 
   if (!chamado) {
@@ -250,14 +281,15 @@ function abrirFotoChamadoAtual() {
     return;
   }
 
-  const fotoBase64 = chamado.fotoData || chamado.foto || "";
+  const fotos = obterFotosDoChamado(chamado);
+  const foto = fotos[indiceFoto];
 
-  if (!fotoBase64 || !String(fotoBase64).startsWith("data:image")) {
+  if (!foto) {
     alert("Este chamado não possui uma foto disponível para visualização.");
     return;
   }
 
-  abrirVisualizacaoFoto(fotoBase64, chamado.fotoNome || "Foto anexada");
+  abrirVisualizacaoFoto(foto.data, foto.nome);
 }
 
 function abrirVisualizacaoFoto(fotoBase64, nomeFoto) {
