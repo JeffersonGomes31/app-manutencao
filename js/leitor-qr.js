@@ -181,8 +181,8 @@ function renderizarResultadoLeitorQR(codigo) {
           Abrir OS com este QR
         </button>
         ${usuarioEhManutencaoAutorizada() ? `
-          <button type="button" class="secondary-button" onclick="openPage('ativos')">
-            Cadastrar ativo
+          <button type="button" class="secondary-button" onclick="prepararCadastroAtivoPorQR(${formatarParametroJS(codigo)})">
+            Cadastrar ativo/local
           </button>
         ` : ""}
       </div>
@@ -225,6 +225,11 @@ function mostrarHistoricoAtivoNoLeitor(codigo) {
     return;
   }
 
+  if (typeof criarHTMLHistoricoAtivo === "function") {
+    container.innerHTML = criarHTMLHistoricoAtivo(historico, codigo);
+    return;
+  }
+
   container.innerHTML = historico.map(chamado => `
     <div class="ticket-row" onclick="abrirDetalhesChamado(${formatarParametroJS(chamado.id)})">
       <div>
@@ -235,6 +240,21 @@ function mostrarHistoricoAtivoNoLeitor(codigo) {
       <span class="${obterClasseStatus(chamado.status)}">${escaparHTML(chamado.status || "Aberto")}</span>
     </div>
   `).join("");
+}
+
+function prepararCadastroAtivoPorQR(codigo) {
+  openPage("ativos");
+
+  const codigoInput = document.getElementById("codigoAtivo");
+  const nomeInput = document.getElementById("nomeAtivo");
+
+  if (codigoInput) {
+    codigoInput.value = normalizarCodigoAtivo(codigo);
+  }
+
+  if (nomeInput && !nomeInput.value) {
+    nomeInput.focus();
+  }
 }
 
 window.addEventListener("beforeunload", pararLeituraQRCode);

@@ -4,22 +4,27 @@
 
 async function criarChamado() {
   const localInput = document.getElementById("localChamado");
+  const andarInput = document.getElementById("andarChamado");
   const setorInput = document.getElementById("setorChamado");
   const equipamentoInput = document.getElementById("equipamentoChamado");
   const horarioInput = document.getElementById("horarioChamado");
   const acompanhamentoInput = document.getElementById("precisaAcompanhamento");
   const categoriaInput = document.getElementById("categoriaChamado");
   const prioridadeInput = document.getElementById("prioridadeChamado");
+  const subcategoriaInput = document.getElementById("subcategoriaChamado");
+  const tipoManutencaoInput = document.getElementById("tipoManutencaoChamado");
   const descricaoInput = document.getElementById("descricaoChamado");
   const fotoInput = document.getElementById("fotoChamado");
 
-  if (!localInput || !setorInput || !horarioInput || !categoriaInput || !prioridadeInput || !descricaoInput) {
+  if (!localInput || !andarInput || !setorInput || !horarioInput || !categoriaInput || !prioridadeInput || !descricaoInput) {
     alert("Erro: alguns campos do formulário não foram encontrados no HTML.");
     return;
   }
 
   const local = localInput.value.trim();
-  const setor = setorInput.value.trim();
+  const andar = andarInput.value.trim();
+  const setorSolicitante = setorInput.value.trim();
+  const setor = andar;
   const equipamentoCodigo = equipamentoInput ? equipamentoInput.value.trim().toUpperCase() : "";
   const ativoVinculado = equipamentoCodigo && typeof encontrarAtivoPorCodigo === "function" ? encontrarAtivoPorCodigo(equipamentoCodigo) : null;
   const equipamentoNome = ativoVinculado ? (ativoVinculado.nome || "") : "";
@@ -27,11 +32,13 @@ async function criarChamado() {
   const precisaAcompanhamento = acompanhamentoInput ? acompanhamentoInput.value : "Não informado";
   const categoria = categoriaInput.value;
   const prioridade = prioridadeInput.value;
+  const subcategoria = subcategoriaInput ? subcategoriaInput.value : "";
+  const tipoManutencao = tipoManutencaoInput ? tipoManutencaoInput.value : "Corretiva";
   const descricao = descricaoInput.value.trim();
   const arquivosFotos = obterArquivosFotosChamado(fotoInput);
 
-  if (!local || !setor || !horario || !categoria || !descricao) {
-    alert("Preencha local, nome do solicitante, melhor horário, categoria e descrição do problema.");
+  if (!andar || !local || !setorSolicitante || !horario || !categoria || !subcategoria || !descricao) {
+    alert("Preencha andar, local do andar, nome do solicitante, melhor horário, categoria, subcategoria e descrição do problema.");
     return;
   }
 
@@ -62,12 +69,16 @@ async function criarChamado() {
     validadoEmISO: "",
     descricao,
     local,
+    andar,
     equipamentoCodigo,
     equipamentoNome,
     setor,
+    setorSolicitante,
     horario,
     precisaAcompanhamento: precisaAcompanhamento || "Não informado",
     categoria,
+    subcategoria,
+    tipoManutencao,
     prioridade,
     status: "ABERTO",
     data: dataAtual,
@@ -86,7 +97,7 @@ async function criarChamado() {
       {
         data: dataAtual,
         acao: "OS aberta",
-        descricao: `${numeroOS} registrada por ${usuarioAtual.nome}${equipamentoCodigo ? ` e vinculada ao ativo ${equipamentoCodigo}` : ""}.`
+        descricao: `${numeroOS} registrada por ${usuarioAtual.nome}${equipamentoCodigo ? ` e vinculada ao ativo ${equipamentoCodigo}` : ""}. Categoria: ${categoria}${subcategoria ? ` / ${subcategoria}` : ""}.`
       }
     ]
   };
@@ -152,11 +163,14 @@ function gerarNumeroOS(data) {
 
 function limparFormularioChamado() {
   const campos = [
+    "andarChamado",
     "localChamado",
     "setorChamado",
     "equipamentoChamado",
     "horarioChamado",
     "categoriaChamado",
+    "subcategoriaChamado",
+    "tipoManutencaoChamado",
     "descricaoChamado",
     "fotoChamado"
   ];
@@ -178,6 +192,10 @@ function limparFormularioChamado() {
 
   if (acompanhamentoInput) {
     acompanhamentoInput.value = "";
+  }
+
+  if (typeof atualizarLocaisPorAndarManutencao === "function") {
+    atualizarLocaisPorAndarManutencao();
   }
 
   document.querySelectorAll(".category-fast-button").forEach(botao => {
@@ -262,6 +280,8 @@ function montarTextoBuscaChamado(chamado) {
     chamado.equipamentoNome,
     chamado.setor,
     chamado.categoria,
+    chamado.subcategoria,
+    chamado.tipoManutencao,
     chamado.prioridade,
     chamado.status,
     chamado.solicitanteNome
@@ -294,7 +314,9 @@ function criarCardChamado(chamado) {
       <div class="ticket-info">
         <h3>${escaparHTML(chamado.numeroOS || "OS")}: ${escaparHTML(chamado.descricao)}</h3>
         <p>
-          ${escaparHTML(chamado.categoria)}
+          ${escaparHTML(chamado.categoria)}${chamado.subcategoria ? ` / ${escaparHTML(chamado.subcategoria)}` : ""}
+          &nbsp;•&nbsp;
+          ${escaparHTML(chamado.tipoManutencao || "Corretiva")}
           &nbsp;•&nbsp;
           ${escaparHTML(chamado.local)}
           ${chamado.equipamentoCodigo ? `&nbsp;•&nbsp; Ativo ${escaparHTML(chamado.equipamentoCodigo)}` : ""}
@@ -578,6 +600,7 @@ function selecionarCategoriaRapida(categoria, botao) {
 
   if (campoCategoria) {
     campoCategoria.value = categoria;
+    campoCategoria.dispatchEvent(new Event("change"));
   }
 
   document.querySelectorAll(".category-fast-button").forEach(item => {

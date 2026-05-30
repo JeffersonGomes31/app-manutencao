@@ -23,6 +23,8 @@ let termoBuscaChamados = "";
 let termoBuscaPainel = "";
 let filtroPainelStatusAtual = "TODOS";
 let filtroPainelPrioridadeAtual = "TODAS";
+let filtroPeriodoDashboardAtual = "30";
+let filtroCategoriaDashboardAtual = "TODAS";
 
 let monitorChamados = null;
 let monitorComunicados = null;

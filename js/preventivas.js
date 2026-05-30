@@ -11,13 +11,20 @@ function renderizarPlanosPreventivos() {
 
   atualizarResumoPreventivas();
 
-  const planosOrdenados = [...planosPreventivos].sort((a, b) => {
+  const planosOrdenados = filtrarPlanosPreventivos([...planosPreventivos]).sort((a, b) => {
+    const aInativo = a.ativo === false ? 1 : 0;
+    const bInativo = b.ativo === false ? 1 : 0;
+
+    if (aInativo !== bInativo) {
+      return aInativo - bInativo;
+    }
+
     return obterDataPlanoPreventivo(a.proximaExecucaoISO).getTime() - obterDataPlanoPreventivo(b.proximaExecucaoISO).getTime();
   });
 
   lista.innerHTML = planosOrdenados.length > 0
     ? planosOrdenados.map(criarCardPlanoPreventivo).join("")
-    : criarMensagemVazia("Nenhum plano preventivo", "Cadastre rotinas recorrentes para reduzir falhas e OS emergenciais.");
+    : criarMensagemVazia("Nenhum plano preventivo encontrado", "Ajuste os filtros ou cadastre uma nova rotina preventiva.");
 }
 
 function atualizarResumoPreventivas() {
@@ -26,6 +33,7 @@ function atualizarResumoPreventivas() {
   limiteSemana.setDate(limiteSemana.getDate() + 7);
 
   const planosAtivos = planosPreventivos.filter(plano => plano.ativo !== false);
+  const inativos = planosPreventivos.filter(plano => plano.ativo === false);
   const vencidos = planosAtivos.filter(plano => obterInicioDoDia(obterDataPlanoPreventivo(plano.proximaExecucaoISO)) < hoje);
   const semana = planosAtivos.filter(plano => {
     const data = obterInicioDoDia(obterDataPlanoPreventivo(plano.proximaExecucaoISO));
@@ -35,6 +43,7 @@ function atualizarResumoPreventivas() {
   setTextContent("totalPlanosPreventivos", planosAtivos.length);
   setTextContent("totalPreventivasVencidas", vencidos.length);
   setTextContent("totalPreventivasSemana", semana.length);
+  setTextContent("totalPreventivasInativas", inativos.length);
 }
 
 function criarCardPlanoPreventivo(plano) {
@@ -53,22 +62,31 @@ function criarCardPlanoPreventivo(plano) {
         <span class="preventive-status">${escaparHTML(situacao.texto)}</span>
       </div>
 
-      <p><strong>Frequência:</strong> ${escaparHTML(formatarFrequenciaPreventiva(plano))}</p>
-      <p><strong>Próxima execução:</strong> ${escaparHTML(formatarDataPreventiva(dataExecucao))}</p>
+      <div class="preventive-meta-grid">
+        <div class="preventive-meta-item"><span>Categoria</span><strong>${escaparHTML(plano.categoria || "Não informada")}</strong></div>
+        <div class="preventive-meta-item"><span>Subcategoria</span><strong>${escaparHTML(plano.subcategoria || "Não informada")}</strong></div>
+        <div class="preventive-meta-item"><span>Frequência</span><strong>${escaparHTML(formatarFrequenciaPreventiva(plano))}</strong></div>
+        <div class="preventive-meta-item"><span>Próxima execução</span><strong>${escaparHTML(formatarDataPreventiva(dataExecucao))}</strong></div>
+        <div class="preventive-meta-item"><span>Responsável</span><strong>${escaparHTML(plano.responsavelPadrao || "Equipe de manutenção")}</strong></div>
+      </div>
+
+      ${criarChecklistPreventiva(plano)}
       <p><strong>Observações:</strong> ${escaparHTML(plano.observacoes || "Sem observações")}</p>
       ${plano.ultimaOS ? `<p><strong>Última OS gerada:</strong> ${escaparHTML(plano.ultimaOS)}</p>` : ""}
 
-      ${podeGerarOS ? `
-        <button type="button" class="primary-button" onclick="gerarOSPreventiva(${formatarParametroJS(plano.id)})">
-          Gerar OS preventiva
-        </button>
-      ` : ""}
+      <div class="preventive-actions">
+        ${podeGerarOS ? `
+          <button type="button" class="primary-button" onclick="gerarOSPreventiva(${formatarParametroJS(plano.id)})">
+            Gerar OS preventiva
+          </button>
+        ` : ""}
 
-      ${podeInativar ? `
-        <button type="button" class="secondary-button" onclick="inativarPlanoPreventivo(${formatarParametroJS(plano.id)})">
-          Inativar plano
-        </button>
-      ` : ""}
+        ${podeInativar ? `
+          <button type="button" class="secondary-button" onclick="inativarPlanoPreventivo(${formatarParametroJS(plano.id)})">
+            Inativar plano
+          </button>
+        ` : ""}
+      </div>
     </div>
   `;
 }
@@ -82,6 +100,10 @@ async function salvarPlanoPreventivo() {
   const ativoInput = document.getElementById("ativoPlanoPreventivo");
   const nomeInput = document.getElementById("nomePlanoPreventivo");
   const localInput = document.getElementById("localPlanoPreventivo");
+  const categoriaInput = document.getElementById("categoriaPlanoPreventivo");
+  const subcategoriaInput = document.getElementById("subcategoriaPlanoPreventivo");
+  const checklistInput = document.getElementById("checklistPlanoPreventivo");
+  const responsavelInput = document.getElementById("responsavelPlanoPreventivo");
   const quantidadeFrequenciaInput = document.getElementById("quantidadeFrequenciaPlanoPreventivo");
   const unidadeFrequenciaInput = document.getElementById("unidadeFrequenciaPlanoPreventivo");
   const proximaInput = document.getElementById("proximaExecucaoPlanoPreventivo");
@@ -90,14 +112,18 @@ async function salvarPlanoPreventivo() {
   const ativoCodigo = ativoInput ? ativoInput.value.trim().toUpperCase() : "";
   const nome = nomeInput ? nomeInput.value.trim() : "";
   const localizacao = localInput ? localInput.value.trim() : "";
+  const categoria = categoriaInput ? categoriaInput.value : "";
+  const subcategoria = subcategoriaInput ? subcategoriaInput.value : "";
+  const checklist = checklistInput ? checklistInput.value.split("\n").map(item => item.trim()).filter(Boolean) : [];
+  const responsavelPadrao = responsavelInput ? responsavelInput.value.trim() : "";
   const quantidadeFrequencia = quantidadeFrequenciaInput ? Number(quantidadeFrequenciaInput.value) : 0;
   const unidadeFrequencia = unidadeFrequenciaInput ? unidadeFrequenciaInput.value : "dias";
   const frequenciaDias = calcularFrequenciaEmDias(quantidadeFrequencia, unidadeFrequencia);
   const proximaExecucao = proximaInput ? proximaInput.value : "";
   const observacoes = observacoesInput ? observacoesInput.value.trim() : "";
 
-  if (!ativoCodigo || !nome || !localizacao || !proximaExecucao) {
-    alert("Informe ativo, nome da rotina, local e próxima execução.");
+  if (!ativoCodigo || !nome || !localizacao || !categoria || !subcategoria || !proximaExecucao) {
+    alert("Informe ativo, nome da rotina, categoria, subcategoria, local e próxima execução.");
     return;
   }
 
@@ -117,6 +143,10 @@ async function salvarPlanoPreventivo() {
     ativoCodigo,
     nome,
     localizacao,
+    categoria,
+    subcategoria,
+    checklist,
+    responsavelPadrao: responsavelPadrao || "Equipe de manutenção",
     quantidadeFrequencia,
     unidadeFrequencia,
     frequenciaDias,
@@ -170,7 +200,9 @@ async function gerarOSPreventiva(planoId) {
     setor: plano.localizacao,
     horario: "A definir",
     precisaAcompanhamento: "Não informado",
-    categoria: "Preventiva",
+    categoria: plano.categoria || "Preventiva",
+    subcategoria: plano.subcategoria || "Preventiva programada",
+    tipoManutencao: "Preventiva",
     prioridade: "Média",
     status: "ABERTO",
     data: agora.toLocaleDateString("pt-BR"),
@@ -187,6 +219,7 @@ async function gerarOSPreventiva(planoId) {
     criadoPorNome: usuarioAtual.nome,
     criadoPorEmail: usuarioAtual.email,
     justificativaAguardando: "",
+    checklistPreventiva: Array.isArray(plano.checklist) ? plano.checklist : [],
     historico: [
       {
         data: agora.toLocaleDateString("pt-BR"),
@@ -238,6 +271,10 @@ function limparFormularioPlanoPreventivo() {
     "ativoPlanoPreventivo",
     "nomePlanoPreventivo",
     "localPlanoPreventivo",
+    "categoriaPlanoPreventivo",
+    "subcategoriaPlanoPreventivo",
+    "checklistPlanoPreventivo",
+    "responsavelPlanoPreventivo",
     "quantidadeFrequenciaPlanoPreventivo",
     "proximaExecucaoPlanoPreventivo",
     "observacoesPlanoPreventivo"
@@ -275,6 +312,72 @@ function prepararPlanoPreventivoDoAtivo(codigo) {
   }
 
   openPage("preventivas");
+}
+
+function atualizarSubcategoriasPlanoPreventivo() {
+  const categoriaInput = document.getElementById("categoriaPlanoPreventivo");
+  const subcategoriaInput = document.getElementById("subcategoriaPlanoPreventivo");
+
+  if (!categoriaInput || !subcategoriaInput) {
+    return;
+  }
+
+  const categoria = categoriaInput.value;
+  const opcoes = categoriasManutencao[categoria] || [];
+
+  subcategoriaInput.innerHTML = '<option value="">Selecione</option>';
+  opcoes.forEach(item => {
+    const option = document.createElement("option");
+    option.value = item;
+    option.textContent = item;
+    subcategoriaInput.appendChild(option);
+  });
+}
+
+function filtrarPlanosPreventivos(planos) {
+  const filtro = document.getElementById("filtroSituacaoPreventiva")?.value || "TODAS";
+  const busca = removerAcentos((document.getElementById("buscaPlanoPreventivo")?.value || "").toLowerCase());
+  const hoje = obterInicioDoDia(new Date());
+  const limiteSemana = new Date(hoje);
+  limiteSemana.setDate(limiteSemana.getDate() + 7);
+
+  return planos.filter(plano => {
+    const data = obterInicioDoDia(obterDataPlanoPreventivo(plano.proximaExecucaoISO));
+    const ativo = plano.ativo !== false;
+    const texto = removerAcentos([
+      plano.nome,
+      plano.ativoCodigo,
+      plano.localizacao,
+      plano.categoria,
+      plano.subcategoria,
+      plano.responsavelPadrao
+    ].join(" ").toLowerCase());
+
+    const passaBusca = !busca || texto.includes(busca);
+    let passaFiltro = true;
+
+    if (filtro === "VENCIDAS") passaFiltro = ativo && data < hoje;
+    if (filtro === "SEMANA") passaFiltro = ativo && data >= hoje && data <= limiteSemana;
+    if (filtro === "PROGRAMADAS") passaFiltro = ativo && data > limiteSemana;
+    if (filtro === "INATIVAS") passaFiltro = !ativo;
+
+    return passaBusca && passaFiltro;
+  });
+}
+
+function criarChecklistPreventiva(plano) {
+  const itens = Array.isArray(plano.checklist) ? plano.checklist : [];
+
+  if (!itens.length) {
+    return `<div class="preventive-checklist"><strong>Checklist:</strong><p>Sem checklist cadastrado.</p></div>`;
+  }
+
+  return `
+    <div class="preventive-checklist">
+      <strong>Checklist:</strong>
+      <ul>${itens.map(item => `<li>${escaparHTML(item)}</li>`).join("")}</ul>
+    </div>
+  `;
 }
 
 function calcularFrequenciaEmDias(quantidade, unidade) {
@@ -347,4 +450,8 @@ function obterInicioDoDia(data) {
 
 function formatarDataPreventiva(data) {
   return data.toLocaleDateString("pt-BR");
+}
+
+function removerAcentos(texto) {
+  return String(texto || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }

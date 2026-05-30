@@ -299,30 +299,72 @@
 
         <label>
           Localização
-          <input id="localAtivo" type="text" placeholder="Ex: Sala 02, Biblioteca, Laboratório de informática" />
-        </label>
-
-        <label>
-          Categoria
-          <select id="categoriaAtivo">
-            <option value="Equipamento">Equipamento</option>
-            <option value="Ambiente">Ambiente</option>
-            <option value="Infraestrutura">Infraestrutura</option>
-            <option value="Mobiliário">Mobiliário</option>
-            <option value="TI / Audiovisual">TI / Audiovisual</option>
+          <select id="localAtivo">
+            <option value="">Selecione</option>
+            <option>Sala de Aula</option>
+            <option>Laboratório de Informática</option>
+            <option>Laboratório Técnico</option>
+            <option>Banheiro</option>
+            <option>Recepção</option>
+            <option>Biblioteca</option>
+            <option>Auditório</option>
+            <option>Cozinha Pedagógica</option>
+            <option>Área Externa</option>
+            <option>Coordenação</option>
+            <option>Outro local</option>
           </select>
         </label>
 
+        <div class="form-row">
+          <label>
+            Tipo de cadastro
+            <select id="categoriaAtivo">
+              <option value="Equipamento">Equipamento</option>
+              <option value="Ambiente">Ambiente</option>
+              <option value="Infraestrutura">Infraestrutura</option>
+              <option value="Mobiliário">Mobiliário</option>
+              <option value="TI / Audiovisual">TI / Audiovisual</option>
+            </select>
+          </label>
+
+          <label>
+            Criticidade
+            <select id="criticidadeAtivo">
+              <option value="Baixa">Baixa</option>
+              <option value="Média">Média</option>
+              <option value="Alta">Alta</option>
+              <option value="Crítica">Crítica</option>
+            </select>
+          </label>
+        </div>
+
+        <label>
+          Categoria principal de manutenção
+          <select id="categoriaManutencaoAtivo">
+            <option value="">Selecione</option>
+            <option value="Elétrica">Elétrica</option>
+            <option value="Hidráulica">Hidráulica</option>
+            <option value="Alvenaria">Alvenaria</option>
+            <option value="Pintura">Pintura</option>
+            <option value="Eletrônica">Eletrônica</option>
+            <option value="Outros">Outros</option>
+          </select>
+        </label>
+
+        <label>
+          Observações do ativo/local
+          <textarea id="observacoesAtivo" placeholder="Ex: ambiente com grande circulação, equipamento essencial para aula, verificar histórico de reincidência..."></textarea>
+        </label>
+
         <button type="button" class="primary-button" onclick="salvarAtivo()">
-          Cadastrar ativo
+          Cadastrar ativo/local
         </button>
       </div>
 
       <div class="form-card qr-help-card">
         <h3>Como usar o QR Code</h3>
-        <p>Depois de cadastrar um ativo, gere uma etiqueta apontando para o app com o código na URL:</p>
-        <code>https://jeffersongomes31.github.io/app-manutencao/?qr=CODIGO-DO-ATIVO</code>
-        <p>Ao abrir o link, a Nova OS já será preparada com o equipamento informado.</p>
+        <p>Depois de cadastrar um ativo ou local, o app gera o link do QR Code e permite imprimir uma etiqueta simples com código, nome, localização e endereço.</p>
+        <p>Use o leitor para consultar histórico, abrir nova OS vinculada ou conferir reincidência daquele ponto.</p>
       </div>
 
       <div class="section-header spacing">
@@ -384,6 +426,7 @@
         <div class="dashboard-card"><span>Planos ativos</span><strong id="totalPlanosPreventivos">0</strong><small>Rotinas programadas</small></div>
         <div class="dashboard-card"><span>Vencidas</span><strong id="totalPreventivasVencidas">0</strong><small>Precisam gerar OS</small></div>
         <div class="dashboard-card"><span>Próximos 7 dias</span><strong id="totalPreventivasSemana">0</strong><small>Agenda preventiva</small></div>
+        <div class="dashboard-card"><span>Inativas</span><strong id="totalPreventivasInativas">0</strong><small>Planos pausados</small></div>
       </div>
 
       <div class="form-card" id="areaNovoPlanoPreventivo">
@@ -398,6 +441,28 @@
           Nome da rotina
           <input id="nomePlanoPreventivo" type="text" placeholder="Ex: Limpeza preventiva do ar-condicionado" />
         </label>
+
+        <div class="form-row">
+          <label>
+            Categoria técnica
+            <select id="categoriaPlanoPreventivo" onchange="atualizarSubcategoriasPlanoPreventivo()">
+              <option value="">Selecione</option>
+              <option value="Elétrica">Elétrica</option>
+              <option value="Hidráulica">Hidráulica</option>
+              <option value="Alvenaria">Alvenaria</option>
+              <option value="Pintura">Pintura</option>
+              <option value="Eletrônica">Eletrônica</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </label>
+
+          <label>
+            Subcategoria
+            <select id="subcategoriaPlanoPreventivo">
+              <option value="">Selecione</option>
+            </select>
+          </label>
+        </div>
 
         <label>
           Setor / local
@@ -420,9 +485,21 @@
           </label>
         </div>
 
+        <div class="form-row">
+          <label>
+            Próxima execução
+            <input id="proximaExecucaoPlanoPreventivo" type="date" />
+          </label>
+
+          <label>
+            Responsável padrão
+            <input id="responsavelPlanoPreventivo" type="text" placeholder="Ex: Equipe de manutenção" />
+          </label>
+        </div>
+
         <label>
-          Próxima execução
-          <input id="proximaExecucaoPlanoPreventivo" type="date" />
+          Checklist da preventiva
+          <textarea id="checklistPlanoPreventivo" placeholder="Digite uma atividade por linha. Ex:\nVerificar fixação\nLimpar filtros\nTestar funcionamento"></textarea>
         </label>
 
         <label>
@@ -444,6 +521,26 @@
         <h2>Planos cadastrados</h2>
       </div>
 
+      <div class="form-card">
+        <div class="form-row preventive-filter-grid">
+          <label>
+            Filtrar por situação
+            <select id="filtroSituacaoPreventiva" onchange="renderizarPlanosPreventivos()">
+              <option value="TODAS">Todas</option>
+              <option value="VENCIDAS">Vencidas</option>
+              <option value="SEMANA">Próximos 7 dias</option>
+              <option value="PROGRAMADAS">Programadas</option>
+              <option value="INATIVAS">Inativas</option>
+            </select>
+          </label>
+
+          <label>
+            Buscar plano
+            <input id="buscaPlanoPreventivo" type="search" placeholder="Nome, ativo, local ou categoria" oninput="renderizarPlanosPreventivos()" />
+          </label>
+        </div>
+      </div>
+
       <div class="preventive-list" id="listaPlanosPreventivos">
         <!-- Planos carregados pelo JavaScript -->
       </div>
@@ -457,10 +554,58 @@
       </header>
 
      <form class="form-card">
+
      <label>
-        Local da ocorrência
-        <input id="localChamado" type="text" placeholder="Ex: Sala 02, cozinha, banheiro..." />
+        Escolher o andar
+        <select id="andarChamado">
+          <option value="">Selecione o andar</option>
+          <option value="1º ANDAR">1º ANDAR</option>
+          <option value="SL ANDAR">SL ANDAR</option>
+          <option value="0º ANDAR">0º ANDAR</option>
+          <option value="-1º ANDAR">-1º ANDAR</option>
+        </select>
+        <small class="form-help">Depois de escolher o andar, o campo abaixo mostra somente os locais daquele andar.</small>
      </label>
+
+     <label>
+        Local do andar
+        <select id="localChamado" disabled>
+          <option value="">Selecione um andar primeiro</option>
+        </select>
+     </label>
+
+     <label>
+        Tipo de manutenção
+        <select id="tipoManutencaoChamado">
+          <option value="Corretiva">Corretiva</option>
+          <option value="Preventiva">Preventiva</option>
+          <option value="Inspeção">Inspeção</option>
+          <option value="Melhoria">Melhoria</option>
+        </select>
+        <small class="form-help">Use Corretiva para falhas, Preventiva para rotina programada, Inspeção para vistoria e Melhoria para evolução da estrutura.</small>
+     </label>
+
+     <label>
+        Categoria da OS
+        <select id="categoriaChamado">
+          <option value="">Selecione</option>
+          <option value="Elétrica">Elétrica</option>
+          <option value="Hidráulica">Hidráulica</option>
+          <option value="Alvenaria">Alvenaria</option>
+          <option value="Pintura">Pintura</option>
+          <option value="Eletrônica">Eletrônica</option>
+          <option value="Outros">Outros</option>
+        </select>
+     </label>
+
+     <label>
+        Subcategoria
+        <select id="subcategoriaChamado">
+          <option value="">Selecione uma categoria primeiro</option>
+        </select>
+        <small class="form-help">As subcategorias mudam conforme a categoria escolhida.</small>
+     </label>
+
 
      <label>
         Equipamento / patrimônio / QR Code
@@ -496,19 +641,6 @@
           <option value="Não">Não</option>
         </select>
       </label>
-
-  <label>
-    Categoria da OS
-    <select id="categoriaChamado">
-      <option value="">Selecione</option>
-      <option value="Elétrica">Elétrica</option>
-      <option value="Hidráulica">Hidráulica</option>
-      <option value="Alvenaria">Alvenaria</option>
-      <option value="Pintura">Pintura</option>
-      <option value="Eletrônica">Eletrônica</option>
-      <option value="Outros">Outros</option>
-    </select>
-  </label>
 
         <label>
           Prioridade
@@ -742,8 +874,37 @@
     <section class="page" id="painel">
       <header class="page-header">
         <h1>Painel da manutenção</h1>
-        <p>Gerencie as Ordens de Serviço recebidas, responsáveis, prazos e histórico de atendimento.</p>
+        <p>Gerencie as OS recebidas com indicadores por período, categoria, prioridade, setor crítico e preventivas.</p>
       </header>
+
+
+
+      <div class="form-card dashboard-period-card">
+        <div class="form-row dashboard-period-grid">
+          <label>
+            Período dos indicadores
+            <select id="filtroPeriodoDashboard" onchange="alterarPeriodoDashboard(this.value)">
+              <option value="TODOS">Todo o histórico</option>
+              <option value="7">Últimos 7 dias</option>
+              <option value="30" selected>Últimos 30 dias</option>
+              <option value="90">Últimos 90 dias</option>
+            </select>
+          </label>
+          <label>
+            Categoria
+            <select id="filtroCategoriaDashboard" onchange="alterarCategoriaDashboard(this.value)">
+              <option value="TODAS">Todas as categorias</option>
+              <option value="Elétrica">Elétrica</option>
+              <option value="Hidráulica">Hidráulica</option>
+              <option value="Alvenaria">Alvenaria</option>
+              <option value="Pintura">Pintura</option>
+              <option value="Eletrônica">Eletrônica</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </label>
+        </div>
+        <small class="form-help">Os cards e rankings abaixo consideram o período e a categoria selecionados. A fila operacional continua usando os filtros próprios.</small>
+      </div>
 
       <div class="dashboard-grid dashboard-grid-kpi">
         <div class="dashboard-card"><span>Total de OS</span><strong id="totalOSPainel">0</strong><small>Base operacional registrada</small></div>
@@ -757,6 +918,9 @@
         <div class="dashboard-card"><span>Tempo atendimento</span><strong id="tempoMedioAtendimentoPainel">--</strong><small>Abertura até início</small></div>
         <div class="dashboard-card"><span>Tempo reparo</span><strong id="tempoMedioReparoPainel">--</strong><small>Início até conclusão</small></div>
         <div class="dashboard-card"><span>Disponibilidade</span><strong id="disponibilidadePainel">--</strong><small>OS concluídas no prazo</small></div>
+        <div class="dashboard-card"><span>OS no período</span><strong id="totalOSPeriodoPainel">0</strong><small>Conforme filtro aplicado</small></div>
+        <div class="dashboard-card"><span>Planos vencidos</span><strong id="totalPreventivasVencidasPainel">0</strong><small>Preventivas fora da data</small></div>
+        <div class="dashboard-card"><span>SLA cumprido</span><strong id="slaCumpridoPainel">--</strong><small>Concluídas dentro do prazo</small></div>
       </div>
 
       <div class="section-header spacing">
@@ -782,6 +946,26 @@
         <div class="insight-card">
           <h3>Equipamentos críticos</h3>
           <div id="rankingEquipamentosPainel" class="ranking-list"></div>
+        </div>
+
+        <div class="insight-card">
+          <h3>OS por categoria</h3>
+          <div id="indicadorCategoriasOS" class="indicator-list"></div>
+        </div>
+
+        <div class="insight-card">
+          <h3>Tipo de manutenção</h3>
+          <div id="indicadorTiposManutencao" class="indicator-list"></div>
+        </div>
+
+        <div class="insight-card">
+          <h3>Preventivas próximas/vencidas</h3>
+          <div id="rankingPreventivasPainel" class="ranking-list"></div>
+        </div>
+
+        <div class="insight-card">
+          <h3>Resumo mensal</h3>
+          <div id="indicadorResumoMensal" class="indicator-list"></div>
         </div>
       </div>
 
@@ -905,6 +1089,14 @@
         <div class="detail-item">
           <span>Categoria da OS</span>
           <strong id="detalheCategoria">-</strong>
+        </div>
+        <div class="detail-item">
+          <span>Subcategoria</span>
+          <strong id="detalheSubcategoria">-</strong>
+        </div>
+        <div class="detail-item">
+          <span>Tipo de manutenção</span>
+          <strong id="detalheTipoManutencao">-</strong>
         </div>
         <div class="detail-item">
           <span>Prioridade</span>
@@ -1062,6 +1254,7 @@
       });
     }
   </script>
+  <script src="js/categorias.js"></script>
 </body>
 
 </html>

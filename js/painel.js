@@ -58,20 +58,24 @@ function renderizarPainelManutencao() {
 }
 
 function atualizarResumoPainel() {
+  const chamadosDashboard = obterChamadosDashboardFiltrados();
   const totalOS = chamados.length;
-  const totalAbertos = chamados.filter(chamado => chamado.status === "ABERTO").length;
-  const totalAndamento = chamados.filter(chamado => chamado.status === "EM ANDAMENTO").length;
-  const totalConcluidos = chamados.filter(chamado => chamado.status === "CONCLUÍDO").length;
-  const totalValidados = chamados.filter(chamado => chamado.status === "VALIDADO").length;
-  const totalEncerrados = chamados.filter(chamado => chamado.status === "ENCERRADO").length;
-  const totalCancelados = chamados.filter(chamado => chamado.status === "CANCELADO").length;
-  const totalBacklog = chamados.filter(chamado => ["ABERTO", "EM ANDAMENTO", "AGUARDANDO"].includes(chamado.status)).length;
-  const totalAtrasados = chamados.filter(chamadoEstaAtrasado).length;
-  const totalUrgentes = chamados.filter(chamado => chamado.prioridade === "Urgente" && !statusFinalizado(chamado.status)).length;
-  const totalPreventivas = contarChamadosPorTexto(["preventiva", "preventivo"]);
-  const totalEmergenciais = contarChamadosPorTexto(["emergencial", "emergência", "urgente"]);
+  const totalPeriodo = chamadosDashboard.length;
+  const totalAbertos = chamadosDashboard.filter(chamado => chamado.status === "ABERTO").length;
+  const totalAndamento = chamadosDashboard.filter(chamado => chamado.status === "EM ANDAMENTO").length;
+  const totalConcluidos = chamadosDashboard.filter(chamado => chamado.status === "CONCLUÍDO").length;
+  const totalValidados = chamadosDashboard.filter(chamado => chamado.status === "VALIDADO").length;
+  const totalEncerrados = chamadosDashboard.filter(chamado => chamado.status === "ENCERRADO").length;
+  const totalCancelados = chamadosDashboard.filter(chamado => chamado.status === "CANCELADO").length;
+  const totalBacklog = chamadosDashboard.filter(chamado => ["ABERTO", "EM ANDAMENTO", "AGUARDANDO"].includes(chamado.status)).length;
+  const totalAtrasados = chamadosDashboard.filter(chamadoEstaAtrasado).length;
+  const totalUrgentes = chamadosDashboard.filter(chamado => chamado.prioridade === "Urgente" && !statusFinalizado(chamado.status)).length;
+  const totalPreventivas = contarChamadosPorTexto(["preventiva", "preventivo"], chamadosDashboard);
+  const totalEmergenciais = contarChamadosPorTexto(["emergencial", "emergência", "urgente"], chamadosDashboard);
+  const totalPreventivasVencidas = contarPreventivasVencidasPainel();
 
   setTextContent("totalOSPainel", totalOS);
+  setTextContent("totalOSPeriodoPainel", totalPeriodo);
   setTextContent("totalChamadosPainel", totalOS);
   setTextContent("totalAbertosPainel", totalAbertos);
   setTextContent("totalAndamentoPainel", totalAndamento);
@@ -85,32 +89,64 @@ function atualizarResumoPainel() {
   setTextContent("totalUrgentesPainel", totalUrgentes);
   setTextContent("totalPreventivasPainel", totalPreventivas);
   setTextContent("totalEmergenciaisPainel", totalEmergenciais);
-  setTextContent("tempoMedioAtendimentoPainel", calcularTempoMedioAtendimento());
-  setTextContent("tempoMedioReparoPainel", calcularTempoMedioReparo());
-  setTextContent("disponibilidadePainel", calcularDisponibilidadeOperacional());
+  setTextContent("totalPreventivasVencidasPainel", totalPreventivasVencidas);
+  setTextContent("tempoMedioAtendimentoPainel", calcularTempoMedioAtendimento(chamadosDashboard));
+  setTextContent("tempoMedioReparoPainel", calcularTempoMedioReparo(chamadosDashboard));
+  setTextContent("disponibilidadePainel", calcularDisponibilidadeOperacional(chamadosDashboard));
+  setTextContent("slaCumpridoPainel", calcularDisponibilidadeOperacional(chamadosDashboard));
 
   renderizarIndicadoresOperacionais({
-    totalOS,
+    totalOS: totalPeriodo,
+    chamados: chamadosDashboard,
     status: {
       "Aberto": totalAbertos,
       "Em andamento": totalAndamento,
-      "Aguardando": chamados.filter(chamado => chamado.status === "AGUARDANDO").length,
+      "Aguardando": chamadosDashboard.filter(chamado => chamado.status === "AGUARDANDO").length,
       "Concluído": totalConcluidos,
       "Validado": totalValidados,
       "Encerrado": totalEncerrados,
       "Cancelado": totalCancelados
     },
     prioridades: {
-      "Urgente": chamados.filter(chamado => chamado.prioridade === "Urgente").length,
-      "Alta": chamados.filter(chamado => chamado.prioridade === "Alta").length,
-      "Média": chamados.filter(chamado => chamado.prioridade === "Média").length,
-      "Baixa": chamados.filter(chamado => chamado.prioridade === "Baixa").length
+      "Urgente": chamadosDashboard.filter(chamado => chamado.prioridade === "Urgente").length,
+      "Alta": chamadosDashboard.filter(chamado => chamado.prioridade === "Alta").length,
+      "Média": chamadosDashboard.filter(chamado => chamado.prioridade === "Média").length,
+      "Baixa": chamadosDashboard.filter(chamado => chamado.prioridade === "Baixa").length
     }
   });
 }
 
-function contarChamadosPorTexto(termos) {
-  return chamados.filter(chamado => {
+function alterarPeriodoDashboard(periodo) {
+  filtroPeriodoDashboardAtual = periodo || "30";
+  renderizarPainelManutencao();
+}
+
+function alterarCategoriaDashboard(categoria) {
+  filtroCategoriaDashboardAtual = categoria || "TODAS";
+  renderizarPainelManutencao();
+}
+
+function obterChamadosDashboardFiltrados() {
+  let lista = [...chamados];
+
+  if (filtroCategoriaDashboardAtual !== "TODAS") {
+    lista = lista.filter(chamado => chamado.categoria === filtroCategoriaDashboardAtual);
+  }
+
+  if (filtroPeriodoDashboardAtual !== "TODOS") {
+    const dias = Number(filtroPeriodoDashboardAtual);
+    const limite = new Date();
+    limite.setDate(limite.getDate() - dias);
+    limite.setHours(0, 0, 0, 0);
+
+    lista = lista.filter(chamado => obterDataValida(chamado.criadoEm || chamado.data, chamado.data) >= limite);
+  }
+
+  return lista;
+}
+
+function contarChamadosPorTexto(termos, base = chamados) {
+  return base.filter(chamado => {
     const texto = [
       chamado.tipoDemanda,
       chamado.tipoRegistro,
@@ -123,8 +159,8 @@ function contarChamadosPorTexto(termos) {
   }).length;
 }
 
-function calcularTempoMedioAtendimento() {
-  const duracoes = chamados
+function calcularTempoMedioAtendimento(base = chamados) {
+  const duracoes = base
     .filter(chamado => chamado.iniciadoEmISO)
     .map(chamado => calcularDiferencaHoras(chamado.criadoEm || chamado.data, chamado.iniciadoEmISO, chamado.data))
     .filter(valor => valor !== null);
@@ -132,8 +168,8 @@ function calcularTempoMedioAtendimento() {
   return formatarMediaHoras(duracoes);
 }
 
-function calcularTempoMedioReparo() {
-  const duracoes = chamados
+function calcularTempoMedioReparo(base = chamados) {
+  const duracoes = base
     .filter(chamado => chamado.iniciadoEmISO && chamado.concluidoEmISO)
     .map(chamado => calcularDiferencaHoras(chamado.iniciadoEmISO, chamado.concluidoEmISO, chamado.data))
     .filter(valor => valor !== null);
@@ -171,8 +207,8 @@ function formatarMediaHoras(valores) {
   return `${Math.round(media / 24)}d`;
 }
 
-function calcularDisponibilidadeOperacional() {
-  const concluidos = chamados.filter(chamado => ["CONCLUÍDO", "VALIDADO", "ENCERRADO"].includes(chamado.status));
+function calcularDisponibilidadeOperacional(base = chamados) {
+  const concluidos = base.filter(chamado => ["CONCLUÍDO", "VALIDADO", "ENCERRADO"].includes(chamado.status));
 
   if (!concluidos.length) {
     return "--";
@@ -195,10 +231,15 @@ function calcularDisponibilidadeOperacional() {
 }
 
 function renderizarIndicadoresOperacionais(dados) {
+  const base = dados.chamados || chamados;
   renderizarBarrasIndicador("indicadorStatusOS", dados.status, dados.totalOS);
   renderizarBarrasIndicador("indicadorPrioridadesOS", dados.prioridades, dados.totalOS);
-  renderizarRankingPainel("rankingSetoresPainel", contarOcorrenciasPainel("setor"), "Nenhum setor com OS registrada.");
-  renderizarRankingPainel("rankingEquipamentosPainel", contarEquipamentosCriticos(), "Nenhum equipamento vinculado às OS ainda.");
+  renderizarBarrasIndicador("indicadorCategoriasOS", contarOcorrenciasPainel("categoria", base), dados.totalOS);
+  renderizarBarrasIndicador("indicadorTiposManutencao", contarOcorrenciasPainel("tipoManutencao", base), dados.totalOS);
+  renderizarBarrasIndicador("indicadorResumoMensal", contarResumoMensalPainel(base), dados.totalOS);
+  renderizarRankingPainel("rankingSetoresPainel", contarOcorrenciasPainel("setor", base), "Nenhum setor com OS registrada.");
+  renderizarRankingPainel("rankingEquipamentosPainel", contarEquipamentosCriticos(base), "Nenhum equipamento vinculado às OS ainda.");
+  renderizarRankingPainel("rankingPreventivasPainel", contarPreventivasPorSituacaoPainel(), "Nenhuma preventiva cadastrada.");
 }
 
 function renderizarBarrasIndicador(idElemento, dados, total) {
@@ -230,16 +271,16 @@ function renderizarBarrasIndicador(idElemento, dados, total) {
   }).join("");
 }
 
-function contarOcorrenciasPainel(campo) {
-  return chamados.reduce((mapa, chamado) => {
+function contarOcorrenciasPainel(campo, base = chamados) {
+  return base.reduce((mapa, chamado) => {
     const chave = String(chamado[campo] || "Não informado").trim() || "Não informado";
     mapa[chave] = (mapa[chave] || 0) + 1;
     return mapa;
   }, {});
 }
 
-function contarEquipamentosCriticos() {
-  return chamados.reduce((mapa, chamado) => {
+function contarEquipamentosCriticos(base = chamados) {
+  return base.reduce((mapa, chamado) => {
     const codigo = String(chamado.equipamentoCodigo || "").trim();
     const nome = String(chamado.equipamentoNome || "").trim();
     const chave = codigo || nome;
@@ -287,6 +328,61 @@ function renderizarRankingPainel(idElemento, dados, mensagemVazia) {
   }).join("");
 }
 
+function contarPreventivasVencidasPainel() {
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+
+  return planosPreventivos.filter(plano => {
+    if (plano.ativo === false || !plano.proximaExecucao) {
+      return false;
+    }
+
+    const data = obterDataValida(plano.proximaExecucao, plano.proximaExecucao);
+    data.setHours(0, 0, 0, 0);
+    return data < hoje;
+  }).length;
+}
+
+function contarPreventivasPorSituacaoPainel() {
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  const seteDias = new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+  return planosPreventivos.reduce((mapa, plano) => {
+    if (plano.ativo === false) {
+      mapa["Inativas"] = (mapa["Inativas"] || 0) + 1;
+      return mapa;
+    }
+
+    if (!plano.proximaExecucao) {
+      mapa["Sem próxima data"] = (mapa["Sem próxima data"] || 0) + 1;
+      return mapa;
+    }
+
+    const data = obterDataValida(plano.proximaExecucao, plano.proximaExecucao);
+    data.setHours(0, 0, 0, 0);
+
+    if (data < hoje) {
+      mapa["Vencidas"] = (mapa["Vencidas"] || 0) + 1;
+    } else if (data <= seteDias) {
+      mapa["Próximos 7 dias"] = (mapa["Próximos 7 dias"] || 0) + 1;
+    } else {
+      mapa["Programadas"] = (mapa["Programadas"] || 0) + 1;
+    }
+
+    return mapa;
+  }, {});
+}
+
+function contarResumoMensalPainel(base = chamados) {
+  return base.reduce((mapa, chamado) => {
+    const data = obterDataValida(chamado.criadoEm || chamado.data, chamado.data);
+    const rotulo = `${String(data.getMonth() + 1).padStart(2, "0")}/${data.getFullYear()}`;
+    mapa[rotulo] = (mapa[rotulo] || 0) + 1;
+    return mapa;
+  }, {});
+}
+
 function obterFilaPainelFiltrada() {
   let filaFiltrada = [...chamados];
 
@@ -319,6 +415,8 @@ function montarTextoBuscaPainel(chamado) {
     chamado.setor,
     chamado.horario,
     chamado.categoria,
+    chamado.subcategoria,
+    chamado.tipoManutencao,
     chamado.prioridade,
     chamado.status,
     chamado.solicitanteNome
@@ -340,7 +438,9 @@ function criarCardPainel(chamado) {
         <div>
           <h3>${escaparHTML(chamado.numeroOS || "OS")}: ${escaparHTML(chamado.descricao)}</h3>
           <p>
-            ${escaparHTML(chamado.categoria)}
+            ${escaparHTML(chamado.categoria)}${chamado.subcategoria ? ` / ${escaparHTML(chamado.subcategoria)}` : ""}
+            •
+            ${escaparHTML(chamado.tipoManutencao || "Corretiva")}
             •
             ${escaparHTML(chamado.local)}
             •
@@ -356,6 +456,8 @@ function criarCardPainel(chamado) {
         <p><strong>Etapa:</strong> ${escaparHTML(chamado.etapaFluxo || obterEtapaFluxoPorStatus(chamado.status))}</p>
         <p><strong>Responsável manutenção:</strong> ${escaparHTML(chamado.responsavelManutencao || "A definir")}</p>
         <p><strong>Ativo / QR:</strong> ${escaparHTML(chamado.equipamentoCodigo || "Não vinculado")}${chamado.equipamentoNome ? ` • ${escaparHTML(chamado.equipamentoNome)}` : ""}</p>
+        <p><strong>Categoria técnica:</strong> ${escaparHTML(chamado.categoria || "Não informada")}${chamado.subcategoria ? ` / ${escaparHTML(chamado.subcategoria)}` : ""}</p>
+        <p><strong>Tipo de manutenção:</strong> ${escaparHTML(chamado.tipoManutencao || "Corretiva")}</p>
         <p><strong>Prioridade:</strong> ${escaparHTML(chamado.prioridade)}</p>
         <p><strong>SLA:</strong> ${escaparHTML(textoSLA)}</p>
         <p><strong>Solicitante:</strong> ${escaparHTML(chamado.solicitanteNome || "Não informado")}</p>

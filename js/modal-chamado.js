@@ -25,6 +25,8 @@ function abrirDetalhesChamado(id) {
   setTextContent("detalheHorario", chamado.horario || "Não informado");
   setTextContent("detalheAcompanhamento", chamado.precisaAcompanhamento || "Não informado");
   setTextContent("detalheCategoria", chamado.categoria);
+  setTextContent("detalheSubcategoria", chamado.subcategoria || "Não informada");
+  setTextContent("detalheTipoManutencao", chamado.tipoManutencao || "Corretiva");
   setTextContent("detalhePrioridade", chamado.prioridade);
   setTextContent("detalheDescricao", chamado.descricao);
 

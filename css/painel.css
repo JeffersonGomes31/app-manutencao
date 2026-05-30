@@ -330,3 +330,25 @@
     width: 100%;
   }
 }
+
+
+/* Etapa 5 - Dashboard e KPIs */
+.dashboard-period-card {
+  margin-bottom: 16px;
+}
+
+.dashboard-period-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.dashboard-period-grid select {
+  width: 100%;
+}
+
+@media (max-width: 520px) {
+  .dashboard-period-grid {
+    grid-template-columns: 1fr;
+  }
+}
