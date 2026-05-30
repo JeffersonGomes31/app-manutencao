@@ -156,7 +156,7 @@ function gerarIniciaisUsuario(nome) {
 }
 
 function statusFinalizado(status) {
-  return status === "CONCLUÍDO" || status === "CANCELADO";
+  return status === "ENCERRADO" || status === "CANCELADO";
 }
 
 function atualizarPainelSeAberto() {

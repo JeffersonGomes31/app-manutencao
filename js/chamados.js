@@ -5,6 +5,8 @@
 async function criarChamado() {
   const localInput = document.getElementById("localChamado");
   const setorInput = document.getElementById("setorChamado");
+  const equipamentoInput = document.getElementById("equipamentoChamado");
+  const nomeEquipamentoInput = document.getElementById("nomeEquipamentoChamado");
   const horarioInput = document.getElementById("horarioChamado");
   const acompanhamentoInput = document.getElementById("precisaAcompanhamento");
   const categoriaInput = document.getElementById("categoriaChamado");
@@ -19,6 +21,8 @@ async function criarChamado() {
 
   const local = localInput.value.trim();
   const setor = setorInput.value.trim();
+  const equipamentoCodigo = equipamentoInput ? equipamentoInput.value.trim().toUpperCase() : "";
+  const equipamentoNome = nomeEquipamentoInput ? nomeEquipamentoInput.value.trim() : "";
   const horario = horarioInput.value;
   const precisaAcompanhamento = acompanhamentoInput ? acompanhamentoInput.value : "Não informado";
   const categoria = categoriaInput.value;
@@ -46,9 +50,20 @@ async function criarChamado() {
     alert("Uma ou mais imagens não puderam ser anexadas. O chamado será criado com as imagens válidas.");
   }
 
+  const numeroOS = gerarNumeroOS(agora);
+
   const novoChamado = {
+    numeroOS,
+    tipoRegistro: "OS",
+    etapaFluxo: "Solicitação registrada",
+    responsavelManutencao: "A definir",
+    iniciadoEmISO: "",
+    concluidoEmISO: "",
+    validadoEmISO: "",
     descricao,
     local,
+    equipamentoCodigo,
+    equipamentoNome,
     setor,
     horario,
     precisaAcompanhamento: precisaAcompanhamento || "Não informado",
@@ -70,8 +85,8 @@ async function criarChamado() {
     historico: [
       {
         data: dataAtual,
-        acao: "Chamado aberto",
-        descricao: `Solicitação registrada por ${usuarioAtual.nome}.`
+        acao: "OS aberta",
+        descricao: `${numeroOS} registrada por ${usuarioAtual.nome}${equipamentoCodigo ? ` e vinculada ao ativo ${equipamentoCodigo}` : ""}.`
       }
     ]
   };
@@ -83,7 +98,7 @@ async function criarChamado() {
       await registrarNotificacaoNovoChamado(chamadoId, novoChamado);
     }
 
-    alert("Chamado enviado com sucesso!");
+    alert(`OS ${numeroOS} aberta com sucesso!`);
     limparFormularioChamado();
     prepararAbaChamadosAposEnvio();
     openPage("chamados");
@@ -124,10 +139,23 @@ async function converterArquivosFotosChamado(arquivos) {
 }
 
 
+function gerarNumeroOS(data) {
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, "0");
+  const dia = String(data.getDate()).padStart(2, "0");
+  const hora = String(data.getHours()).padStart(2, "0");
+  const minuto = String(data.getMinutes()).padStart(2, "0");
+  const segundo = String(data.getSeconds()).padStart(2, "0");
+
+  return `OS-${ano}${mes}${dia}-${hora}${minuto}${segundo}`;
+}
+
 function limparFormularioChamado() {
   const campos = [
     "localChamado",
     "setorChamado",
+    "equipamentoChamado",
+    "nomeEquipamentoChamado",
     "horarioChamado",
     "categoriaChamado",
     "descricaoChamado",
@@ -162,13 +190,13 @@ function prepararAbaChamadosAposEnvio() {
   filtroStatusAtual = "TODOS";
   termoBuscaChamados = "";
 
-  const buscaChamados = document.getElementById("buscaChamados");
+  const buscaChamados = document.getElementById("buscaChamados") || document.getElementById("buscaOS");
 
   if (buscaChamados) {
     buscaChamados.value = "";
   }
 
-  const filtros = document.querySelectorAll("#filtrosChamados .filter");
+  const filtros = document.querySelectorAll("#filtrosChamados .filter, #filtrosOS .filter");
 
   filtros.forEach(botao => {
     botao.classList.remove("active");
@@ -184,8 +212,8 @@ function obterChamadosVisiveis() {
 }
 
 function renderizarChamados() {
-  const listaChamados = document.getElementById("listaChamados");
-  const listaChamadosInicio = document.getElementById("listaChamadosInicio");
+  const listaChamados = document.getElementById("listaChamados") || document.getElementById("listaOS");
+  const listaChamadosInicio = document.getElementById("listaChamadosInicio") || document.getElementById("listaOSInicio");
   const chamadosVisiveis = obterChamadosVisiveis();
   const chamadosFiltrados = obterChamadosFiltrados(chamadosVisiveis);
 
@@ -228,8 +256,11 @@ function obterChamadosFiltrados(lista) {
 
 function montarTextoBuscaChamado(chamado) {
   return [
+    chamado.numeroOS,
     chamado.descricao,
     chamado.local,
+    chamado.equipamentoCodigo,
+    chamado.equipamentoNome,
     chamado.setor,
     chamado.categoria,
     chamado.prioridade,
@@ -262,11 +293,12 @@ function criarCardChamado(chamado) {
       </div>
 
       <div class="ticket-info">
-        <h3>${escaparHTML(chamado.descricao)}</h3>
+        <h3>${escaparHTML(chamado.numeroOS || "OS")}: ${escaparHTML(chamado.descricao)}</h3>
         <p>
           ${escaparHTML(chamado.categoria)}
           &nbsp;•&nbsp;
           ${escaparHTML(chamado.local)}
+          ${chamado.equipamentoCodigo ? `&nbsp;•&nbsp; Ativo ${escaparHTML(chamado.equipamentoCodigo)}` : ""}
           &nbsp;•&nbsp;
           ${escaparHTML(chamado.setor || "Setor não informado")}
           &nbsp;•&nbsp;
@@ -304,6 +336,14 @@ function obterPesoStatus(chamado) {
   const sla = calcularSLA(chamado);
 
   if (chamado.status === "CONCLUÍDO") {
+    return 80;
+  }
+
+  if (chamado.status === "VALIDADO") {
+    return 85;
+  }
+
+  if (chamado.status === "ENCERRADO") {
     return 90;
   }
 
@@ -384,8 +424,16 @@ function obterPrazoHoras(prioridade) {
 }
 
 function calcularSLA(chamado) {
+  if (chamado.status === "ENCERRADO") {
+    return { texto: "Encerrado", classe: "sla-green" };
+  }
+
+  if (chamado.status === "VALIDADO") {
+    return { texto: "Validado", classe: "sla-green" };
+  }
+
   if (chamado.status === "CONCLUÍDO") {
-    return { texto: "Concluído", classe: "sla-green" };
+    return { texto: "Aguardando validação", classe: "sla-blue" };
   }
 
   if (chamado.status === "CANCELADO") {
@@ -436,8 +484,12 @@ function chamadoEstaAtrasado(chamado) {
 }
 
 function obterClasseStatus(status) {
-  if (status === "CONCLUÍDO") {
+  if (status === "ENCERRADO" || status === "VALIDADO") {
     return "status-green";
+  }
+
+  if (status === "CONCLUÍDO") {
+    return "status-purple";
   }
 
   if (status === "AGUARDANDO") {
@@ -452,8 +504,12 @@ function obterClasseStatus(status) {
 }
 
 function obterClasseIcone(status) {
-  if (status === "CONCLUÍDO") {
+  if (status === "ENCERRADO" || status === "VALIDADO") {
     return "green-bg";
+  }
+
+  if (status === "CONCLUÍDO") {
+    return "blue-bg";
   }
 
   if (status === "AGUARDANDO" || status === "CANCELADO") {
@@ -534,3 +590,12 @@ function selecionarCategoriaRapida(categoria, botao) {
   }
 }
 
+
+
+function filtrarOS(status, botao) {
+  filtrarChamados(status, botao);
+}
+
+function pesquisarOS(valor) {
+  pesquisarChamados(valor);
+}

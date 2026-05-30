@@ -142,6 +142,16 @@ service cloud.firestore {
       allow delete: if ehAdmin();
     }
 
+    match /ativos/{ativoId} {
+      allow read: if estaLogado();
+      allow create, update, delete: if ehManutencaoOuAdmin();
+    }
+
+    match /planosPreventivos/{planoId} {
+      allow read: if estaLogado();
+      allow create, update, delete: if ehManutencaoOuAdmin();
+    }
+
     match /comunicados/{comunicadoId} {
       allow read: if estaLogado();
       allow create, update, delete: if ehManutencaoOuAdmin();

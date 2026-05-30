@@ -82,6 +82,14 @@ function executarRenderizacaoDaPagina(pageId) {
     renderizarComunicados();
   }
 
+  if (pageId === "ativos" && typeof renderizarAtivos === "function") {
+    renderizarAtivos();
+  }
+
+  if (pageId === "preventivas" && typeof renderizarPlanosPreventivos === "function") {
+    renderizarPlanosPreventivos();
+  }
+
   if (pageId === "perfil") {
     aplicarPermissoesNaTela();
   }

@@ -26,6 +26,8 @@ function aplicarPermissoesNaTela() {
   const perfilTextoOrientacao = document.getElementById("perfilTextoOrientacao");
   const botaoPainel = document.getElementById("botaoPainelManutencao");
   const areaNovoComunicado = document.getElementById("areaNovoComunicado");
+  const areaNovoAtivo = document.getElementById("areaNovoAtivo");
+  const areaNovoPlanoPreventivo = document.getElementById("areaNovoPlanoPreventivo");
 
   if (areaNavegacao) {
     areaNavegacao.style.display = perfilSalvo ? "" : "none";
@@ -53,10 +55,26 @@ function aplicarPermissoesNaTela() {
     areaNovoComunicado.style.display = usuarioEhManutencaoAutorizada() ? "grid" : "none";
   }
 
+  if (areaNovoAtivo) {
+    areaNovoAtivo.style.display = usuarioEhManutencaoAutorizada() ? "grid" : "none";
+  }
+
+  if (areaNovoPlanoPreventivo) {
+    areaNovoPlanoPreventivo.style.display = usuarioEhManutencaoAutorizada() ? "grid" : "none";
+  }
+
   preencherResumoUsuarioNaTela();
 
   if (typeof atualizarResumoPerfil === "function") {
     atualizarResumoPerfil();
+  }
+
+  if (typeof renderizarAtivos === "function") {
+    renderizarAtivos();
+  }
+
+  if (typeof renderizarPlanosPreventivos === "function") {
+    renderizarPlanosPreventivos();
   }
 }
 

@@ -68,6 +68,85 @@ function observarChamadosFirebase(usuario, callback, callbackErro) {
   }, callbackErro);
 }
 
+function observarAtivosFirebase(callback, callbackErro) {
+  return firebaseDb
+    .collection("ativos")
+    .orderBy("codigo", "asc")
+    .onSnapshot(snapshot => {
+      const lista = snapshot.docs.map(documento => normalizarAtivoFirebase(documento));
+      callback(lista);
+    }, callbackErro);
+}
+
+async function criarAtivoFirebase(ativo) {
+  await firebaseDb.collection("ativos").add({
+    ...ativo,
+    criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+    atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+function normalizarAtivoFirebase(documento) {
+  const dados = documento.data();
+
+  return {
+    id: documento.id,
+    codigo: dados.codigo || documento.id,
+    nome: dados.nome || "Ativo sem nome",
+    localizacao: dados.localizacao || dados.local || "Não informado",
+    categoria: dados.categoria || "Equipamento",
+    ativo: dados.ativo !== false,
+    criadoPorUid: dados.criadoPorUid || "",
+    criadoPorNome: dados.criadoPorNome || ""
+  };
+}
+
+
+function observarPlanosPreventivosFirebase(callback, callbackErro) {
+  return firebaseDb
+    .collection("planosPreventivos")
+    .orderBy("proximaExecucaoISO", "asc")
+    .onSnapshot(snapshot => {
+      const lista = snapshot.docs.map(documento => normalizarPlanoPreventivoFirebase(documento));
+      callback(lista);
+    }, callbackErro);
+}
+
+async function criarPlanoPreventivoFirebase(plano) {
+  await firebaseDb.collection("planosPreventivos").add({
+    ...plano,
+    criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+    atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+async function atualizarPlanoPreventivoFirebase(id, dados) {
+  await firebaseDb.collection("planosPreventivos").doc(String(id)).update({
+    ...dados,
+    atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+function normalizarPlanoPreventivoFirebase(documento) {
+  const dados = documento.data();
+
+  return {
+    id: documento.id,
+    ativoCodigo: dados.ativoCodigo || dados.equipamentoCodigo || "",
+    nome: dados.nome || "Preventiva sem nome",
+    localizacao: dados.localizacao || dados.local || "Não informado",
+    frequenciaDias: Number(dados.frequenciaDias || 30),
+    proximaExecucaoISO: dados.proximaExecucaoISO || new Date().toISOString(),
+    ultimaExecucaoISO: dados.ultimaExecucaoISO || "",
+    observacoes: dados.observacoes || "",
+    ultimaOS: dados.ultimaOS || "",
+    ultimaOSId: dados.ultimaOSId || "",
+    ativo: dados.ativo !== false,
+    criadoPorUid: dados.criadoPorUid || "",
+    criadoPorNome: dados.criadoPorNome || ""
+  };
+}
+
 function observarComunicadosFirebase(callback, callbackErro) {
   return firebaseDb
     .collection("comunicados")
@@ -155,7 +234,20 @@ function normalizarChamadoFirebase(documento) {
   return {
     id: documento.id,
     descricao: dados.descricao || "Sem descrição",
+    numeroOS: dados.numeroOS || dados.codigoOS || `OS-${documento.id.slice(0, 6).toUpperCase()}`,
+    tipoRegistro: dados.tipoRegistro || "OS",
+    etapaFluxo: dados.etapaFluxo || obterEtapaFluxoPorStatus(dados.status || "ABERTO"),
+    responsavelManutencao: dados.responsavelManutencao || "A definir",
+    iniciadoEmISO: dados.iniciadoEmISO || "",
+    concluidoEmISO: dados.concluidoEmISO || "",
+    validadoEmISO: dados.validadoEmISO || "",
+    validadoPorNome: dados.validadoPorNome || "",
+    validacaoObservacao: dados.validacaoObservacao || "",
+    encerradoEmISO: dados.encerradoEmISO || "",
+    encerradoPorNome: dados.encerradoPorNome || "",
     local: dados.local || "Não informado",
+    equipamentoCodigo: dados.equipamentoCodigo || dados.equipamento || dados.patrimonio || "",
+    equipamentoNome: dados.equipamentoNome || "",
     setor: dados.setor || "Não informado",
     horario: dados.horario || "Não informado",
     precisaAcompanhamento: dados.precisaAcompanhamento || "Não informado",
@@ -221,6 +313,20 @@ function normalizarFotosFinalizacaoChamadoFirebase(dados) {
       adicionadaEm: foto && foto.adicionadaEm ? String(foto.adicionadaEm) : ""
     }))
     .filter(foto => foto.data.startsWith("data:image"));
+}
+
+function obterEtapaFluxoPorStatus(status) {
+  const etapas = {
+    "ABERTO": "Solicitação registrada",
+    "EM ANDAMENTO": "Execução",
+    "AGUARDANDO": "Aguardando material / validação",
+    "CONCLUÍDO": "Aguardando validação",
+    "VALIDADO": "Validação",
+    "ENCERRADO": "Encerrado e auditado",
+    "CANCELADO": "Cancelado"
+  };
+
+  return etapas[status] || "Triagem";
 }
 
 function normalizarComunicadoFirebase(documento) {

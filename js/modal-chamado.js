@@ -14,7 +14,13 @@ function abrirDetalhesChamado(id) {
 
   setTextContent("detalheTitulo", chamado.descricao);
   setTextContent("detalheData", `Aberto em ${chamado.data}`);
+  setTextContent("detalheNumeroOS", chamado.numeroOS || "OS não informada");
+  setTextContent("detalheEtapaFluxo", chamado.etapaFluxo || obterEtapaFluxoPorStatus(chamado.status));
+  setTextContent("detalheResponsavel", chamado.responsavelManutencao || "A definir");
+  setTextContent("detalheValidacao", montarTextoValidacaoOS(chamado));
+  setTextContent("detalheEncerramento", montarTextoEncerramentoOS(chamado));
   setTextContent("detalheLocal", chamado.local);
+  setTextContent("detalheAtivo", montarTextoAtivoChamado(chamado));
   setTextContent("detalheSetor", chamado.setor || "Não informado");
   setTextContent("detalheHorario", chamado.horario || "Não informado");
   setTextContent("detalheAcompanhamento", chamado.precisaAcompanhamento || "Não informado");
@@ -108,7 +114,7 @@ function renderizarHistorico(historico) {
       <div class="history-item">
         <strong>Sem histórico</strong>
         <span>-</span>
-        <p>Nenhuma movimentação registrada.</p>
+        <p>Nenhuma movimentação operacional registrada.</p>
       </div>
     `;
   }
@@ -123,7 +129,7 @@ function renderizarHistorico(historico) {
 }
 
 function chamadoPodeSerCancelado(chamado) {
-  if (!chamado || statusFinalizado(chamado.status)) {
+  if (!chamado || chamado.status !== "ABERTO") {
     return false;
   }
 
@@ -187,6 +193,7 @@ async function executarCancelamentoChamado(id, motivo, acaoHistorico, botao) {
   try {
     await atualizarChamadoFirebase(id, {
       status: "CANCELADO",
+      etapaFluxo: "Cancelado",
       historico: adicionarItemArrayFirebase(itemHistorico),
       canceladoPorUid: usuarioAtual.id,
       canceladoPorNome: usuarioAtual.nome,
@@ -372,4 +379,41 @@ function fecharVisualizacaoFoto() {
     imagemFoto.removeAttribute("src");
     imagemFoto.removeAttribute("alt");
   }
+}
+
+
+function montarTextoAtivoChamado(chamado) {
+  if (!chamado || !chamado.equipamentoCodigo) {
+    return "Não vinculado";
+  }
+
+  return chamado.equipamentoNome
+    ? `${chamado.equipamentoCodigo} • ${chamado.equipamentoNome}`
+    : chamado.equipamentoCodigo;
+}
+
+
+function montarTextoValidacaoOS(chamado) {
+  if (!chamado || !chamado.validadoEmISO) {
+    return chamado && chamado.status === "CONCLUÍDO" ? "Pendente de validação" : "Ainda não validada";
+  }
+
+  const data = new Date(chamado.validadoEmISO);
+  const dataTexto = Number.isNaN(data.getTime()) ? "data não informada" : data.toLocaleString("pt-BR");
+  const responsavel = chamado.validadoPorNome || "Manutenção";
+  const observacao = chamado.validacaoObservacao ? ` • ${chamado.validacaoObservacao}` : "";
+
+  return `${responsavel} em ${dataTexto}${observacao}`;
+}
+
+function montarTextoEncerramentoOS(chamado) {
+  if (!chamado || !chamado.encerradoEmISO) {
+    return chamado && chamado.status === "VALIDADO" ? "Pendente de encerramento" : "Ainda não encerrada";
+  }
+
+  const data = new Date(chamado.encerradoEmISO);
+  const dataTexto = Number.isNaN(data.getTime()) ? "data não informada" : data.toLocaleString("pt-BR");
+  const responsavel = chamado.encerradoPorNome || "Manutenção";
+
+  return `${responsavel} em ${dataTexto}`;
 }

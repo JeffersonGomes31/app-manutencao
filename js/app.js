@@ -55,6 +55,8 @@ function prepararTelaSemSessao() {
   chamados = [];
   comunicados = [];
   notificacoes = [];
+  ativos = [];
+  planosPreventivos = [];
 
   preencherFormularioPerfil();
   aplicarPermissoesNaTela();
@@ -66,6 +68,14 @@ function prepararTelaSemSessao() {
 
   if (typeof renderizarComunicados === "function") {
     renderizarComunicados();
+  }
+
+  if (typeof renderizarAtivos === "function") {
+    renderizarAtivos();
+  }
+
+  if (typeof renderizarPlanosPreventivos === "function") {
+    renderizarPlanosPreventivos();
   }
 
   openPage("perfil");
@@ -205,6 +215,32 @@ function iniciarMonitoresDeDados() {
     console.error("Erro ao carregar notificações:", erro);
     alert("Não foi possível carregar as notificações do Firebase.");
   });
+
+  monitorAtivos = observarAtivosFirebase(lista => {
+    ativos = lista;
+
+    if (typeof renderizarAtivos === "function") {
+      renderizarAtivos();
+    }
+
+    if (typeof prepararQRCodeInicial === "function") {
+      prepararQRCodeInicial();
+    }
+  }, erro => {
+    console.error("Erro ao carregar ativos:", erro);
+    alert("Não foi possível carregar os ativos do Firebase.");
+  });
+  monitorPlanosPreventivos = observarPlanosPreventivosFirebase(lista => {
+    planosPreventivos = lista;
+
+    if (typeof renderizarPlanosPreventivos === "function") {
+      renderizarPlanosPreventivos();
+    }
+  }, erro => {
+    console.error("Erro ao carregar planos preventivos:", erro);
+    alert("Não foi possível carregar os planos preventivos do Firebase.");
+  });
+
 }
 
 function encerrarMonitoresDeDados() {
@@ -218,8 +254,18 @@ function encerrarMonitoresDeDados() {
     monitorComunicados = null;
   }
 
+  if (typeof monitorAtivos === "function") {
+    monitorAtivos();
+    monitorAtivos = null;
+  }
+
   if (typeof monitorNotificacoes === "function") {
     monitorNotificacoes();
     monitorNotificacoes = null;
+  }
+
+  if (typeof monitorPlanosPreventivos === "function") {
+    monitorPlanosPreventivos();
+    monitorPlanosPreventivos = null;
   }
 }

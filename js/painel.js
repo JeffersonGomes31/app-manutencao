@@ -58,23 +58,233 @@ function renderizarPainelManutencao() {
 }
 
 function atualizarResumoPainel() {
-  const totalChamados = chamados.length;
+  const totalOS = chamados.length;
   const totalAbertos = chamados.filter(chamado => chamado.status === "ABERTO").length;
   const totalAndamento = chamados.filter(chamado => chamado.status === "EM ANDAMENTO").length;
   const totalConcluidos = chamados.filter(chamado => chamado.status === "CONCLUÍDO").length;
+  const totalValidados = chamados.filter(chamado => chamado.status === "VALIDADO").length;
+  const totalEncerrados = chamados.filter(chamado => chamado.status === "ENCERRADO").length;
   const totalCancelados = chamados.filter(chamado => chamado.status === "CANCELADO").length;
+  const totalBacklog = chamados.filter(chamado => ["ABERTO", "EM ANDAMENTO", "AGUARDANDO"].includes(chamado.status)).length;
   const totalAtrasados = chamados.filter(chamadoEstaAtrasado).length;
-  const totalUrgentes = chamados.filter(chamado => {
-    return chamado.prioridade === "Urgente" && !statusFinalizado(chamado.status);
-  }).length;
+  const totalUrgentes = chamados.filter(chamado => chamado.prioridade === "Urgente" && !statusFinalizado(chamado.status)).length;
+  const totalPreventivas = contarChamadosPorTexto(["preventiva", "preventivo"]);
+  const totalEmergenciais = contarChamadosPorTexto(["emergencial", "emergência", "urgente"]);
 
-  setTextContent("totalChamadosPainel", totalChamados);
+  setTextContent("totalOSPainel", totalOS);
+  setTextContent("totalChamadosPainel", totalOS);
   setTextContent("totalAbertosPainel", totalAbertos);
   setTextContent("totalAndamentoPainel", totalAndamento);
   setTextContent("totalConcluidosPainel", totalConcluidos);
+  setTextContent("totalAguardandoValidacaoPainel", totalConcluidos);
+  setTextContent("totalValidadosPainel", totalValidados);
+  setTextContent("totalEncerradasPainel", totalEncerrados);
   setTextContent("totalCanceladosPainel", totalCancelados);
+  setTextContent("totalBacklogPainel", totalBacklog);
   setTextContent("totalAtrasadosPainel", totalAtrasados);
   setTextContent("totalUrgentesPainel", totalUrgentes);
+  setTextContent("totalPreventivasPainel", totalPreventivas);
+  setTextContent("totalEmergenciaisPainel", totalEmergenciais);
+  setTextContent("tempoMedioAtendimentoPainel", calcularTempoMedioAtendimento());
+  setTextContent("tempoMedioReparoPainel", calcularTempoMedioReparo());
+  setTextContent("disponibilidadePainel", calcularDisponibilidadeOperacional());
+
+  renderizarIndicadoresOperacionais({
+    totalOS,
+    status: {
+      "Aberto": totalAbertos,
+      "Em andamento": totalAndamento,
+      "Aguardando": chamados.filter(chamado => chamado.status === "AGUARDANDO").length,
+      "Concluído": totalConcluidos,
+      "Validado": totalValidados,
+      "Encerrado": totalEncerrados,
+      "Cancelado": totalCancelados
+    },
+    prioridades: {
+      "Urgente": chamados.filter(chamado => chamado.prioridade === "Urgente").length,
+      "Alta": chamados.filter(chamado => chamado.prioridade === "Alta").length,
+      "Média": chamados.filter(chamado => chamado.prioridade === "Média").length,
+      "Baixa": chamados.filter(chamado => chamado.prioridade === "Baixa").length
+    }
+  });
+}
+
+function contarChamadosPorTexto(termos) {
+  return chamados.filter(chamado => {
+    const texto = [
+      chamado.tipoDemanda,
+      chamado.tipoRegistro,
+      chamado.categoria,
+      chamado.prioridade,
+      chamado.descricao
+    ].join(" ").toLowerCase();
+
+    return termos.some(termo => texto.includes(termo));
+  }).length;
+}
+
+function calcularTempoMedioAtendimento() {
+  const duracoes = chamados
+    .filter(chamado => chamado.iniciadoEmISO)
+    .map(chamado => calcularDiferencaHoras(chamado.criadoEm || chamado.data, chamado.iniciadoEmISO, chamado.data))
+    .filter(valor => valor !== null);
+
+  return formatarMediaHoras(duracoes);
+}
+
+function calcularTempoMedioReparo() {
+  const duracoes = chamados
+    .filter(chamado => chamado.iniciadoEmISO && chamado.concluidoEmISO)
+    .map(chamado => calcularDiferencaHoras(chamado.iniciadoEmISO, chamado.concluidoEmISO, chamado.data))
+    .filter(valor => valor !== null);
+
+  return formatarMediaHoras(duracoes);
+}
+
+function calcularDiferencaHoras(inicioISO, fimISO, dataReservaBR) {
+  const inicio = obterDataValida(inicioISO, dataReservaBR);
+  const fim = obterDataValida(fimISO, dataReservaBR);
+  const diferencaMs = fim.getTime() - inicio.getTime();
+
+  if (!Number.isFinite(diferencaMs) || diferencaMs < 0) {
+    return null;
+  }
+
+  return diferencaMs / (1000 * 60 * 60);
+}
+
+function formatarMediaHoras(valores) {
+  if (!valores.length) {
+    return "--";
+  }
+
+  const media = valores.reduce((soma, valor) => soma + valor, 0) / valores.length;
+
+  if (media < 1) {
+    return `${Math.max(1, Math.round(media * 60))}min`;
+  }
+
+  if (media < 24) {
+    return `${media.toFixed(1).replace(".", ",")}h`;
+  }
+
+  return `${Math.round(media / 24)}d`;
+}
+
+function calcularDisponibilidadeOperacional() {
+  const concluidos = chamados.filter(chamado => ["CONCLUÍDO", "VALIDADO", "ENCERRADO"].includes(chamado.status));
+
+  if (!concluidos.length) {
+    return "--";
+  }
+
+  const noPrazo = concluidos.filter(chamado => {
+    if (chamado.prioridade === "Urgente") {
+      return true;
+    }
+
+    const criadoEm = obterDataValida(chamado.criadoEm, chamado.data);
+    const concluidoEm = obterDataValida(chamado.concluidoEmISO, chamado.data);
+    const prazoHoras = obterPrazoHoras(chamado.prioridade);
+    const vencimento = new Date(criadoEm.getTime() + prazoHoras * 60 * 60 * 1000);
+
+    return concluidoEm <= vencimento;
+  }).length;
+
+  return `${Math.round((noPrazo / concluidos.length) * 100)}%`;
+}
+
+function renderizarIndicadoresOperacionais(dados) {
+  renderizarBarrasIndicador("indicadorStatusOS", dados.status, dados.totalOS);
+  renderizarBarrasIndicador("indicadorPrioridadesOS", dados.prioridades, dados.totalOS);
+  renderizarRankingPainel("rankingSetoresPainel", contarOcorrenciasPainel("setor"), "Nenhum setor com OS registrada.");
+  renderizarRankingPainel("rankingEquipamentosPainel", contarEquipamentosCriticos(), "Nenhum equipamento vinculado às OS ainda.");
+}
+
+function renderizarBarrasIndicador(idElemento, dados, total) {
+  const elemento = document.getElementById(idElemento);
+
+  if (!elemento) {
+    return;
+  }
+
+  const entradas = Object.entries(dados).filter(([, quantidade]) => quantidade > 0);
+
+  if (!entradas.length) {
+    elemento.innerHTML = `<p class="empty-indicator">Ainda não há dados suficientes para este indicador.</p>`;
+    return;
+  }
+
+  elemento.innerHTML = entradas.map(([rotulo, quantidade]) => {
+    const percentual = total > 0 ? Math.round((quantidade / total) * 100) : 0;
+
+    return `
+      <div class="indicator-item">
+        <div class="indicator-line">
+          <span>${escaparHTML(rotulo)}</span>
+          <strong>${quantidade} • ${percentual}%</strong>
+        </div>
+        <div class="indicator-bar"><div class="indicator-fill" style="width:${percentual}%"></div></div>
+      </div>
+    `;
+  }).join("");
+}
+
+function contarOcorrenciasPainel(campo) {
+  return chamados.reduce((mapa, chamado) => {
+    const chave = String(chamado[campo] || "Não informado").trim() || "Não informado";
+    mapa[chave] = (mapa[chave] || 0) + 1;
+    return mapa;
+  }, {});
+}
+
+function contarEquipamentosCriticos() {
+  return chamados.reduce((mapa, chamado) => {
+    const codigo = String(chamado.equipamentoCodigo || "").trim();
+    const nome = String(chamado.equipamentoNome || "").trim();
+    const chave = codigo || nome;
+
+    if (!chave) {
+      return mapa;
+    }
+
+    const rotulo = nome && codigo ? `${codigo} • ${nome}` : chave;
+    mapa[rotulo] = (mapa[rotulo] || 0) + 1;
+    return mapa;
+  }, {});
+}
+
+function renderizarRankingPainel(idElemento, dados, mensagemVazia) {
+  const elemento = document.getElementById(idElemento);
+
+  if (!elemento) {
+    return;
+  }
+
+  const entradas = Object.entries(dados)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  if (!entradas.length) {
+    elemento.innerHTML = `<p class="empty-indicator">${escaparHTML(mensagemVazia)}</p>`;
+    return;
+  }
+
+  const maiorValor = Math.max(...entradas.map(([, quantidade]) => quantidade));
+
+  elemento.innerHTML = entradas.map(([rotulo, quantidade]) => {
+    const percentual = maiorValor > 0 ? Math.round((quantidade / maiorValor) * 100) : 0;
+
+    return `
+      <div class="ranking-item">
+        <div class="ranking-line">
+          <span>${escaparHTML(rotulo)}</span>
+          <strong>${quantidade}</strong>
+        </div>
+        <div class="ranking-bar"><div class="ranking-fill" style="width:${percentual}%"></div></div>
+      </div>
+    `;
+  }).join("");
 }
 
 function obterFilaPainelFiltrada() {
@@ -101,8 +311,11 @@ function obterFilaPainelFiltrada() {
 
 function montarTextoBuscaPainel(chamado) {
   return [
+    chamado.numeroOS,
     chamado.descricao,
     chamado.local,
+    chamado.equipamentoCodigo,
+    chamado.equipamentoNome,
     chamado.setor,
     chamado.horario,
     chamado.categoria,
@@ -125,7 +338,7 @@ function criarCardPainel(chamado) {
     <div class="admin-card ${cardCritico ? "admin-card-critical" : ""}">
       <div class="admin-card-header">
         <div>
-          <h3>${escaparHTML(chamado.descricao)}</h3>
+          <h3>${escaparHTML(chamado.numeroOS || "OS")}: ${escaparHTML(chamado.descricao)}</h3>
           <p>
             ${escaparHTML(chamado.categoria)}
             •
@@ -139,6 +352,10 @@ function criarCardPainel(chamado) {
       </div>
 
       <div class="admin-card-body">
+        <p><strong>Número da OS:</strong> ${escaparHTML(chamado.numeroOS || "Não informado")}</p>
+        <p><strong>Etapa:</strong> ${escaparHTML(chamado.etapaFluxo || obterEtapaFluxoPorStatus(chamado.status))}</p>
+        <p><strong>Responsável manutenção:</strong> ${escaparHTML(chamado.responsavelManutencao || "A definir")}</p>
+        <p><strong>Ativo / QR:</strong> ${escaparHTML(chamado.equipamentoCodigo || "Não vinculado")}${chamado.equipamentoNome ? ` • ${escaparHTML(chamado.equipamentoNome)}` : ""}</p>
         <p><strong>Prioridade:</strong> ${escaparHTML(chamado.prioridade)}</p>
         <p><strong>SLA:</strong> ${escaparHTML(textoSLA)}</p>
         <p><strong>Solicitante:</strong> ${escaparHTML(chamado.solicitanteNome || "Não informado")}</p>
@@ -158,6 +375,15 @@ function criarCardPainel(chamado) {
           <button class="admin-action-button blue" onclick="selecionarFotoFinalizacao(${formatarParametroJS(chamado.id)}, this)">
             Adicionar foto final
           </button>
+          <button class="admin-action-button green" onclick="validarOS(${formatarParametroJS(chamado.id)}, this)">
+            Validar OS
+          </button>
+        ` : ""}
+
+        ${chamado.status === "VALIDADO" ? `
+          <button class="admin-action-button green" onclick="encerrarOS(${formatarParametroJS(chamado.id)}, this)">
+            Encerrar OS
+          </button>
         ` : ""}
       </div>
     </div>
@@ -168,8 +394,26 @@ function criarControleStatusPainel(chamado, chamadoFinalizado) {
   if (chamadoFinalizado) {
     return `
       <div class="admin-status-control">
-        <label>Status do chamado</label>
-        <button class="admin-action-button disabled" disabled>Chamado finalizado</button>
+        <label>Status da OS</label>
+        <button class="admin-action-button disabled" disabled>OS finalizada</button>
+      </div>
+    `;
+  }
+
+  if (chamado.status === "CONCLUÍDO") {
+    return `
+      <div class="admin-status-control">
+        <label>Status da OS</label>
+        <button class="admin-action-button disabled" disabled>Aguardando validação</button>
+      </div>
+    `;
+  }
+
+  if (chamado.status === "VALIDADO") {
+    return `
+      <div class="admin-status-control">
+        <label>Status da OS</label>
+        <button class="admin-action-button disabled" disabled>Aguardando encerramento</button>
       </div>
     `;
   }
@@ -183,7 +427,7 @@ function criarControleStatusPainel(chamado, chamadoFinalizado) {
           <option value="ABERTO" ${chamado.status === "ABERTO" ? "selected" : ""}>Aberto</option>
           <option value="EM ANDAMENTO" ${chamado.status === "EM ANDAMENTO" ? "selected" : ""}>Em andamento</option>
           <option value="AGUARDANDO" ${chamado.status === "AGUARDANDO" ? "selected" : ""}>Aguardando</option>
-          <option value="CONCLUÍDO" ${chamado.status === "CONCLUÍDO" ? "selected" : ""}>Concluído</option>
+          <option value="CONCLUÍDO" ${chamado.status === "CONCLUÍDO" ? "selected" : ""}>Concluído / aguardando validação</option>
           <option value="CANCELADO" ${chamado.status === "CANCELADO" ? "selected" : ""}>Cancelado</option>
         </select>
 
@@ -270,18 +514,32 @@ async function alterarStatusPainel(id, novoStatus, botao) {
   }
 
   const statusAnterior = chamadoAtual.status;
+  const agora = new Date();
   const itemHistorico = {
-    data: new Date().toLocaleString("pt-BR"),
-    acao: "Status alterado pelo painel",
+    data: agora.toLocaleString("pt-BR"),
+    acao: "Movimentação operacional da OS",
     descricao: montarDescricaoAlteracaoStatus(statusAnterior, novoStatus, justificativaAguardando)
   };
+  const dadosAtualizacao = {
+    status: novoStatus,
+    etapaFluxo: obterEtapaFluxoPorStatus(novoStatus),
+    justificativaAguardando,
+    responsavelManutencao: chamadoAtual.responsavelManutencao && chamadoAtual.responsavelManutencao !== "A definir"
+      ? chamadoAtual.responsavelManutencao
+      : usuarioAtual.nome,
+    historico: adicionarItemArrayFirebase(itemHistorico)
+  };
+
+  if (novoStatus === "EM ANDAMENTO" && !chamadoAtual.iniciadoEmISO) {
+    dadosAtualizacao.iniciadoEmISO = agora.toISOString();
+  }
+
+  if (novoStatus === "CONCLUÍDO") {
+    dadosAtualizacao.concluidoEmISO = agora.toISOString();
+  }
 
   try {
-    await atualizarChamadoFirebase(id, {
-      status: novoStatus,
-      justificativaAguardando,
-      historico: adicionarItemArrayFirebase(itemHistorico)
-    });
+    await atualizarChamadoFirebase(id, dadosAtualizacao);
 
     if (typeof registrarNotificacaoStatusChamado === "function") {
       await registrarNotificacaoStatusChamado(chamadoAtual, novoStatus, justificativaAguardando);
@@ -312,7 +570,7 @@ function obterJustificativaAguardando(novoStatus) {
 }
 
 function montarDescricaoAlteracaoStatus(statusAnterior, novoStatus, justificativaAguardando) {
-  const descricaoBase = `Status alterado de ${statusAnterior} para ${novoStatus}.`;
+  const descricaoBase = `Status alterado de ${statusAnterior} para ${novoStatus}. Etapa atual: ${obterEtapaFluxoPorStatus(novoStatus)}.`;
 
   if (novoStatus !== "AGUARDANDO") {
     return descricaoBase;
@@ -346,10 +604,101 @@ async function cancelarChamado(id, botao) {
     return;
   }
 
-  await cancelarChamadoComMotivo(id, motivo.trim(), "Chamado cancelado pela manutenção");
+  await cancelarChamadoComMotivo(id, motivo.trim(), "OS cancelada pela manutenção");
   aplicarFeedbackSucesso(botao, "Cancelado", "Salvar status");
 }
 
+async function validarOS(id, botao) {
+  if (!usuarioEhManutencaoAutorizada()) {
+    alert("Somente a manutenção autorizada pode validar OS.");
+    return;
+  }
+
+  const chamado = chamados.find(item => idsIguais(item.id, id));
+
+  if (!chamado) {
+    alert("OS não encontrada.");
+    return;
+  }
+
+  if (chamado.status !== "CONCLUÍDO") {
+    alert("A OS só pode ser validada depois de concluída pela manutenção.");
+    return;
+  }
+
+  const observacao = prompt("Informe uma observação de validação da OS:") || "Validação registrada sem observação adicional.";
+  const agora = new Date();
+  const itemHistorico = {
+    data: agora.toLocaleString("pt-BR"),
+    acao: "OS validada",
+    descricao: `${usuarioAtual.nome} validou a execução. Observação: ${observacao.trim()}`
+  };
+
+  try {
+    await atualizarChamadoFirebase(id, {
+      status: "VALIDADO",
+      etapaFluxo: "Validação",
+      validadoEmISO: agora.toISOString(),
+      validadoPorUid: usuarioAtual.id,
+      validadoPorNome: usuarioAtual.nome,
+      validacaoObservacao: observacao.trim(),
+      historico: adicionarItemArrayFirebase(itemHistorico)
+    });
+
+    aplicarFeedbackSucesso(botao, "Validada", "Validar OS");
+    alert("OS validada com sucesso.");
+  } catch (erro) {
+    console.error("Erro ao validar OS:", erro);
+    alert("Não foi possível validar a OS no Firebase.");
+  }
+}
+
+async function encerrarOS(id, botao) {
+  if (!usuarioEhManutencaoAutorizada()) {
+    alert("Somente a manutenção autorizada pode encerrar OS.");
+    return;
+  }
+
+  const chamado = chamados.find(item => idsIguais(item.id, id));
+
+  if (!chamado) {
+    alert("OS não encontrada.");
+    return;
+  }
+
+  if (chamado.status !== "VALIDADO") {
+    alert("A OS só pode ser encerrada depois de validada.");
+    return;
+  }
+
+  if (!confirm("Confirmar encerramento definitivo desta OS?")) {
+    return;
+  }
+
+  const agora = new Date();
+  const itemHistorico = {
+    data: agora.toLocaleString("pt-BR"),
+    acao: "OS encerrada",
+    descricao: `${usuarioAtual.nome} encerrou a OS após validação da execução.`
+  };
+
+  try {
+    await atualizarChamadoFirebase(id, {
+      status: "ENCERRADO",
+      etapaFluxo: "Encerrado e auditado",
+      encerradoEmISO: agora.toISOString(),
+      encerradoPorUid: usuarioAtual.id,
+      encerradoPorNome: usuarioAtual.nome,
+      historico: adicionarItemArrayFirebase(itemHistorico)
+    });
+
+    aplicarFeedbackSucesso(botao, "Encerrada", "Encerrar OS");
+    alert("OS encerrada com sucesso.");
+  } catch (erro) {
+    console.error("Erro ao encerrar OS:", erro);
+    alert("Não foi possível encerrar a OS no Firebase.");
+  }
+}
 
 async function selecionarFotoFinalizacao(id, botao) {
   if (!usuarioEhManutencaoAutorizada()) {

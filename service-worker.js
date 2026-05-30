@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-manutencao-v12-colaborador-simples-foto-final";
+const CACHE_NAME = "app-manutencao-etapa5-rastreabilidade-v1";
 
 const FILES_TO_CACHE = [
   "./",
@@ -27,6 +27,8 @@ const FILES_TO_CACHE = [
   "./js/painel.js",
   "./js/perfil.js",
   "./js/comunicados.js",
+  "./js/ativos.js",
+  "./js/preventivas.js",
   "./js/app.js",
   "./img/senac-predio.png",
   "./img/icon-192.png",
