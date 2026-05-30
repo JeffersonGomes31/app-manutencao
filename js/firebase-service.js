@@ -86,6 +86,10 @@ async function criarAtivoFirebase(ativo) {
   });
 }
 
+async function excluirAtivoFirebase(id) {
+  await firebaseDb.collection("ativos").doc(String(id)).delete();
+}
+
 function normalizarAtivoFirebase(documento) {
   const dados = documento.data();
 
@@ -135,6 +139,8 @@ function normalizarPlanoPreventivoFirebase(documento) {
     ativoCodigo: dados.ativoCodigo || dados.equipamentoCodigo || "",
     nome: dados.nome || "Preventiva sem nome",
     localizacao: dados.localizacao || dados.local || "Não informado",
+    quantidadeFrequencia: Number(dados.quantidadeFrequencia || 0),
+    unidadeFrequencia: dados.unidadeFrequencia || "",
     frequenciaDias: Number(dados.frequenciaDias || 30),
     proximaExecucaoISO: dados.proximaExecucaoISO || new Date().toISOString(),
     ultimaExecucaoISO: dados.ultimaExecucaoISO || "",

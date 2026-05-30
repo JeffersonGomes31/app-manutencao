@@ -60,6 +60,7 @@ function prepararTelaSemSessao() {
 
   preencherFormularioPerfil();
   aplicarPermissoesNaTela();
+  aplicarPermissoesInterface();
   renderizarChamados();
 
   if (typeof renderizarNotificacoes === "function") {
@@ -78,11 +79,14 @@ function prepararTelaSemSessao() {
     renderizarPlanosPreventivos();
   }
 
-  openPage("perfil");
+  aplicarPermissoesInterface();
+  openPage(usuarioAtual && usuarioAtual.perfil === "manutencao" ? "painel" : "inicio");
 }
 
 async function processarEstadoAutenticacao(usuarioFirebase) {
   encerrarMonitoresDeDados();
+
+  aplicarPermissoesInterface();
 
   if (!usuarioFirebase) {
     prepararTelaSemSessao();
@@ -96,6 +100,7 @@ async function processarEstadoAutenticacao(usuarioFirebase) {
     }
 
     aplicarPermissoesNaTela();
+    aplicarPermissoesInterface();
     iniciarMonitoresDeDados();
     openPage("inicio");
     return;
@@ -120,8 +125,9 @@ async function processarEstadoAutenticacao(usuarioFirebase) {
 
     preencherFormularioPerfil();
     aplicarPermissoesNaTela();
+    aplicarPermissoesInterface();
     iniciarMonitoresDeDados();
-    openPage("inicio");
+    openPage(usuarioEhManutencaoAutorizada() ? "painel" : "inicio");
   } catch (erro) {
     console.error("Erro ao carregar usuário:", erro);
     alert("Não foi possível carregar o perfil do usuário no Firebase.");
@@ -268,4 +274,15 @@ function encerrarMonitoresDeDados() {
     monitorPlanosPreventivos();
     monitorPlanosPreventivos = null;
   }
+}
+
+
+function aplicarPermissoesInterface() {
+  const manutencao = typeof usuarioEhManutencaoAutorizada === "function"
+    ? usuarioEhManutencaoAutorizada()
+    : Boolean(usuarioAtual && usuarioAtual.manutencaoAutorizado);
+
+  document.querySelectorAll(".manut-only").forEach((elemento) => {
+    elemento.style.display = manutencao ? "" : "none";
+  });
 }

@@ -23,7 +23,6 @@ function prepararQRCodeInicial() {
 
 function preencherAtivoNaNovaOS(codigo) {
   const equipamentoInput = document.getElementById("equipamentoChamado");
-  const nomeEquipamentoInput = document.getElementById("nomeEquipamentoChamado");
   const localInput = document.getElementById("localChamado");
   const ativo = encontrarAtivoPorCodigo(codigo);
 
@@ -32,10 +31,6 @@ function preencherAtivoNaNovaOS(codigo) {
   }
 
   if (ativo) {
-    if (nomeEquipamentoInput) {
-      nomeEquipamentoInput.value = ativo.nome || "";
-    }
-
     if (localInput && !localInput.value) {
       localInput.value = ativo.localizacao || "";
     }
@@ -151,6 +146,9 @@ function criarCardAtivo(ativo) {
         <button type="button" class="secondary-button" onclick="prepararPlanoPreventivoDoAtivo(${formatarParametroJS(ativo.codigo)})">
           Criar preventiva deste ativo
         </button>
+        <button type="button" class="danger-button" onclick="excluirAtivo(${formatarParametroJS(ativo.id)}, ${formatarParametroJS(ativo.codigo)})">
+          Excluir ativo
+        </button>
       ` : ""}
     </div>
   `;
@@ -159,4 +157,36 @@ function criarCardAtivo(ativo) {
 function prepararOSDoAtivo(codigo) {
   preencherAtivoNaNovaOS(codigo);
   openPage("novo");
+}
+
+async function excluirAtivo(id, codigo) {
+  if (!usuarioEhManutencaoAutorizada()) {
+    alert("Somente a manutenção autorizada pode excluir ativos.");
+    return;
+  }
+
+  if (!id) {
+    alert("Ativo não encontrado para exclusão.");
+    return;
+  }
+
+  const totalOS = chamados.filter(chamado => {
+    return normalizarCodigoAtivo(chamado.equipamentoCodigo) === normalizarCodigoAtivo(codigo);
+  }).length;
+
+  const mensagem = totalOS > 0
+    ? `Este ativo possui ${totalOS} OS vinculada(s). Excluir o ativo não apaga o histórico das OS. Deseja continuar?`
+    : "Deseja excluir este ativo?";
+
+  if (!confirm(mensagem)) {
+    return;
+  }
+
+  try {
+    await excluirAtivoFirebase(id);
+    alert("Ativo excluído com sucesso.");
+  } catch (erro) {
+    console.error("Erro ao excluir ativo:", erro);
+    alert("Não foi possível excluir o ativo no Firebase.");
+  }
 }

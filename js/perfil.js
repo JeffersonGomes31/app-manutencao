@@ -63,6 +63,10 @@ function aplicarPermissoesNaTela() {
     areaNovoPlanoPreventivo.style.display = usuarioEhManutencaoAutorizada() ? "grid" : "none";
   }
 
+  if (typeof aplicarPermissoesInterface === "function") {
+    aplicarPermissoesInterface();
+  }
+
   preencherResumoUsuarioNaTela();
 
   if (typeof atualizarResumoPerfil === "function") {

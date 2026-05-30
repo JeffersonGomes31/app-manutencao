@@ -95,7 +95,7 @@
             <p>Ver categorias</p>
           </div>
 
-          <div class="quick-card" onclick="openPage('ativos')">
+          <div class="quick-card manut-only" onclick="openPage('ativos')">
             <div class="quick-icon blue-bg">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M4 7h16v10H4V7Z" stroke="currentColor" stroke-linejoin="round" />
@@ -103,11 +103,11 @@
                 <path d="M6 19h12" stroke="currentColor" stroke-linecap="round" />
               </svg>
             </div>
-            <h3>Ativos / QR</h3>
+            <h3 class="manut-only-title">Ativos / QR</h3>
             <p>Equipamentos rastreáveis</p>
           </div>
 
-          <div class="quick-card" onclick="openPage('preventivas')">
+          <div class="quick-card manut-only" onclick="openPage('preventivas')">
             <div class="quick-icon green-bg">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M7 3v4M17 3v4M4 9h16" stroke="currentColor" stroke-linecap="round" />
@@ -115,7 +115,7 @@
                 <path d="m8 14 2 2 5-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </div>
-            <h3>Preventivas</h3>
+            <h3 class="manut-only-title">Preventivas</h3>
             <p>Planos recorrentes</p>
           </div>
         </div>
@@ -354,16 +354,21 @@
           <input id="localPlanoPreventivo" type="text" placeholder="Ex: Sala 02, Laboratório de informática" />
         </label>
 
-        <label>
-          Frequência
-          <select id="frequenciaPlanoPreventivo">
-            <option value="30">Mensal - 30 dias</option>
-            <option value="60">Bimestral - 60 dias</option>
-            <option value="90">Trimestral - 90 dias</option>
-            <option value="180">Semestral - 180 dias</option>
-            <option value="365">Anual - 365 dias</option>
-          </select>
-        </label>
+        <div class="form-row">
+          <label>
+            Frequência da preventiva
+            <input id="quantidadeFrequenciaPlanoPreventivo" type="number" min="1" step="1" placeholder="Ex: 15" />
+          </label>
+
+          <label>
+            Período
+            <select id="unidadeFrequenciaPlanoPreventivo">
+              <option value="dias">Dias</option>
+              <option value="semanas">Semanas</option>
+              <option value="meses">Meses</option>
+            </select>
+          </label>
+        </div>
 
         <label>
           Próxima execução
@@ -382,7 +387,7 @@
 
       <div class="form-card qr-help-card">
         <h3>Como funciona</h3>
-        <p>Quando um plano vencer, a manutenção pode gerar uma OS preventiva. Após gerar, o sistema atualiza automaticamente a próxima execução conforme a frequência cadastrada.</p>
+        <p>Quando um plano vencer, a manutenção pode gerar uma OS preventiva. Após gerar, o sistema atualiza automaticamente a próxima execução conforme a frequência específica cadastrada.</p>
       </div>
 
       <div class="section-header spacing">
@@ -414,16 +419,11 @@
      </label>
 
      <label>
-        Nome do equipamento
-        <input id="nomeEquipamentoChamado" type="text" placeholder="Ex: Ar-condicionado Split, projetor multimídia, bebedouro..." />
-     </label>
-
-     <label>
-        Setor solicitante
+        Nome do Solicitante
        <input 
        id="setorChamado" 
        type="text" 
-       placeholder="Ex: Administração, Recepção, Sala dos Professores..."
+       placeholder="Digite o nome de quem está solicitando a OS"
        />
      </label>
 
@@ -446,36 +446,6 @@
           <option value="Não">Não</option>
         </select>
       </label>
-
-  <div class="category-fast-box">
-    <span>Selecione a área da OS</span>
-
-    <div class="category-fast-grid">
-      <button type="button" class="category-fast-button" onclick="selecionarCategoriaRapida('Elétrica', this)">
-        Elétrica
-      </button>
-
-      <button type="button" class="category-fast-button" onclick="selecionarCategoriaRapida('Hidráulica', this)">
-        Hidráulica
-      </button>
-
-      <button type="button" class="category-fast-button" onclick="selecionarCategoriaRapida('Alvenaria', this)">
-        Alvenaria
-      </button>
-
-      <button type="button" class="category-fast-button" onclick="selecionarCategoriaRapida('Pintura', this)">
-        Pintura
-      </button>
-
-      <button type="button" class="category-fast-button" onclick="selecionarCategoriaRapida('Eletrônica', this)">
-        Eletrônica
-      </button>
-
-      <button type="button" class="category-fast-button" onclick="selecionarCategoriaRapida('Outros', this)">
-        Outros
-      </button>
-    </div>
-  </div>
 
   <label>
     Categoria da OS

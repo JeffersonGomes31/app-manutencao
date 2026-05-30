@@ -12,7 +12,9 @@ function openPage(pageId, navElement) {
     itemNavegacao = null;
   }
 
-  if (paginaDestino === "painel" && !usuarioEhManutencaoAutorizada()) {
+  const paginasRestritasManutencao = ["painel", "ativos", "preventivas"];
+
+  if (paginasRestritasManutencao.includes(paginaDestino) && !usuarioEhManutencaoAutorizada()) {
     alert("Acesso permitido somente para a manutenção autorizada.");
     return;
   }

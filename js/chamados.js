@@ -6,7 +6,6 @@ async function criarChamado() {
   const localInput = document.getElementById("localChamado");
   const setorInput = document.getElementById("setorChamado");
   const equipamentoInput = document.getElementById("equipamentoChamado");
-  const nomeEquipamentoInput = document.getElementById("nomeEquipamentoChamado");
   const horarioInput = document.getElementById("horarioChamado");
   const acompanhamentoInput = document.getElementById("precisaAcompanhamento");
   const categoriaInput = document.getElementById("categoriaChamado");
@@ -22,7 +21,8 @@ async function criarChamado() {
   const local = localInput.value.trim();
   const setor = setorInput.value.trim();
   const equipamentoCodigo = equipamentoInput ? equipamentoInput.value.trim().toUpperCase() : "";
-  const equipamentoNome = nomeEquipamentoInput ? nomeEquipamentoInput.value.trim() : "";
+  const ativoVinculado = equipamentoCodigo && typeof encontrarAtivoPorCodigo === "function" ? encontrarAtivoPorCodigo(equipamentoCodigo) : null;
+  const equipamentoNome = ativoVinculado ? (ativoVinculado.nome || "") : "";
   const horario = horarioInput.value;
   const precisaAcompanhamento = acompanhamentoInput ? acompanhamentoInput.value : "Não informado";
   const categoria = categoriaInput.value;
@@ -31,7 +31,7 @@ async function criarChamado() {
   const arquivosFotos = obterArquivosFotosChamado(fotoInput);
 
   if (!local || !setor || !horario || !categoria || !descricao) {
-    alert("Preencha local, setor, melhor horário, categoria e descrição do problema.");
+    alert("Preencha local, nome do solicitante, melhor horário, categoria e descrição do problema.");
     return;
   }
 
@@ -155,7 +155,6 @@ function limparFormularioChamado() {
     "localChamado",
     "setorChamado",
     "equipamentoChamado",
-    "nomeEquipamentoChamado",
     "horarioChamado",
     "categoriaChamado",
     "descricaoChamado",

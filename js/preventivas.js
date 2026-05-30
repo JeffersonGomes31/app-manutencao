@@ -53,7 +53,7 @@ function criarCardPlanoPreventivo(plano) {
         <span class="preventive-status">${escaparHTML(situacao.texto)}</span>
       </div>
 
-      <p><strong>Frequência:</strong> a cada ${Number(plano.frequenciaDias || 30)} dias</p>
+      <p><strong>Frequência:</strong> ${escaparHTML(formatarFrequenciaPreventiva(plano))}</p>
       <p><strong>Próxima execução:</strong> ${escaparHTML(formatarDataPreventiva(dataExecucao))}</p>
       <p><strong>Observações:</strong> ${escaparHTML(plano.observacoes || "Sem observações")}</p>
       ${plano.ultimaOS ? `<p><strong>Última OS gerada:</strong> ${escaparHTML(plano.ultimaOS)}</p>` : ""}
@@ -82,19 +82,27 @@ async function salvarPlanoPreventivo() {
   const ativoInput = document.getElementById("ativoPlanoPreventivo");
   const nomeInput = document.getElementById("nomePlanoPreventivo");
   const localInput = document.getElementById("localPlanoPreventivo");
-  const frequenciaInput = document.getElementById("frequenciaPlanoPreventivo");
+  const quantidadeFrequenciaInput = document.getElementById("quantidadeFrequenciaPlanoPreventivo");
+  const unidadeFrequenciaInput = document.getElementById("unidadeFrequenciaPlanoPreventivo");
   const proximaInput = document.getElementById("proximaExecucaoPlanoPreventivo");
   const observacoesInput = document.getElementById("observacoesPlanoPreventivo");
 
   const ativoCodigo = ativoInput ? ativoInput.value.trim().toUpperCase() : "";
   const nome = nomeInput ? nomeInput.value.trim() : "";
   const localizacao = localInput ? localInput.value.trim() : "";
-  const frequenciaDias = frequenciaInput ? Number(frequenciaInput.value) : 30;
+  const quantidadeFrequencia = quantidadeFrequenciaInput ? Number(quantidadeFrequenciaInput.value) : 0;
+  const unidadeFrequencia = unidadeFrequenciaInput ? unidadeFrequenciaInput.value : "dias";
+  const frequenciaDias = calcularFrequenciaEmDias(quantidadeFrequencia, unidadeFrequencia);
   const proximaExecucao = proximaInput ? proximaInput.value : "";
   const observacoes = observacoesInput ? observacoesInput.value.trim() : "";
 
   if (!ativoCodigo || !nome || !localizacao || !proximaExecucao) {
     alert("Informe ativo, nome da rotina, local e próxima execução.");
+    return;
+  }
+
+  if (!Number.isFinite(quantidadeFrequencia) || quantidadeFrequencia <= 0 || !frequenciaDias) {
+    alert("Informe uma frequência válida para a preventiva.");
     return;
   }
 
@@ -109,6 +117,8 @@ async function salvarPlanoPreventivo() {
     ativoCodigo,
     nome,
     localizacao,
+    quantidadeFrequencia,
+    unidadeFrequencia,
     frequenciaDias,
     proximaExecucaoISO: dataExecucao.toISOString(),
     observacoes,
@@ -228,6 +238,7 @@ function limparFormularioPlanoPreventivo() {
     "ativoPlanoPreventivo",
     "nomePlanoPreventivo",
     "localPlanoPreventivo",
+    "quantidadeFrequenciaPlanoPreventivo",
     "proximaExecucaoPlanoPreventivo",
     "observacoesPlanoPreventivo"
   ].forEach(id => {
@@ -238,10 +249,10 @@ function limparFormularioPlanoPreventivo() {
     }
   });
 
-  const frequenciaInput = document.getElementById("frequenciaPlanoPreventivo");
+  const unidadeFrequenciaInput = document.getElementById("unidadeFrequenciaPlanoPreventivo");
 
-  if (frequenciaInput) {
-    frequenciaInput.value = "30";
+  if (unidadeFrequenciaInput) {
+    unidadeFrequenciaInput.value = "dias";
   }
 }
 
@@ -264,6 +275,35 @@ function prepararPlanoPreventivoDoAtivo(codigo) {
   }
 
   openPage("preventivas");
+}
+
+function calcularFrequenciaEmDias(quantidade, unidade) {
+  const quantidadeNumerica = Number(quantidade);
+
+  if (!Number.isFinite(quantidadeNumerica) || quantidadeNumerica <= 0) {
+    return 0;
+  }
+
+  if (unidade === "semanas") {
+    return quantidadeNumerica * 7;
+  }
+
+  if (unidade === "meses") {
+    return quantidadeNumerica * 30;
+  }
+
+  return quantidadeNumerica;
+}
+
+function formatarFrequenciaPreventiva(plano) {
+  const quantidade = Number(plano.quantidadeFrequencia || 0);
+  const unidade = plano.unidadeFrequencia || "";
+
+  if (quantidade > 0 && unidade) {
+    return `a cada ${quantidade} ${unidade}`;
+  }
+
+  return `a cada ${Number(plano.frequenciaDias || 30)} dias`;
 }
 
 function obterSituacaoPlanoPreventivo(plano) {

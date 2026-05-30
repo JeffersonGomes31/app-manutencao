@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-manutencao-etapa5-rastreabilidade-v1";
+const CACHE_NAME = "app-manutencao-etapa6-ativos-excluir-v2";
 
 const FILES_TO_CACHE = [
   "./",
