@@ -64,3 +64,20 @@ refactor: centralizar colecoes firebase e versionar regras do firestore
 
 
 - Melhoria visual do histórico técnico das OS com timeline e ícones.
+
+---
+
+## Centralização das constantes do sistema
+
+- Criada a pasta `/src/constants` para concentrar constantes estruturais do app.
+- Separados os dados de andares, locais, categorias, subcategorias, status, prioridades, tipos de manutenção e coleções Firebase.
+- Mantido o comportamento atual do app, apenas reorganizando a origem das listas e nomes fixos.
+- Removida a duplicação da constante `COLLECTIONS` de `js/firebase-service.js`, passando a usar `/src/constants/firebase.js`.
+- Adicionado `src/constants/index.js` como índice central das constantes em `window.APP_CONSTANTS`.
+- Cache do PWA atualizado para carregar os novos arquivos de constantes.
+
+### Commit sugerido
+
+```txt
+refactor: centralizar constantes estruturais do sistema
+```

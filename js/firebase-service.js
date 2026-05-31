@@ -12,14 +12,6 @@ const firebaseConfig = {
   appId: "1:729718839494:web:d92add8d24aa1e3fc65fc7"
 };
 
-const COLLECTIONS = Object.freeze({
-  CHAMADOS: "chamados",
-  PREVENTIVAS: "planosPreventivos",
-  ATIVOS: "ativos",
-  USUARIOS: "usuarios",
-  NOTIFICACOES: "notificacoes",
-  COMUNICADOS: "comunicados"
-});
 
 let firebaseAuth = null;
 let firebaseDb = null;

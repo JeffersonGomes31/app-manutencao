@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-manutencao-logs-criador-etapa8";
+const CACHE_NAME = "app-manutencao-constantes-etapa10";
 
 const FILES_TO_CACHE = [
   "./",
@@ -17,6 +17,15 @@ const FILES_TO_CACHE = [
   "./css/notificacoes.css",
   "./css/areas.css",
   "./css/responsive.css",
+  "./src/constants/andares.js",
+  "./src/constants/locais.js",
+  "./src/constants/categorias.js",
+  "./src/constants/subcategorias.js",
+  "./src/constants/status.js",
+  "./src/constants/prioridades.js",
+  "./src/constants/tiposOS.js",
+  "./src/constants/firebase.js",
+  "./src/constants/index.js",
   "./js/state.js",
   "./js/firebase-service.js",
   "./js/utils.js",
