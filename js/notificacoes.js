@@ -174,7 +174,7 @@ async function registrarNotificacaoNovoChamado(chamadoId, chamado) {
 
   await registrarNotificacaoInterna({
     titulo: "Novo chamado aberto",
-    mensagem: `${chamado.solicitanteNome} abriu um chamado em ${chamado.local}: ${chamado.descricao}`,
+    mensagem: `${chamado.criadoPorNome || "Usuário"} abriu uma OS em ${chamado.local}: ${chamado.descricao}`,
     tipo: "novo_chamado",
     chamadoId,
     chamadoDescricao: chamado.descricao,
@@ -183,7 +183,7 @@ async function registrarNotificacaoNovoChamado(chamadoId, chamado) {
 }
 
 async function registrarNotificacaoStatusChamado(chamado, novoStatus, justificativaAguardando) {
-  const destinatarioUid = chamado.criadoPorUid || chamado.solicitanteId;
+  const destinatarioUid = chamado.criadoPorUid;
 
   if (!destinatarioUid) {
     return;
@@ -220,7 +220,7 @@ async function registrarNotificacaoCancelamentoChamado(chamado, motivo) {
     return;
   }
 
-  const destinatarioUid = chamado.criadoPorUid || chamado.solicitanteId;
+  const destinatarioUid = chamado.criadoPorUid;
 
   if (!destinatarioUid) {
     return;

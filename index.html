@@ -176,7 +176,7 @@
         <input 
          type="text" 
          id="buscaOS" 
-         placeholder="Buscar por nº da OS, local, categoria, descrição ou solicitante..."
+         placeholder="Buscar por nº da OS, local, categoria, descrição ou criador..."
          oninput="pesquisarOS(this.value)"
         />
       </div>
@@ -614,16 +614,6 @@
         <small class="form-help">Opcional. Ao ler um QR Code do ativo, este campo poderá vir preenchido automaticamente.</small>
      </label>
 
-     <label>
-        Nome do Solicitante
-       <input 
-       id="setorChamado" 
-       name="solicitanteChamado"
-       type="text" 
-       autocomplete="name"
-       placeholder="Digite o nome de quem está solicitando a OS"
-       />
-     </label>
 
       <label>
         Melhor horário para atendimento
@@ -840,8 +830,8 @@
       </div>
 
       <div class="profile-item">
-        <span>Setor / solicitante</span>
-        <strong id="perfilSetorValor">Solicitante</strong>
+        <span>Setor</span>
+        <strong id="perfilSetorValor">Manutenção</strong>
       </div>
 
       <div class="profile-item">
@@ -980,7 +970,7 @@
   <input 
     type="text" 
     id="buscaPainel" 
-    placeholder="Buscar por nº da OS, local, setor, descrição ou solicitante..."
+    placeholder="Buscar por nº da OS, local, setor, descrição ou criador..."
     oninput="pesquisarPainel(this.value)"
   />
 
@@ -1078,10 +1068,6 @@
           <strong id="detalheAtivo">-</strong>
         </div>
         
-        <div class="detail-item">
-          <span>Solicitante informado</span>
-          <strong id="detalheSetor">-</strong>
-        </div>
 
         <div class="detail-item">
           <span>Melhor horário</span>
@@ -1244,6 +1230,7 @@
   <script src="js/navigation.js"></script>
   <script src="js/notificacoes.js"></script>
   <script src="js/categorias.js"></script>
+  <script src="js/logs-tecnicos.js"></script>
   <script src="js/chamados.js"></script>
   <script src="js/modal-chamado.js"></script>
   <script src="js/painel.js"></script>

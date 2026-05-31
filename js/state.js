@@ -1,7 +1,7 @@
 const USUARIO_PADRAO = {
   id: "",
   nome: "Colaborador",
-  setor: "Solicitante",
+  setor: "Manutenção",
   email: "",
   unidade: "Senac Campo Mourão",
   perfil: "colaborador",

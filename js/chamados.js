@@ -79,7 +79,6 @@ function obterCamposFormularioChamado() {
   const campos = {
     andar: document.getElementById("andarChamado"),
     local: document.getElementById("localChamado"),
-    solicitante: document.getElementById("solicitanteChamado") || document.getElementById("setorChamado"),
     equipamento: document.getElementById("equipamentoChamado"),
     horario: document.getElementById("horarioChamado"),
     acompanhamento: document.getElementById("precisaAcompanhamento"),
@@ -91,7 +90,7 @@ function obterCamposFormularioChamado() {
     foto: document.getElementById("fotoChamado")
   };
 
-  const obrigatorios = ["andar", "local", "solicitante", "horario", "categoria", "subcategoria", "prioridade", "descricao"];
+  const obrigatorios = ["andar", "local", "horario", "categoria", "subcategoria", "prioridade", "descricao"];
   const ausentes = obrigatorios.filter(nome => !campos[nome]);
 
   return {
@@ -110,7 +109,6 @@ function lerValoresFormularioChamado(campos) {
   return {
     andar: obterValorCampoChamado(campos.andar),
     local: obterValorCampoChamado(campos.local),
-    solicitanteNome: obterValorCampoChamado(campos.solicitante),
     equipamentoCodigo,
     equipamentoNome: ativoVinculado ? (ativoVinculado.nome || "") : "",
     horario: obterValorCampoChamado(campos.horario),
@@ -133,7 +131,6 @@ function validarValoresFormularioChamado(valores) {
   const regras = [
     ["Escolher o andar", valores.andar],
     ["Local do andar", valores.local],
-    ["Nome do solicitante", valores.solicitanteNome],
     ["Melhor horário para atendimento", valores.horario],
     ["Categoria da OS", valores.categoria],
     ["Subcategoria", valores.subcategoria],
@@ -150,7 +147,6 @@ function marcarCamposObrigatoriosChamado(campos, camposPendentes) {
   const mapa = {
     "Escolher o andar": campos.andar,
     "Local do andar": campos.local,
-    "Nome do solicitante": campos.solicitante,
     "Melhor horário para atendimento": campos.horario,
     "Categoria da OS": campos.categoria,
     "Subcategoria": campos.subcategoria,
@@ -170,15 +166,33 @@ function marcarCamposObrigatoriosChamado(campos, camposPendentes) {
 
 function montarObjetoChamado({ numeroOS, dataAtual, valores, fotosAnexadas, fotoPrincipal }) {
   const usuario = usuarioAtual || {};
-  const criadoPorNome = usuario.nome || valores.solicitanteNome || "Não informado";
+  const criadoPorNome = usuario.nome || "Jefferson Gomes";
   const criadoPorId = usuario.id || "colaborador-local";
   const criadoPorEmail = usuario.email || "";
+
+  const tecnicoResponsavel = typeof obterTecnicoResponsavelPadrao === "function"
+    ? obterTecnicoResponsavelPadrao()
+    : {
+        nome: "Jefferson Gomes",
+        funcao: "Oficial de Manutenção",
+        setor: "Manutenção",
+        ativo: true
+      };
+
+  const logInicial = typeof gerarLogOS === "function"
+    ? gerarLogOS({
+        acao: "OS criada",
+        descricao: `${numeroOS} criada por ${criadoPorNome}.`,
+        usuario: tecnicoResponsavel.nome
+      })
+    : null;
 
   return {
     numeroOS,
     tipoRegistro: "OS",
     etapaFluxo: "Solicitação registrada",
-    responsavelManutencao: "A definir",
+    responsavelManutencao: tecnicoResponsavel.nome,
+    tecnicoResponsavel,
     iniciadoEmISO: "",
     concluidoEmISO: "",
     validadoEmISO: "",
@@ -187,8 +201,7 @@ function montarObjetoChamado({ numeroOS, dataAtual, valores, fotosAnexadas, foto
     local: valores.local,
     equipamentoCodigo: valores.equipamentoCodigo,
     equipamentoNome: valores.equipamentoNome,
-    setor: valores.solicitanteNome,
-    setorSolicitante: valores.solicitanteNome,
+    setor: usuario.setor || "Manutenção",
     horario: valores.horario,
     precisaAcompanhamento: valores.precisaAcompanhamento,
     categoria: valores.categoria,
@@ -201,18 +214,16 @@ function montarObjetoChamado({ numeroOS, dataAtual, valores, fotosAnexadas, foto
     fotoNome: fotoPrincipal ? fotoPrincipal.nome : "",
     fotoData: fotoPrincipal ? fotoPrincipal.data : "",
     fotos: fotosAnexadas,
-    solicitanteId: criadoPorId,
-    solicitanteNome: valores.solicitanteNome,
-    solicitanteEmail: criadoPorEmail,
     criadoPorUid: criadoPorId,
     criadoPorNome,
     criadoPorEmail,
     justificativaAguardando: "",
+    logs: logInicial ? [logInicial] : [],
     historico: [
       {
         data: dataAtual,
         acao: "OS aberta",
-        descricao: `${numeroOS} registrada por ${criadoPorNome}. Solicitante informado: ${valores.solicitanteNome}. Local: ${valores.andar} / ${valores.local}. Categoria: ${valores.categoria} / ${valores.subcategoria}.`
+        descricao: `${numeroOS} registrada por ${criadoPorNome}. Local: ${valores.andar} / ${valores.local}. Categoria: ${valores.categoria} / ${valores.subcategoria}.`
       }
     ]
   };
@@ -383,12 +394,12 @@ function montarTextoBuscaChamado(chamado) {
     chamado.equipamentoCodigo,
     chamado.equipamentoNome,
     chamado.setor,
+    chamado.criadoPorNome,
     chamado.categoria,
     chamado.subcategoria,
     chamado.tipoManutencao,
     chamado.prioridade,
-    chamado.status,
-    chamado.solicitanteNome
+    chamado.status
   ].join(" ").toLowerCase();
 }
 
@@ -424,8 +435,6 @@ function criarCardChamado(chamado) {
           &nbsp;•&nbsp;
           ${escaparHTML(chamado.local)}
           ${chamado.equipamentoCodigo ? `&nbsp;•&nbsp; Ativo ${escaparHTML(chamado.equipamentoCodigo)}` : ""}
-          &nbsp;•&nbsp;
-          ${escaparHTML(chamado.setorSolicitante || chamado.solicitanteNome || chamado.setor || "Solicitante não informado")}
           &nbsp;•&nbsp;
           ${escaparHTML(chamado.data)}
         </p>

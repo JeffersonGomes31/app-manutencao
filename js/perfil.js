@@ -89,7 +89,7 @@ function obterAreaNavegacao() {
 
 function preencherResumoUsuarioNaTela() {
   const nome = usuarioAtual.nome || "Colaborador";
-  const setor = usuarioAtual.setor || "Solicitante";
+  const setor = usuarioAtual.setor || "Manutenção";
   const email = usuarioAtual.email || "Não informado";
   const unidade = usuarioAtual.unidade || "Senac Campo Mourão";
   const perfilTextoFormatado = obterNomePerfilFormatado(usuarioAtual.perfil);
@@ -254,7 +254,7 @@ async function sairDaConta() {
 
 function atualizarResumoPerfil() {
   const totalChamados = chamados.length;
-  const meusChamados = chamados.filter(chamado => idsIguais(chamado.solicitanteId, usuarioAtual.id)).length;
+  const meusChamados = chamados.filter(chamado => idsIguais(chamado.criadoPorUid, usuarioAtual.id)).length;
   const chamadosAbertos = chamados.filter(chamado => !statusFinalizado(chamado.status)).length;
   const chamadosCancelados = chamados.filter(chamado => chamado.status === "CANCELADO").length;
 

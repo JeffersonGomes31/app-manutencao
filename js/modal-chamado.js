@@ -15,14 +15,13 @@ function abrirDetalhesChamado(id) {
   setTextContent("detalheTitulo", chamado.descricao);
   setTextContent("detalheData", `Aberto em ${chamado.data}`);
   setTextContent("detalheNumeroOS", chamado.numeroOS || "OS não informada");
-  setTextContent("detalheCriadoPor", chamado.criadoPorNome || chamado.solicitanteNome || "Não informado");
+  setTextContent("detalheCriadoPor", chamado.criadoPorNome || "Não informado");
   setTextContent("detalheEtapaFluxo", chamado.etapaFluxo || obterEtapaFluxoPorStatus(chamado.status));
-  setTextContent("detalheResponsavel", chamado.responsavelManutencao || "A definir");
+  setTextContent("detalheResponsavel", `${(chamado.tecnicoResponsavel && chamado.tecnicoResponsavel.nome) || chamado.responsavelManutencao || "A definir"}${(chamado.tecnicoResponsavel && chamado.tecnicoResponsavel.funcao) ? " — " + chamado.tecnicoResponsavel.funcao : ""}`);
   setTextContent("detalheValidacao", montarTextoValidacaoOS(chamado));
   setTextContent("detalheEncerramento", montarTextoEncerramentoOS(chamado));
   setTextContent("detalheLocal", chamado.andar ? `${chamado.andar} / ${chamado.local}` : chamado.local);
   setTextContent("detalheAtivo", montarTextoAtivoChamado(chamado));
-  setTextContent("detalheSetor", chamado.setorSolicitante || chamado.solicitanteNome || chamado.setor || "Não informado");
   setTextContent("detalheHorario", chamado.horario || "Não informado");
   setTextContent("detalheAcompanhamento", chamado.precisaAcompanhamento || "Não informado");
   setTextContent("detalheCategoria", chamado.categoria);
@@ -141,8 +140,7 @@ function chamadoPodeSerCancelado(chamado) {
   }
 
   if (usuarioAtual.perfil === "colaborador") {
-    return idsIguais(chamado.solicitanteId, usuarioAtual.id)
-      || idsIguais(chamado.criadoPorUid, usuarioAtual.id);
+    return idsIguais(chamado.criadoPorUid, usuarioAtual.id);
   }
 
   return false;
