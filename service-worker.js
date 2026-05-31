@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-manutencao-constantes-etapa10";
+const CACHE_NAME = "app-manutencao-exportacoes-etapa11";
 
 const FILES_TO_CACHE = [
   "./",
@@ -25,6 +25,7 @@ const FILES_TO_CACHE = [
   "./src/constants/prioridades.js",
   "./src/constants/tiposOS.js",
   "./src/constants/firebase.js",
+  "./src/constants/exportacoes.js",
   "./src/constants/index.js",
   "./js/state.js",
   "./js/firebase-service.js",
@@ -33,6 +34,7 @@ const FILES_TO_CACHE = [
   "./js/notificacoes.js",
   "./js/categorias.js",
   "./js/chamados.js",
+  "./js/exportacoes.js",
   "./js/modal-chamado.js",
   "./js/painel.js",
   "./js/perfil.js",

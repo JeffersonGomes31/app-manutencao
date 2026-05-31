@@ -1,5 +1,24 @@
 # Atualização
 
+## Exportação de OS finalizadas
+
+- Adicionado bloco de exportação na tela de Ordens de Serviço para usuários da manutenção.
+- Implementada exportação local das OS finalizadas nos formatos Excel, PDF e Word.
+- Consideradas como finalizadas as OS com status `CONCLUÍDO`, `VALIDADO` ou `ENCERRADO`.
+- Centralizadas as configurações de exportação em `src/constants/exportacoes.js`, evitando novos arrays espalhados.
+- Criado o módulo `js/exportacoes.js` para concentrar montagem de relatório, tabela, download e impressão em PDF.
+- A exportação respeita a busca textual atual da tela de OS, mas sempre limita o relatório aos status finalizados.
+- Cache do PWA atualizado para carregar os novos arquivos de exportação.
+- Não houve necessidade de nova coleção Firebase nem alteração em `firestore.rules`, pois a exportação usa os dados já carregados no app.
+
+### Commit sugerido
+
+```txt
+feat: adicionar exportacao de os finalizadas
+```
+
+---
+
 - O andar **Telhado** agora utiliza os mesmos locais vinculados ao **1º ANDAR**.
 - Removida a lista específica anterior do Telhado para evitar redundância.
 - Mantida a fonte única `locaisPrimeiroAndarManutencao` para facilitar manutenção futura.
@@ -80,4 +99,24 @@ refactor: centralizar colecoes firebase e versionar regras do firestore
 
 ```txt
 refactor: centralizar constantes estruturais do sistema
+```
+
+---
+
+## Exportação de OS finalizadas sem imagens
+
+- Adicionada exportação de OS finalizadas em Excel, PDF e Word.
+- A exportação considera OS com status `CONCLUÍDO`, `VALIDADO` ou `ENCERRADO`.
+- Os arquivos exportados trazem somente dados textuais/estruturados informados na abertura da OS.
+- Imagens, anexos e evidências visuais não são incluídos na exportação para manter os arquivos leves e evitar dependência do Storage.
+- Criado o módulo `js/exportacoes.js` para isolar a regra de geração dos relatórios.
+- Criada a constante `src/constants/exportacoes.js` para centralizar status e colunas exportadas.
+- Cache do PWA atualizado para carregar os novos arquivos.
+- Não há necessidade de criar nova coleção no Firebase.
+- Não há necessidade de alterar `firestore.rules`.
+
+### Commit sugerido
+
+```txt
+feat: exportar os finalizadas sem imagens
 ```

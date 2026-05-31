@@ -181,6 +181,19 @@
         />
       </div>
 
+      <div class="export-card manut-only">
+        <div>
+          <h3>Exportar OS finalizadas</h3>
+          <p>Gere relatórios somente com os dados preenchidos na abertura da OS, sem imagens ou anexos.</p>
+        </div>
+
+        <div class="export-actions">
+          <button type="button" class="secondary-button" onclick="exportarOSFinalizadasExcel()">Excel</button>
+          <button type="button" class="secondary-button" onclick="exportarOSFinalizadasPDF()">PDF</button>
+          <button type="button" class="secondary-button" onclick="exportarOSFinalizadasWord()">Word</button>
+        </div>
+      </div>
+
       <div class="tickets-card" id="listaOS">
         <!-- Todos os chamados carregados pelo JavaScript -->
       </div>
@@ -1232,6 +1245,7 @@
   <script src="src/constants/prioridades.js"></script>
   <script src="src/constants/tiposOS.js"></script>
   <script src="src/constants/firebase.js"></script>
+  <script src="src/constants/exportacoes.js"></script>
   <script src="src/constants/index.js"></script>
   <script src="js/state.js"></script>
   <script src="js/firebase-service.js"></script>
@@ -1241,6 +1255,7 @@
   <script src="js/categorias.js"></script>
   <script src="js/logs-tecnicos.js"></script>
   <script src="js/chamados.js"></script>
+  <script src="js/exportacoes.js"></script>
   <script src="js/modal-chamado.js"></script>
   <script src="js/painel.js"></script>
   <script src="js/perfil.js"></script>
