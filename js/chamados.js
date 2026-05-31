@@ -219,14 +219,6 @@ function montarObjetoChamado({ numeroOS, dataAtual, valores, fotosAnexadas, foto
 }
 
 
-function obterValorSelectChamado(select) {
-  if (!select) return "";
-  const valor = (select.value || "").trim();
-  if (valor) return valor;
-  const opcaoSelecionada = select.options && select.selectedIndex >= 0 ? select.options[select.selectedIndex] : null;
-  return opcaoSelecionada && opcaoSelecionada.value ? String(opcaoSelecionada.value).trim() : "";
-}
-
 function obterArquivosFotosChamado(fotoInput) {
   if (!fotoInput || !fotoInput.files) {
     return [];
@@ -308,10 +300,6 @@ function limparFormularioChamado() {
 
   if (acompanhamentoInput) {
     acompanhamentoInput.value = "";
-  }
-
-  if (typeof atualizarLocaisPorAndarManutencao === "function") {
-    atualizarLocaisPorAndarManutencao();
   }
 
   document.querySelectorAll(".category-fast-button").forEach(botao => {

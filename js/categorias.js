@@ -59,34 +59,38 @@ const categoriasManutencao = Object.freeze({
   ]
 });
 
+const locaisPrimeiroAndarManutencao = Object.freeze([
+  "banheiro masculino",
+  "banheiro feminino",
+  "SABES",
+  "Sala Instrutores",
+  "Sala-01",
+  "Sala-02",
+  "Sala-03",
+  "Sala-04",
+  "Sala-05",
+  "Sala-06",
+  "Sala-07",
+  "Sala-08",
+  "Sala-09",
+  "Sala-10 INFORMATICA",
+  "Sala-11 INFORMATICA",
+  "Sala-12",
+  "Sala-13 Laboratório informática",
+  "Sala-14 Medicina",
+  "Escadaria"
+]);
+
 const locaisPorAndarManutencao = Object.freeze({
-  "1º ANDAR": [
-    "banheiro masculino",
-    "banheiro feminino",
-    "SABES",
-    "Sala Instrutores",
-    "Sala-01",
-    "Sala-02",
-    "Sala-03",
-    "Sala-04",
-    "Sala-05",
-    "Sala-06",
-    "Sala-07",
-    "Sala-08",
-    "Sala-09",
-    "Sala-10 INFORMATICA",
-    "Sala-11 INFORMATICA",
-    "Sala-12",
-    "Sala-13 Laboratório informática",
-    "Sala-14 Medicina"
-  ],
+  "1º ANDAR": locaisPrimeiroAndarManutencao,
   "SL ANDAR": [
     "BIBLIOTECA",
     "TC-TI",
     "Área de convivência 01 e 02",
     "banheiro masculino",
     "banheiro feminino",
-    "banheiro PCD"
+    "banheiro PCD",
+    "Escadaria"
   ],
   "0º ANDAR": [
     "banheiro masculino",
@@ -118,7 +122,8 @@ const locaisPorAndarManutencao = Object.freeze({
     "Espaço esgoto",
     "Sala de Bombas d'água",
     "Caixa d'água"
-  ]
+  ],
+  "Telhado": locaisPrimeiroAndarManutencao
 });
 
 function preencherSelect(select, opcoes, placeholder, valorSelecionado = "") {
