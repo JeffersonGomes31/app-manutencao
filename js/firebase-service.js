@@ -12,6 +12,15 @@ const firebaseConfig = {
   appId: "1:729718839494:web:d92add8d24aa1e3fc65fc7"
 };
 
+const COLLECTIONS = Object.freeze({
+  CHAMADOS: "chamados",
+  PREVENTIVAS: "planosPreventivos",
+  ATIVOS: "ativos",
+  USUARIOS: "usuarios",
+  NOTIFICACOES: "notificacoes",
+  COMUNICADOS: "comunicados"
+});
+
 let firebaseAuth = null;
 let firebaseDb = null;
 
@@ -41,7 +50,7 @@ function encerrarSessaoFirebase() {
 }
 
 async function buscarPerfilFirebase(uid) {
-  const documento = await firebaseDb.collection("usuarios").doc(uid).get();
+  const documento = await firebaseDb.collection(COLLECTIONS.USUARIOS).doc(uid).get();
 
   if (!documento.exists) {
     return null;
@@ -54,7 +63,7 @@ async function buscarPerfilFirebase(uid) {
 }
 
 function observarChamadosFirebase(usuario, callback, callbackErro) {
-  let consulta = firebaseDb.collection("chamados");
+  let consulta = firebaseDb.collection(COLLECTIONS.CHAMADOS);
 
   if (usuario.perfil === "colaborador") {
     consulta = consulta.where("criadoPorUid", "==", usuario.id);
@@ -70,7 +79,7 @@ function observarChamadosFirebase(usuario, callback, callbackErro) {
 
 function observarAtivosFirebase(callback, callbackErro) {
   return firebaseDb
-    .collection("ativos")
+    .collection(COLLECTIONS.ATIVOS)
     .orderBy("codigo", "asc")
     .onSnapshot(snapshot => {
       const lista = snapshot.docs.map(documento => normalizarAtivoFirebase(documento));
@@ -79,7 +88,7 @@ function observarAtivosFirebase(callback, callbackErro) {
 }
 
 async function criarAtivoFirebase(ativo) {
-  await firebaseDb.collection("ativos").add({
+  await firebaseDb.collection(COLLECTIONS.ATIVOS).add({
     ...ativo,
     criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
     atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
@@ -87,7 +96,7 @@ async function criarAtivoFirebase(ativo) {
 }
 
 async function excluirAtivoFirebase(id) {
-  await firebaseDb.collection("ativos").doc(String(id)).delete();
+  await firebaseDb.collection(COLLECTIONS.ATIVOS).doc(String(id)).delete();
 }
 
 function normalizarAtivoFirebase(documento) {
@@ -111,7 +120,7 @@ function normalizarAtivoFirebase(documento) {
 
 function observarPlanosPreventivosFirebase(callback, callbackErro) {
   return firebaseDb
-    .collection("planosPreventivos")
+    .collection(COLLECTIONS.PREVENTIVAS)
     .orderBy("proximaExecucaoISO", "asc")
     .onSnapshot(snapshot => {
       const lista = snapshot.docs.map(documento => normalizarPlanoPreventivoFirebase(documento));
@@ -120,7 +129,7 @@ function observarPlanosPreventivosFirebase(callback, callbackErro) {
 }
 
 async function criarPlanoPreventivoFirebase(plano) {
-  await firebaseDb.collection("planosPreventivos").add({
+  await firebaseDb.collection(COLLECTIONS.PREVENTIVAS).add({
     ...plano,
     criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
     atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
@@ -128,7 +137,7 @@ async function criarPlanoPreventivoFirebase(plano) {
 }
 
 async function atualizarPlanoPreventivoFirebase(id, dados) {
-  await firebaseDb.collection("planosPreventivos").doc(String(id)).update({
+  await firebaseDb.collection(COLLECTIONS.PREVENTIVAS).doc(String(id)).update({
     ...dados,
     atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
   });
@@ -162,7 +171,7 @@ function normalizarPlanoPreventivoFirebase(documento) {
 
 function observarComunicadosFirebase(callback, callbackErro) {
   return firebaseDb
-    .collection("comunicados")
+    .collection(COLLECTIONS.COMUNICADOS)
     .orderBy("criadoEm", "desc")
     .onSnapshot(snapshot => {
       const lista = snapshot.docs.map(documento => normalizarComunicadoFirebase(documento));
@@ -173,7 +182,7 @@ function observarComunicadosFirebase(callback, callbackErro) {
 async function criarChamadoFirebase(chamado) {
   const agora = new Date();
 
-  const documento = await firebaseDb.collection("chamados").add({
+  const documento = await firebaseDb.collection(COLLECTIONS.CHAMADOS).add({
     ...chamado,
     criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
     criadoEmISO: agora.toISOString(),
@@ -184,7 +193,7 @@ async function criarChamadoFirebase(chamado) {
 }
 
 async function atualizarChamadoFirebase(id, dados) {
-  await firebaseDb.collection("chamados").doc(String(id)).update({
+  await firebaseDb.collection(COLLECTIONS.CHAMADOS).doc(String(id)).update({
     ...dados,
     atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
   });
@@ -195,19 +204,19 @@ function adicionarItemArrayFirebase(item) {
 }
 
 async function criarComunicadoFirebase(comunicado) {
-  await firebaseDb.collection("comunicados").add({
+  await firebaseDb.collection(COLLECTIONS.COMUNICADOS).add({
     ...comunicado,
     criadoEm: firebase.firestore.FieldValue.serverTimestamp()
   });
 }
 
 async function excluirComunicadoFirebase(id) {
-  await firebaseDb.collection("comunicados").doc(String(id)).delete();
+  await firebaseDb.collection(COLLECTIONS.COMUNICADOS).doc(String(id)).delete();
 }
 
 
 function observarNotificacoesFirebase(usuario, callback, callbackErro) {
-  let consulta = firebaseDb.collection("notificacoes");
+  let consulta = firebaseDb.collection(COLLECTIONS.NOTIFICACOES);
 
   if (usuario.perfil === "colaborador") {
     consulta = consulta.where("destinatarioUid", "==", usuario.id);
@@ -222,7 +231,7 @@ function observarNotificacoesFirebase(usuario, callback, callbackErro) {
 }
 
 async function criarNotificacaoFirebase(notificacao) {
-  await firebaseDb.collection("notificacoes").add({
+  await firebaseDb.collection(COLLECTIONS.NOTIFICACOES).add({
     ...notificacao,
     lidaPorUids: Array.isArray(notificacao.lidaPorUids) ? notificacao.lidaPorUids : [],
     criadaEm: firebase.firestore.FieldValue.serverTimestamp(),
@@ -231,7 +240,7 @@ async function criarNotificacaoFirebase(notificacao) {
 }
 
 async function marcarNotificacaoComoLidaFirebase(id, uid) {
-  await firebaseDb.collection("notificacoes").doc(String(id)).update({
+  await firebaseDb.collection(COLLECTIONS.NOTIFICACOES).doc(String(id)).update({
     lidaPorUids: firebase.firestore.FieldValue.arrayUnion(uid),
     atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
   });

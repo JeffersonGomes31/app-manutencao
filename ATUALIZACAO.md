@@ -45,3 +45,19 @@ refactor: remover solicitante manual e usar usuario autenticado como criador da 
 ```txt
 fix: manter compatibilidade com regras do firebase ao criar OS autenticada
 ```
+
+---
+
+## Organização das coleções Firebase
+
+- Centralizados os nomes das coleções Firebase na constante `COLLECTIONS`.
+- Substituídos acessos diretos como `collection("chamados")` por `collection(COLLECTIONS.CHAMADOS)`.
+- Incluídas as coleções reais utilizadas pelo app: `chamados`, `planosPreventivos`, `ativos`, `usuarios`, `notificacoes` e `comunicados`.
+- Adicionado o arquivo `firestore.rules` na raiz do projeto para versionamento, backup e manutenção das regras do Firestore.
+- Cache do PWA atualizado para carregar esta nova versão.
+
+### Commit sugerido
+
+```txt
+refactor: centralizar colecoes firebase e versionar regras do firestore
+```
