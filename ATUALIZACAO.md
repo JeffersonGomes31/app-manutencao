@@ -61,3 +61,6 @@ fix: manter compatibilidade com regras do firebase ao criar OS autenticada
 ```txt
 refactor: centralizar colecoes firebase e versionar regras do firestore
 ```
+
+
+- Melhoria visual do histórico técnico das OS com timeline e ícones.

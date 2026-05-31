@@ -110,22 +110,47 @@ function fecharDetalhesChamado() {
   chamadoSelecionadoId = null;
 }
 
+function obterIconeHistorico(acao = "") {
+  const texto = acao.toLowerCase();
+
+  if (texto.includes("criada")) return "🟢";
+  if (texto.includes("status")) return "🔄";
+  if (texto.includes("final")) return "✅";
+  if (texto.includes("checklist")) return "✔️";
+  if (texto.includes("cancel")) return "⛔";
+  if (texto.includes("qr")) return "📱";
+
+  return "📌";
+}
+
 function renderizarHistorico(historico) {
   if (!historico || historico.length === 0) {
     return `
-      <div class="history-item">
-        <strong>Sem histórico</strong>
-        <span>-</span>
-        <p>Nenhuma movimentação operacional registrada.</p>
+      <div class="history-item history-empty">
+        <div class="history-icon">📭</div>
+        <div class="history-content">
+          <strong>Sem histórico técnico</strong>
+          <span>Nenhuma movimentação operacional registrada.</span>
+        </div>
       </div>
     `;
   }
 
   return historico.map(item => `
-    <div class="history-item">
-      <strong>${escaparHTML(item.acao)}</strong>
-      <span>${escaparHTML(item.data)}</span>
-      <p>${escaparHTML(item.descricao)}</p>
+    <div class="history-item history-timeline">
+      <div class="history-icon">
+        ${obterIconeHistorico(item.acao)}
+      </div>
+
+      <div class="history-content">
+        <strong>${escaparHTML(item.acao)}</strong>
+
+        <span class="history-date">
+          ${escaparHTML(item.data || "-")}
+        </span>
+
+        <p>${escaparHTML(item.descricao || "Atualização registrada no sistema.")}</p>
+      </div>
     </div>
   `).join("");
 }
