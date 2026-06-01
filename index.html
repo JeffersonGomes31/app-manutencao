@@ -732,37 +732,49 @@
 <section class="page" id="perfil">
   <!-- FORMULÁRIO DE LOGIN / IDENTIFICAÇÃO -->
   <div class="form-card profile-form-card" id="areaFormularioPerfil">
-    <h2>Acesso do colaborador</h2>
-    <p class="form-help">Para abrir e acompanhar OS, informe apenas seus dados de identificação.</p>
+    <div class="login-header">
+      <h1>Central de Manutenção</h1>
+      <span class="login-accent-line" aria-hidden="true"></span>
+      <p>Acesso ao sistema</p>
+    </div>
 
-    <label>
-      Nome do colaborador
-      <input
-        id="loginNomeColaborador"
-        type="text"
-        autocomplete="name"
-        placeholder="Digite seu nome"
-      />
-    </label>
+    <div class="login-access-card login-access-card-colaborador">
+      <h2>Acesso do colaborador</h2>
+      <p class="form-help">Para abrir e acompanhar OS, informe seus dados.</p>
 
-    <label>
-      Setor onde trabalha
-      <input
-        id="loginSetorColaborador"
-        type="text"
-        placeholder="Ex: Administração, Biblioteca, Laboratório..."
-      />
-    </label>
+      <label>
+        Nome do colaborador
+        <input
+          id="loginNomeColaborador"
+          type="text"
+          autocomplete="name"
+          placeholder="Digite seu nome"
+        />
+      </label>
 
-    <button
-      type="button"
-      class="primary-button"
-      onclick="entrarComoColaborador(this)"
-    >
-      Entrar como colaborador
-    </button>
+      <label>
+        Setor onde trabalha
+        <input
+          id="loginSetorColaborador"
+          type="text"
+          placeholder="Ex: Administração, Biblioteca, Laboratório ..."
+        />
+      </label>
 
-    <div class="maintenance-login-box">
+      <button
+        type="button"
+        class="primary-button"
+        onclick="entrarComoColaborador(this)"
+      >
+        Entrar como colaborador
+      </button>
+    </div>
+
+    <div class="login-divider" aria-hidden="true">
+      <span>ou</span>
+    </div>
+
+    <div class="maintenance-login-box login-access-card login-access-card-manutencao">
       <h2>Acesso da manutenção</h2>
       <p class="form-help">Uso exclusivo da equipe de manutenção autorizada.</p>
 
@@ -791,9 +803,11 @@
         class="secondary-button"
         onclick="entrarComFirebase(this)"
       >
-        Entrar como manutenção
+        Entrar como manutencao
       </button>
     </div>
+
+    <p class="login-secure-note">Acesso seguro e monitorado</p>
   </div>
 
   <!-- ÁREA EXIBIDA SOMENTE DEPOIS DO LOGIN -->

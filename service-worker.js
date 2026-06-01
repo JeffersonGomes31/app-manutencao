@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-manutencao-login-limpo-etapa12";
+const CACHE_NAME = "app-manutencao-login-textos-ajustados-etapa12-v2";
 
 const FILES_TO_CACHE = [
   "./",
