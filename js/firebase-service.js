@@ -55,18 +55,55 @@ async function buscarPerfilFirebase(uid) {
 }
 
 function observarChamadosFirebase(usuario, callback, callbackErro) {
-  let consulta = firebaseDb.collection(COLLECTIONS.CHAMADOS);
+  const colecaoChamados = firebaseDb.collection(COLLECTIONS.CHAMADOS);
 
-  if (usuario.perfil === "colaborador") {
-    consulta = consulta.where("criadoPorUid", "==", usuario.id);
-  } else {
-    consulta = consulta.orderBy("criadoEm", "desc");
+  if (perfilPode(usuario.perfil, PERMISSOES_APP.VER_TODAS_OS)) {
+    return colecaoChamados
+      .orderBy("criadoEm", "desc")
+      .onSnapshot(snapshot => {
+        const lista = snapshot.docs.map(documento => normalizarChamadoFirebase(documento));
+        callback(ordenarChamadosPorPrioridade(lista));
+      }, callbackErro);
   }
 
-  return consulta.onSnapshot(snapshot => {
-    const lista = snapshot.docs.map(documento => normalizarChamadoFirebase(documento));
-    callback(ordenarChamadosPorPrioridade(lista));
-  }, callbackErro);
+  const consultasColaborador = [];
+
+  if (usuario.colaboradorLocalId) {
+    consultasColaborador.push(colecaoChamados.where("colaboradorLocalId", "==", usuario.colaboradorLocalId));
+  }
+
+  if (usuario.id) {
+    consultasColaborador.push(colecaoChamados.where("criadoPorUid", "==", usuario.id));
+  }
+
+  if (!consultasColaborador.length) {
+    callback([]);
+    return function cancelarObservacaoVazia() {};
+  }
+
+  const chamadosPorId = new Map();
+  const publicarListaColaborador = () => {
+    callback(ordenarChamadosPorPrioridade(Array.from(chamadosPorId.values())));
+  };
+
+  const canceladores = consultasColaborador.map(consulta => consulta.onSnapshot(snapshot => {
+    snapshot.docChanges().forEach(alteracao => {
+      const id = alteracao.doc.id;
+
+      if (alteracao.type === "removed") {
+        chamadosPorId.delete(id);
+        return;
+      }
+
+      chamadosPorId.set(id, normalizarChamadoFirebase(alteracao.doc));
+    });
+
+    publicarListaColaborador();
+  }, callbackErro));
+
+  return function cancelarObservacaoChamadosColaborador() {
+    canceladores.forEach(cancelar => cancelar());
+  };
 }
 
 function observarAtivosFirebase(callback, callbackErro) {
@@ -210,10 +247,10 @@ async function excluirComunicadoFirebase(id) {
 function observarNotificacoesFirebase(usuario, callback, callbackErro) {
   let consulta = firebaseDb.collection(COLLECTIONS.NOTIFICACOES);
 
-  if (usuario.perfil === "colaborador") {
+  if (!perfilPode(usuario.perfil, PERMISSOES_APP.VER_TODAS_OS)) {
     consulta = consulta.where("destinatarioUid", "==", usuario.id);
   } else {
-    consulta = consulta.where("destinatarioPerfil", "==", "manutencao");
+    consulta = consulta.where("destinatarioPerfil", "==", PERFIS_USUARIO.MANUTENCAO);
   }
 
   return consulta.onSnapshot(snapshot => {
@@ -281,6 +318,7 @@ function normalizarChamadoFirebase(documento) {
     criadoPorUid: dados.criadoPorUid || "",
     criadoPorNome: dados.criadoPorNome || "Não informado",
     criadoPorEmail: dados.criadoPorEmail || "",
+    colaboradorLocalId: dados.colaboradorLocalId || "",
     canceladoPorUid: dados.canceladoPorUid || "",
     canceladoPorNome: dados.canceladoPorNome || "",
     canceladoMotivo: dados.canceladoMotivo || "",

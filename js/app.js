@@ -80,7 +80,7 @@ function prepararTelaSemSessao() {
   }
 
   aplicarPermissoesInterface();
-  openPage(usuarioAtual && usuarioAtual.perfil === "manutencao" ? "painel" : "inicio");
+  openPage(usuarioPodeVerPainel() ? "painel" : "inicio");
 }
 
 async function processarEstadoAutenticacao(usuarioFirebase) {
@@ -137,6 +137,9 @@ async function processarEstadoAutenticacao(usuarioFirebase) {
 
 function configurarColaboradorAnonimo(usuarioFirebase) {
   const colaboradorLocal = typeof obterColaboradorLocal === "function" ? obterColaboradorLocal() : {};
+  const colaboradorLocalId = typeof garantirIdColaboradorLocal === "function"
+    ? garantirIdColaboradorLocal()
+    : colaboradorLocal.colaboradorLocalId || usuarioFirebase.uid;
 
   if (!colaboradorLocal.nome || !colaboradorLocal.setor) {
     return false;
@@ -144,11 +147,12 @@ function configurarColaboradorAnonimo(usuarioFirebase) {
 
   usuarioAtual = {
     id: usuarioFirebase.uid,
+    colaboradorLocalId,
     nome: colaboradorLocal.nome,
     setor: colaboradorLocal.setor,
     email: "",
     unidade: "Senac Campo Mourão",
-    perfil: "colaborador",
+    perfil: PERFIS_USUARIO.COLABORADOR,
     manutencaoAutorizado: false,
     perfilConfigurado: true
   };
@@ -167,28 +171,11 @@ function normalizarUsuarioLogado(usuarioFirebase, perfil) {
     email: perfil.email || usuarioFirebase.email || "",
     unidade: perfil.unidade || "Senac Campo Mourão",
     perfil: tipoPerfil,
-    manutencaoAutorizado: tipoPerfil === "manutencao" || tipoPerfil === "admin",
+    manutencaoAutorizado: tipoPerfil === PERFIS_USUARIO.MANUTENCAO,
     perfilConfigurado: true
   };
 }
 
-function normalizarPerfilUsuario(perfil) {
-  const perfilTexto = String(perfil || "colaborador")
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-
-  if (perfilTexto === "manutencao") {
-    return "manutencao";
-  }
-
-  if (perfilTexto === "admin" || perfilTexto === "administrador") {
-    return "admin";
-  }
-
-  return "colaborador";
-}
 
 function iniciarMonitoresDeDados() {
   monitorChamados = observarChamadosFirebase(usuarioAtual, lista => {
@@ -284,5 +271,10 @@ function aplicarPermissoesInterface() {
 
   document.querySelectorAll(".manut-only").forEach((elemento) => {
     elemento.style.display = manutencao ? "" : "none";
+  });
+
+  document.querySelectorAll("[data-permissao]").forEach(elemento => {
+    const permissao = elemento.getAttribute("data-permissao");
+    elemento.style.display = usuarioPode(permissao) ? "" : "none";
   });
 }

@@ -73,6 +73,16 @@
             <p>Consultar histórico ou abrir OS</p>
           </div>
 
+          <div class="quick-card" onclick="openPage('chamados')">
+            <div class="quick-icon green-bg">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M9 7h11M9 12h11M9 17h11" stroke="currentColor" stroke-linecap="round" />
+                <path d="M4 7h.01M4 12h.01M4 17h.01" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+              </svg>
+            </div>
+            <h3>Minhas OS</h3>
+            <p>Acompanhar</p>
+          </div>
 
           <div class="quick-card" onclick="openPage('comunicados')">
             <div class="quick-icon orange-bg">
@@ -122,6 +132,16 @@
         </div>
       </section>
 
+      <section>
+        <div class="section-header spacing">
+          <h2>Minhas OS</h2>
+          <a href="#" onclick="openPage('chamados')">Ver todos</a>
+        </div>
+
+        <div class="tickets-card" id="listaOSInicio">
+          <!-- OS recentes carregadas pelo JavaScript -->
+        </div>
+      </section>
 
       <section>
         <div class="section-header spacing">
@@ -804,6 +824,10 @@
         <strong id="perfilTotalOS">0</strong>
       </div>
 
+      <div class="profile-summary-card">
+        <span>Minhas OS</span>
+        <strong id="perfilMeusOS">0</strong>
+      </div>
 
       <div class="profile-summary-card">
         <span>Em aberto</span>
@@ -1229,19 +1253,27 @@
   <script src="src/constants/status.js"></script>
   <script src="src/constants/prioridades.js"></script>
   <script src="src/constants/tiposOS.js"></script>
+  <script src="src/constants/perfis.js"></script>
+  <script src="src/constants/permissoes.js"></script>
   <script src="src/constants/firebase.js"></script>
   <script src="src/constants/exportacoes.js"></script>
   <script src="src/constants/index.js"></script>
   <script src="js/state.js"></script>
+  <script src="js/auth-permissions.js"></script>
   <script src="js/firebase-service.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/navigation.js"></script>
   <script src="js/notificacoes.js"></script>
   <script src="js/categorias.js"></script>
   <script src="js/logs-tecnicos.js"></script>
+  <script src="js/chamados-form.js"></script>
+  <script src="js/chamados-render.js"></script>
   <script src="js/chamados.js"></script>
   <script src="js/exportacoes.js"></script>
   <script src="js/modal-chamado.js"></script>
+  <script src="js/painel-indicadores.js"></script>
+  <script src="js/painel-cards.js"></script>
+  <script src="js/painel-status.js"></script>
   <script src="js/painel.js"></script>
   <script src="js/perfil.js"></script>
   <script src="js/comunicados.js"></script>

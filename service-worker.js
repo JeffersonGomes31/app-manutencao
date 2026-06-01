@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-manutencao-login-textos-ajustados-etapa12-v2";
+const CACHE_NAME = "app-manutencao-etapa17-permissoes-simplificadas-v1";
 
 const FILES_TO_CACHE = [
   "./",
@@ -24,18 +24,27 @@ const FILES_TO_CACHE = [
   "./src/constants/status.js",
   "./src/constants/prioridades.js",
   "./src/constants/tiposOS.js",
+  "./src/constants/perfis.js",
+  "./src/constants/permissoes.js",
   "./src/constants/firebase.js",
   "./src/constants/exportacoes.js",
   "./src/constants/index.js",
   "./js/state.js",
+  "./js/auth-permissions.js",
   "./js/firebase-service.js",
   "./js/utils.js",
   "./js/navigation.js",
   "./js/notificacoes.js",
   "./js/categorias.js",
+  "./js/logs-tecnicos.js",
+  "./js/chamados-form.js",
+  "./js/chamados-render.js",
   "./js/chamados.js",
   "./js/exportacoes.js",
   "./js/modal-chamado.js",
+  "./js/painel-indicadores.js",
+  "./js/painel-cards.js",
+  "./js/painel-status.js",
   "./js/painel.js",
   "./js/perfil.js",
   "./js/comunicados.js",
@@ -57,7 +66,7 @@ self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(cacheNames => Promise.all(
       cacheNames
-        .filter(cacheName => cacheName !== CACHE_NAME)
+        .filter(cacheName => cacheName !== CACHE_NAME && cacheName.startsWith("app-manutencao"))
         .map(cacheName => caches.delete(cacheName))
     ))
   );
@@ -72,7 +81,8 @@ self.addEventListener("fetch", event => {
   const deveBuscarNaRedePrimeiro = url.pathname.endsWith(".html")
     || url.pathname.endsWith(".js")
     || url.pathname.endsWith(".css")
-    || url.pathname.endsWith("/");
+    || url.pathname.endsWith("/")
+    || url.pathname.endsWith("service-worker.js");
 
   if (deveBuscarNaRedePrimeiro) {
     event.respondWith(

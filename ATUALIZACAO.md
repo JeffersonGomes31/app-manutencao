@@ -1,23 +1,55 @@
-# Atualização
+# Atualização - Etapa 17
 
-## Etapa 12 — Textos institucionais da tela de login
+## Permissões simplificadas
 
-- Atualizado o cabeçalho da aba de login para **Central de Manutenção**.
-- Adicionado o subtítulo **Acesso ao sistema**.
-- Atualizados os textos do acesso do colaborador.
-- Atualizados os placeholders de nome e setor.
-- Adicionado separador visual **ou** entre os dois tipos de acesso.
-- Atualizados os textos do acesso da manutenção.
-- Mantido o e-mail sugerido `manutencao@senac.com` como placeholder.
-- Adicionado o texto **Acesso seguro e monitorado**.
-- Mantida a estrutura funcional do login do colaborador e da manutenção.
-- Cache do PWA atualizado para carregar a nova versão.
-- Não houve alteração em Firebase Authentication.
-- Não houve alteração em coleções Firebase.
-- Não houve necessidade de alteração em `firestore.rules`.
+Nesta etapa o sistema de perfis foi simplificado para trabalhar somente com dois papéis operacionais:
 
-### Commit sugerido
+- Colaborador
+- Manutenção
+
+## Ajustes realizados
+
+- Removido o perfil `admin` da centralização de perfis.
+- Removidas permissões específicas de administrador como papel separado.
+- A manutenção passa a concentrar as permissões avançadas do sistema.
+- Atualizado `src/constants/perfis.js`.
+- Atualizado `src/constants/permissoes.js`.
+- Atualizado `js/auth-permissions.js`.
+- Ajustado login para considerar apenas manutenção como perfil técnico autorizado.
+
+## Permissões atuais
+
+### Colaborador
+
+- Abrir OS.
+- Ver somente suas OS.
+- Cancelar OS própria, se ainda não iniciada.
+- Ver comunicados.
+- Ver notificações próprias.
+- Ver perfil.
+
+### Manutenção
+
+- Ver todas as OS.
+- Assumir atendimento.
+- Alterar status.
+- Finalizar OS.
+- Criar preventivas.
+- Gerenciar ativos.
+- Publicar comunicados.
+- Ver painel.
+- Ver logs técnicos.
+- Gerenciar usuários.
+- Exportar dados.
+- Ajustar configurações.
+- Auditar histórico.
+
+## Firebase
+
+Não houve alteração em coleções nem necessidade de ajuste em `firestore.rules`.
+
+## Commit sugerido
 
 ```txt
-style: atualizar textos institucionais da tela de login
+refactor: simplificar perfis e permissoes
 ```

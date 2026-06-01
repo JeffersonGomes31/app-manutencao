@@ -4,7 +4,7 @@ const USUARIO_PADRAO = {
   setor: "Manutenção",
   email: "",
   unidade: "Senac Campo Mourão",
-  perfil: "colaborador",
+  perfil: PERFIS_USUARIO.COLABORADOR,
   manutencaoAutorizado: false,
   perfilConfigurado: false
 };

@@ -178,7 +178,7 @@ async function registrarNotificacaoNovoChamado(chamadoId, chamado) {
     tipo: "novo_chamado",
     chamadoId,
     chamadoDescricao: chamado.descricao,
-    destinatarioPerfil: "manutencao"
+    destinatarioPerfil: PERFIS_USUARIO.MANUTENCAO
   });
 }
 
@@ -208,14 +208,14 @@ async function registrarNotificacaoCancelamentoChamado(chamado, motivo) {
     return;
   }
 
-  if (usuarioAtual.perfil === "colaborador") {
+  if (usuarioPossuiPerfil(PERFIS_USUARIO.COLABORADOR)) {
     await registrarNotificacaoInterna({
       titulo: "Chamado cancelado pelo colaborador",
       mensagem: `${usuarioAtual.nome} cancelou o chamado "${chamado.descricao}". Motivo: ${motivo}`,
       tipo: "cancelamento_colaborador",
       chamadoId: chamado.id,
       chamadoDescricao: chamado.descricao,
-      destinatarioPerfil: "manutencao"
+      destinatarioPerfil: PERFIS_USUARIO.MANUTENCAO
     });
     return;
   }

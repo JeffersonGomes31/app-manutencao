@@ -164,7 +164,7 @@ function chamadoPodeSerCancelado(chamado) {
     return false;
   }
 
-  if (usuarioAtual.perfil === "colaborador") {
+  if (usuarioPossuiPerfil(PERFIS_USUARIO.COLABORADOR)) {
     return idsIguais(chamado.criadoPorUid, usuarioAtual.id);
   }
 
