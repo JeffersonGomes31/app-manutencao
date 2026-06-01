@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-manutencao-login-textos-ajustados-etapa12-v2";
+const CACHE_NAME = "app-manutencao-os-usuario-persistente-v4";
 
 const FILES_TO_CACHE = [
   "./",
@@ -57,7 +57,7 @@ self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(cacheNames => Promise.all(
       cacheNames
-        .filter(cacheName => cacheName !== CACHE_NAME)
+        .filter(cacheName => cacheName !== CACHE_NAME && cacheName.startsWith("app-manutencao"))
         .map(cacheName => caches.delete(cacheName))
     ))
   );
@@ -72,7 +72,8 @@ self.addEventListener("fetch", event => {
   const deveBuscarNaRedePrimeiro = url.pathname.endsWith(".html")
     || url.pathname.endsWith(".js")
     || url.pathname.endsWith(".css")
-    || url.pathname.endsWith("/");
+    || url.pathname.endsWith("/")
+    || url.pathname.endsWith("service-worker.js");
 
   if (deveBuscarNaRedePrimeiro) {
     event.respondWith(
