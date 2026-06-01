@@ -3,7 +3,6 @@
 ===================================================== */
 
 const CHAVE_COLABORADOR_LOCAL = "appManutencaoColaborador";
-const CHAVE_COLABORADOR_ID_LOCAL = "appManutencaoColaboradorId";
 
 function usuarioTemPerfilSalvo() {
   return usuarioAtual && usuarioAtual.perfilConfigurado === true;
@@ -141,46 +140,11 @@ function obterColaboradorLocal() {
   }
 }
 
-function gerarIdColaboradorLocal() {
-  if (window.crypto && typeof window.crypto.randomUUID === "function") {
-    return window.crypto.randomUUID();
-  }
-
-  return `colab-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-}
-
-function obterIdColaboradorLocal() {
-  return localStorage.getItem(CHAVE_COLABORADOR_ID_LOCAL) || "";
-}
-
-function garantirIdColaboradorLocal() {
-  const idExistente = obterIdColaboradorLocal();
-
-  if (idExistente) {
-    return idExistente;
-  }
-
-  const novoId = gerarIdColaboradorLocal();
-  localStorage.setItem(CHAVE_COLABORADOR_ID_LOCAL, novoId);
-  return novoId;
-}
-
 function salvarColaboradorLocal(dados) {
-  const idLocal = dados.colaboradorLocalId || garantirIdColaboradorLocal();
-
-  localStorage.setItem(CHAVE_COLABORADOR_ID_LOCAL, idLocal);
-  localStorage.setItem(CHAVE_COLABORADOR_LOCAL, JSON.stringify({
-    ...dados,
-    colaboradorLocalId: idLocal
-  }));
+  localStorage.setItem(CHAVE_COLABORADOR_LOCAL, JSON.stringify(dados));
 }
 
 function removerColaboradorLocal() {
-  localStorage.removeItem(CHAVE_COLABORADOR_LOCAL);
-  localStorage.removeItem(CHAVE_COLABORADOR_ID_LOCAL);
-}
-
-function removerDadosIdentificacaoColaborador() {
   localStorage.removeItem(CHAVE_COLABORADOR_LOCAL);
 }
 
@@ -207,7 +171,7 @@ async function entrarComoColaborador(botao) {
       botao.textContent = "Entrando...";
     }
 
-    salvarColaboradorLocal({ nome, setor, colaboradorLocalId: garantirIdColaboradorLocal() });
+    salvarColaboradorLocal({ nome, setor });
 
     if (!firebaseAuth.currentUser || !firebaseAuth.currentUser.isAnonymous) {
       await autenticarColaboradorAnonimo();
@@ -267,12 +231,7 @@ async function entrarComFirebase(botao) {
 
 async function sairDaConta() {
   try {
-    if (usuarioEhManutencaoAutorizada()) {
-      removerColaboradorLocal();
-    } else {
-      removerDadosIdentificacaoColaborador();
-    }
-
+    removerColaboradorLocal();
     await encerrarSessaoFirebase();
     fecharDetalhesChamado();
 

@@ -137,9 +137,6 @@ async function processarEstadoAutenticacao(usuarioFirebase) {
 
 function configurarColaboradorAnonimo(usuarioFirebase) {
   const colaboradorLocal = typeof obterColaboradorLocal === "function" ? obterColaboradorLocal() : {};
-  const colaboradorLocalId = typeof garantirIdColaboradorLocal === "function"
-    ? garantirIdColaboradorLocal()
-    : colaboradorLocal.colaboradorLocalId || usuarioFirebase.uid;
 
   if (!colaboradorLocal.nome || !colaboradorLocal.setor) {
     return false;
@@ -147,7 +144,6 @@ function configurarColaboradorAnonimo(usuarioFirebase) {
 
   usuarioAtual = {
     id: usuarioFirebase.uid,
-    colaboradorLocalId,
     nome: colaboradorLocal.nome,
     setor: colaboradorLocal.setor,
     email: "",
