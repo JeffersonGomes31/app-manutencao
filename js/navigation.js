@@ -7,7 +7,6 @@ function openPage(pageId, navElement) {
   let itemNavegacao = navElement;
 
   if (!usuarioTemPerfilSalvo() && paginaDestino !== "perfil") {
-    alert("Faça sua identificação antes de acessar o app.");
     paginaDestino = "perfil";
     itemNavegacao = null;
   }
