@@ -250,7 +250,7 @@ async function inativarPlanoPreventivo(planoId) {
     return;
   }
 
-  if (!confirm("Deseja inativar este plano preventivo?")) {
+  if (!(await appConfirm("Deseja inativar este plano preventivo?", { textoConfirmar: "Inativar", textoCancelar: "Voltar" }))) {
     return;
   }
 

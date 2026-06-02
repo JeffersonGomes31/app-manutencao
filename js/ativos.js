@@ -323,7 +323,7 @@ async function excluirAtivo(id, codigo) {
     ? `Este ativo possui ${totalOS} OS vinculada(s). Excluir o ativo não apaga o histórico das OS. Deseja continuar?`
     : "Deseja excluir este ativo?";
 
-  if (!confirm(mensagem)) {
+  if (!(await appConfirm(mensagem, { textoConfirmar: "Excluir", textoCancelar: "Voltar" }))) {
     return;
   }
 

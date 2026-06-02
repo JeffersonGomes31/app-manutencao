@@ -111,7 +111,7 @@ async function excluirComunicado(id) {
     return;
   }
 
-  const confirmar = confirm("Deseja excluir este comunicado?");
+  const confirmar = await appConfirm("Deseja excluir este comunicado?", { textoConfirmar: "Excluir", textoCancelar: "Voltar" });
 
   if (!confirmar) {
     return;

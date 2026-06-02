@@ -234,7 +234,7 @@ async function encerrarOS(id, botao) {
     return;
   }
 
-  if (!confirm("Confirmar encerramento definitivo desta OS?")) {
+  if (!(await appConfirm("Confirmar encerramento definitivo desta OS?", { textoConfirmar: "Encerrar", textoCancelar: "Voltar" }))) {
     return;
   }
 
