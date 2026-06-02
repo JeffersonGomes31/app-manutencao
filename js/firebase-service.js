@@ -68,14 +68,10 @@ function observarChamadosFirebase(usuario, callback, callbackErro) {
 
   const consultasColaborador = [];
 
-  if (usuario.colaboradorChave) {
-    consultasColaborador.push(colecaoChamados.where("colaboradorChave", "==", usuario.colaboradorChave));
-  }
-
-  if (usuario.colaboradorLocalId) {
-    consultasColaborador.push(colecaoChamados.where("colaboradorLocalId", "==", usuario.colaboradorLocalId));
-  }
-
+  // IMPORTANTE: após reforçar as regras do Firestore, o colaborador só pode ler
+  // documentos cuja autoria esteja vinculada ao UID autenticado.
+  // Consultas por colaboradorChave/colaboradorLocalId foram removidas porque esses
+  // campos são locais e não provam, nas regras, que o documento pertence ao usuário.
   if (usuario.id) {
     consultasColaborador.push(colecaoChamados.where("criadoPorUid", "==", usuario.id));
     consultasColaborador.push(colecaoChamados.where("solicitanteId", "==", usuario.id));
