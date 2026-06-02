@@ -41,6 +41,24 @@ function encerrarSessaoFirebase() {
   return firebaseAuth.signOut();
 }
 
+async function registrarVinculoColaboradorFirebase(codigoColaborador, dados = {}) {
+  if (!codigoColaborador || !firebaseAuth.currentUser) {
+    return;
+  }
+
+  const referencia = firebaseDb.collection(COLLECTIONS.COLABORADORES || "colaboradores").doc(codigoColaborador);
+  const agora = new Date().toISOString();
+
+  await referencia.set({
+    codigo: codigoColaborador,
+    nome: dados.nome || "",
+    setor: dados.setor || "",
+    uidsAutorizados: firebase.firestore.FieldValue.arrayUnion(firebaseAuth.currentUser.uid),
+    atualizadoEm: agora,
+    criadoEm: agora
+  }, { merge: true });
+}
+
 async function buscarPerfilFirebase(uid) {
   const documento = await firebaseDb.collection(COLLECTIONS.USUARIOS).doc(uid).get();
 
@@ -75,6 +93,10 @@ function observarChamadosFirebase(usuario, callback, callbackErro) {
   if (usuario.id) {
     consultasColaborador.push(colecaoChamados.where("criadoPorUid", "==", usuario.id));
     consultasColaborador.push(colecaoChamados.where("solicitanteId", "==", usuario.id));
+  }
+
+  if (usuario.colaboradorCodigo || usuario.colaboradorLocalId) {
+    consultasColaborador.push(colecaoChamados.where("colaboradorCodigo", "==", usuario.colaboradorCodigo || usuario.colaboradorLocalId));
   }
 
   if (!consultasColaborador.length) {
@@ -320,8 +342,9 @@ function normalizarChamadoFirebase(documento) {
     criadoPorNome: dados.criadoPorNome || "Não informado",
     criadoPorEmail: dados.criadoPorEmail || "",
     colaboradorLocalId: dados.colaboradorLocalId || "",
+    colaboradorCodigo: dados.colaboradorCodigo || dados.colaboradorLocalId || "",
     colaboradorChave: dados.colaboradorChave || "",
-    criadoPorColaboradorId: dados.criadoPorColaboradorId || dados.colaboradorLocalId || dados.colaboradorChave || "",
+    criadoPorColaboradorId: dados.criadoPorColaboradorId || dados.colaboradorCodigo || dados.colaboradorLocalId || dados.colaboradorChave || "",
     canceladoPorUid: dados.canceladoPorUid || "",
     canceladoPorNome: dados.canceladoPorNome || "",
     canceladoMotivo: dados.canceladoMotivo || "",

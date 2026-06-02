@@ -106,6 +106,7 @@ function montarObjetoChamado({ numeroOS, dataAtual, valores, fotosAnexadas, foto
   const criadoPorId = usuario.id || (usuarioFirebase && usuarioFirebase.uid) || "";
   const criadoPorEmail = usuario.email || (usuarioFirebase && usuarioFirebase.email) || "";
   const colaboradorLocalId = usuario.colaboradorLocalId || (typeof obterIdColaboradorLocal === "function" ? obterIdColaboradorLocal() : "");
+  const colaboradorCodigo = usuario.colaboradorCodigo || colaboradorLocalId;
   const colaboradorChave = usuario.colaboradorChave || (typeof obterChaveColaboradorLocal === "function" ? obterChaveColaboradorLocal() : "");
 
   if (!criadoPorId) {
@@ -160,8 +161,9 @@ function montarObjetoChamado({ numeroOS, dataAtual, valores, fotosAnexadas, foto
     criadoPorNome,
     criadoPorEmail,
     colaboradorLocalId,
+    colaboradorCodigo,
     colaboradorChave,
-    criadoPorColaboradorId: colaboradorChave || colaboradorLocalId || criadoPorId,
+    criadoPorColaboradorId: colaboradorCodigo || colaboradorChave || colaboradorLocalId || criadoPorId,
     criadoPorPerfil: usuario.perfil || "",
     // Campos internos de compatibilidade com regras antigas do Firestore.
     // O campo manual de solicitante foi removido da interface; estes valores seguem o usuário autenticado.

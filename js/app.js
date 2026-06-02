@@ -159,6 +159,7 @@ function configurarColaboradorAnonimo(usuarioFirebase) {
   usuarioAtual = {
     id: usuarioFirebase.uid,
     colaboradorLocalId,
+    colaboradorCodigo: colaboradorLocalId,
     colaboradorChave,
     nome: colaboradorLocal.nome,
     setor: colaboradorLocal.setor,
@@ -170,6 +171,14 @@ function configurarColaboradorAnonimo(usuarioFirebase) {
   };
 
   preencherFormularioPerfil();
+
+  if (typeof registrarVinculoColaboradorFirebase === "function") {
+    registrarVinculoColaboradorFirebase(colaboradorLocalId, {
+      nome: colaboradorLocal.nome,
+      setor: colaboradorLocal.setor
+    }).catch(erro => console.warn("Não foi possível registrar o vínculo do colaborador:", erro));
+  }
+
   return true;
 }
 

@@ -4,6 +4,7 @@
 
 const CHAVE_COLABORADOR_LOCAL = "appManutencaoColaborador";
 const CHAVE_COLABORADOR_ID_LOCAL = "appManutencaoColaboradorId";
+const PREFIXO_CODIGO_COLABORADOR = "COL";
 
 function aplicarPermissoesNaTela() {
   const perfilSalvo = usuarioTemPerfilSalvo();
@@ -171,11 +172,9 @@ function usuarioEhAutorChamado(chamado) {
 }
 
 function gerarIdColaboradorLocal() {
-  if (window.crypto && typeof window.crypto.randomUUID === "function") {
-    return window.crypto.randomUUID();
-  }
-
-  return `colab-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+  const parteAleatoria = Math.random().toString(36).slice(2, 8).toUpperCase();
+  const parteTempo = Date.now().toString(36).slice(-4).toUpperCase();
+  return `${PREFIXO_CODIGO_COLABORADOR}-${parteTempo}-${parteAleatoria}`;
 }
 
 function obterIdColaboradorLocal() {
@@ -209,7 +208,8 @@ function salvarColaboradorLocal(dados) {
 
 function removerColaboradorLocal() {
   localStorage.removeItem(CHAVE_COLABORADOR_LOCAL);
-  localStorage.removeItem(CHAVE_COLABORADOR_ID_LOCAL);
+  // O código fixo do colaborador é preservado para manter o vínculo com OS antigas
+  // mesmo quando a sessão anônima do Firebase muda após logout/login.
 }
 
 function removerDadosIdentificacaoColaborador() {
@@ -244,6 +244,10 @@ async function entrarComoColaborador(botao) {
     if (!firebaseAuth.currentUser || !firebaseAuth.currentUser.isAnonymous) {
       await autenticarColaboradorAnonimo();
       return;
+    }
+
+    if (typeof registrarVinculoColaboradorFirebase === "function") {
+      await registrarVinculoColaboradorFirebase(obterIdColaboradorLocal(), { nome, setor });
     }
 
     configurarColaboradorAnonimo(firebaseAuth.currentUser);
