@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-manutencao-etapa18-identidade-colaborador-v2";
+const CACHE_NAME = "app-manutencao-diagnostico-inicial-v1";
 
 const FILES_TO_CACHE = [
   "./",
@@ -16,6 +16,7 @@ const FILES_TO_CACHE = [
   "./css/comunicados.css",
   "./css/notificacoes.css",
   "./css/areas.css",
+  "./css/diagnostico.css",
   "./css/responsive.css",
   "./src/constants/andares.js",
   "./src/constants/locais.js",
@@ -51,6 +52,7 @@ const FILES_TO_CACHE = [
   "./js/ativos.js",
   "./js/leitor-qr.js",
   "./js/preventivas.js",
+  "./js/diagnostico.js",
   "./js/app.js",
   "./img/senac-predio.png",
   "./img/icon-192.png",

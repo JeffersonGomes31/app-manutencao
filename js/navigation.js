@@ -95,6 +95,11 @@ function executarRenderizacaoDaPagina(pageId) {
     renderizarPlanosPreventivos();
   }
 
+  if (pageId === "diagnostico" && typeof renderizarDiagnosticos === "function") {
+    inicializarFormularioDiagnostico();
+    renderizarDiagnosticos();
+  }
+
   if (pageId === "perfil") {
     aplicarPermissoesNaTela();
   }

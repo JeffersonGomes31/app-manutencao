@@ -221,6 +221,57 @@ function normalizarPlanoPreventivoFirebase(documento) {
   };
 }
 
+
+function observarDiagnosticosFirebase(callback, callbackErro) {
+  return firebaseDb
+    .collection(COLLECTIONS.DIAGNOSTICOS || "diagnosticos")
+    .orderBy("criadoEm", "desc")
+    .onSnapshot(snapshot => {
+      const lista = snapshot.docs.map(documento => normalizarDiagnosticoFirebase(documento));
+      callback(lista);
+    }, callbackErro);
+}
+
+async function criarDiagnosticoFirebase(diagnostico) {
+  await firebaseDb.collection(COLLECTIONS.DIAGNOSTICOS || "diagnosticos").add({
+    ...diagnostico,
+    criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+    atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+async function atualizarDiagnosticoFirebase(id, dados) {
+  await firebaseDb.collection(COLLECTIONS.DIAGNOSTICOS || "diagnosticos").doc(String(id)).update({
+    ...dados,
+    atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
+  });
+}
+
+function normalizarDiagnosticoFirebase(documento) {
+  const dados = documento.data() || {};
+
+  return {
+    id: documento.id,
+    local: dados.local || "",
+    sistema: dados.sistema || "",
+    tipo: dados.tipo || "Inspeção",
+    prioridade: dados.prioridade || "P3 - Normal",
+    status: dados.status || "Pendente",
+    descricao: dados.descricao || "",
+    risco: dados.risco || "",
+    acao: dados.acao || "",
+    material: dados.material || "",
+    data: dados.data || "",
+    unidade: dados.unidade || "Senac Campo Mourão",
+    criadoEmISO: dados.criadoEmISO || "",
+    criadoPorUid: dados.criadoPorUid || "",
+    criadoPorNome: dados.criadoPorNome || "",
+    resolvidoEmISO: dados.resolvidoEmISO || "",
+    resolvidoPorUid: dados.resolvidoPorUid || "",
+    resolvidoPorNome: dados.resolvidoPorNome || ""
+  };
+}
+
 function observarComunicadosFirebase(callback, callbackErro) {
   return firebaseDb
     .collection(COLLECTIONS.COMUNICADOS)

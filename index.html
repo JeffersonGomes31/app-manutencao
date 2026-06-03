@@ -129,6 +129,17 @@
             <h3 class="manut-only-title">Preventivas</h3>
             <p>Planos recorrentes</p>
           </div>
+
+          <div class="quick-card manut-only" onclick="openPage('diagnostico')">
+            <div class="quick-icon orange-bg">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M9 6h11M9 12h11M9 18h7" stroke="currentColor" stroke-linecap="round" />
+                <path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <h3 class="manut-only-title">Diagnóstico inicial</h3>
+            <p>Inspeção da unidade</p>
+          </div>
         </div>
       </section>
 
@@ -559,6 +570,150 @@
       </div>
     </section>
 
+    <!-- ABA DIAGNÓSTICO INICIAL -->
+    <section class="page manut-only" id="diagnostico">
+      <header class="page-header">
+        <h1>Diagnóstico inicial da unidade</h1>
+        <p>Registre inspeções por ambiente, sistema técnico, criticidade e ação recomendada antes de transformar tudo em OS.</p>
+      </header>
+
+      <div class="diagnostic-dashboard">
+        <div class="dashboard-card"><span>Itens registrados</span><strong id="totalDiagnosticoItens">0</strong><small>Base de levantamento</small></div>
+        <div class="dashboard-card"><span>P1 críticos</span><strong id="totalDiagnosticoP1">0</strong><small>Risco ou paralisação</small></div>
+        <div class="dashboard-card"><span>Pendentes</span><strong id="totalDiagnosticoPendentes">0</strong><small>Aguardando ação</small></div>
+        <div class="dashboard-card"><span>Preventivas</span><strong id="totalDiagnosticoPreventivas">0</strong><small>Rotina programável</small></div>
+      </div>
+
+      <div class="form-card">
+        <h3>Novo item de diagnóstico</h3>
+        <p class="form-help">Use este registro para mapear a situação técnica da unidade. Abra OS apenas quando a demanda estiver clara.</p>
+
+        <label>
+          Local vistoriado
+          <select id="localDiagnostico">
+            <option value="">Selecione o local vistoriado</option>
+          </select>
+        </label>
+
+        <div class="form-row">
+          <label>
+            Sistema técnico
+            <select id="sistemaDiagnostico">
+              <option value="">Selecione</option>
+              <option value="Segurança">Segurança</option>
+              <option value="Elétrica">Elétrica</option>
+              <option value="Iluminação">Iluminação</option>
+              <option value="Hidráulica">Hidráulica</option>
+              <option value="Climatização">Climatização</option>
+              <option value="Civil / mobiliário">Civil / mobiliário</option>
+              <option value="Portas / fechaduras">Portas / fechaduras</option>
+              <option value="Acessibilidade">Acessibilidade</option>
+              <option value="Área externa">Área externa</option>
+              <option value="Inspeção geral">Inspeção geral</option>
+            </select>
+          </label>
+
+          <label>
+            Tipo de demanda
+            <select id="tipoDiagnostico">
+              <option value="">Selecione</option>
+              <option value="Corretiva urgente">Corretiva urgente</option>
+              <option value="Corretiva normal">Corretiva normal</option>
+              <option value="Preventiva">Preventiva</option>
+              <option value="Inspeção">Inspeção</option>
+              <option value="Melhoria">Melhoria</option>
+              <option value="Recorrente">Recorrente</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="form-row">
+          <label>
+            Prioridade
+            <select id="prioridadeDiagnostico">
+              <option value="">Selecione</option>
+              <option value="P1 - Urgente">P1 - Urgente</option>
+              <option value="P2 - Alta">P2 - Alta</option>
+              <option value="P3 - Normal">P3 - Normal</option>
+              <option value="P4 - Baixa">P4 - Baixa</option>
+              <option value="P5 - Preventiva">P5 - Preventiva</option>
+            </select>
+          </label>
+
+          <label>
+            Status
+            <select id="statusDiagnostico">
+              <option value="Pendente">Pendente</option>
+              <option value="Em inspeção">Em inspeção</option>
+              <option value="Aguardando material">Aguardando material</option>
+              <option value="Gerar OS">Gerar OS</option>
+              <option value="Resolvido">Resolvido</option>
+            </select>
+          </label>
+        </div>
+
+        <label>
+          Descrição técnica
+          <textarea id="descricaoDiagnostico" placeholder="Ex: Tomada solta próxima ao quadro branco, com risco de mau contato..."></textarea>
+        </label>
+
+        <label>
+          Risco ou impacto
+          <textarea id="riscoDiagnostico" placeholder="Ex: Choque elétrico, paralisação da sala, desperdício, queda, infiltração ativa..."></textarea>
+        </label>
+
+        <label>
+          Ação recomendada
+          <textarea id="acaoDiagnostico" placeholder="Ex: Substituir tomada, fixar caixa, revisar circuito, isolar área..."></textarea>
+        </label>
+
+        <label>
+          Material necessário
+          <input id="materialDiagnostico" type="text" placeholder="Ex: tomada 10A, espelho, parafusos, reparo de torneira..." />
+        </label>
+
+        <button type="button" class="primary-button" onclick="criarItemDiagnostico(this)">
+          Salvar item do diagnóstico
+        </button>
+      </div>
+
+      <div class="form-card">
+        <h3>Checklist rápido de inspeção</h3>
+        <p class="form-help">Clique em um item para preencher a descrição e sugerir o sistema técnico.</p>
+        <div id="checklistDiagnosticoPadrao"></div>
+      </div>
+
+      <div class="section-header spacing">
+        <h2>Itens do diagnóstico</h2>
+      </div>
+
+      <div class="form-card diagnostic-filters">
+        <select id="filtroStatusDiagnostico" onchange="filtrarDiagnosticoStatus(this.value)">
+          <option value="TODOS">Todos os status</option>
+          <option value="Pendente">Pendentes</option>
+          <option value="Em inspeção">Em inspeção</option>
+          <option value="Aguardando material">Aguardando material</option>
+          <option value="Gerar OS">Gerar OS</option>
+          <option value="Resolvido">Resolvidos</option>
+        </select>
+
+        <select id="filtroPrioridadeDiagnostico" onchange="filtrarDiagnosticoPrioridade(this.value)">
+          <option value="TODAS">Todas as prioridades</option>
+          <option value="P1 - Urgente">P1 - Urgente</option>
+          <option value="P2 - Alta">P2 - Alta</option>
+          <option value="P3 - Normal">P3 - Normal</option>
+          <option value="P4 - Baixa">P4 - Baixa</option>
+          <option value="P5 - Preventiva">P5 - Preventiva</option>
+        </select>
+
+        <input id="buscaDiagnostico" type="search" placeholder="Buscar por local, sistema, descrição, risco ou material" oninput="pesquisarDiagnostico(this.value)" />
+      </div>
+
+      <div class="diagnostic-list" id="listaDiagnostico">
+        <!-- Diagnóstico carregado pelo JavaScript -->
+      </div>
+    </section>
+
     <!-- ABA NOVO -->
     <section class="page" id="novo">
       <header class="page-header">
@@ -893,7 +1048,15 @@
         <p>Gerencie as OS recebidas com indicadores por período, categoria, prioridade, setor crítico e preventivas.</p>
       </header>
 
-
+      <div class="form-card maintenance-action-card manut-only">
+        <div>
+          <h3>Diagnóstico inicial da unidade</h3>
+          <p class="form-help">Mapeie pendências, riscos, preventivas e melhorias antes de abrir OS.</p>
+        </div>
+        <button type="button" class="secondary-button" onclick="openPage('diagnostico')">
+          Abrir diagnóstico inicial
+        </button>
+      </div>
 
       <div class="form-card dashboard-period-card">
         <div class="form-row dashboard-period-grid">
@@ -1282,6 +1445,7 @@
   <script src="js/ativos.js"></script>
   <script src="js/leitor-qr.js"></script>
   <script src="js/preventivas.js"></script>
+  <script src="js/diagnostico.js"></script>
   <script src="js/app.js"></script>
 
   <script>

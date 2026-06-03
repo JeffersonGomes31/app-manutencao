@@ -57,6 +57,7 @@ function prepararTelaSemSessao() {
   notificacoes = [];
   ativos = [];
   planosPreventivos = [];
+  diagnosticos = [];
 
   preencherFormularioPerfil();
   aplicarPermissoesNaTela();
@@ -77,6 +78,10 @@ function prepararTelaSemSessao() {
 
   if (typeof renderizarPlanosPreventivos === "function") {
     renderizarPlanosPreventivos();
+  }
+
+  if (typeof renderizarDiagnosticos === "function") {
+    renderizarDiagnosticos();
   }
 
   aplicarPermissoesInterface();
@@ -284,6 +289,19 @@ function iniciarMonitoresDeDados() {
     alert("Não foi possível carregar os planos preventivos do Firebase.");
   });
 
+  if (usuarioEhManutencaoAutorizada() && typeof observarDiagnosticosFirebase === "function") {
+    monitorDiagnosticos = observarDiagnosticosFirebase(lista => {
+      diagnosticos = lista;
+
+      if (typeof renderizarDiagnosticos === "function") {
+        renderizarDiagnosticos();
+      }
+    }, erro => {
+      console.error("Erro ao carregar diagnóstico inicial:", erro);
+      alert("Não foi possível carregar o diagnóstico inicial do Firebase.");
+    });
+  }
+
 }
 
 function encerrarMonitoresDeDados() {
@@ -310,6 +328,11 @@ function encerrarMonitoresDeDados() {
   if (typeof monitorPlanosPreventivos === "function") {
     monitorPlanosPreventivos();
     monitorPlanosPreventivos = null;
+  }
+
+  if (typeof monitorDiagnosticos === "function") {
+    monitorDiagnosticos();
+    monitorDiagnosticos = null;
   }
 }
 

@@ -9,5 +9,6 @@ const COLLECTIONS = Object.freeze({
   USUARIOS: "usuarios",
   COLABORADORES: "colaboradores",
   NOTIFICACOES: "notificacoes",
-  COMUNICADOS: "comunicados"
+  COMUNICADOS: "comunicados",
+  DIAGNOSTICOS: "diagnosticos"
 });
