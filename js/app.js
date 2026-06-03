@@ -57,6 +57,7 @@ function prepararTelaSemSessao() {
   notificacoes = [];
   ativos = [];
   planosPreventivos = [];
+  diagnosticos = [];
 
   preencherFormularioPerfil();
   aplicarPermissoesNaTela();
@@ -77,6 +78,10 @@ function prepararTelaSemSessao() {
 
   if (typeof renderizarPlanosPreventivos === "function") {
     renderizarPlanosPreventivos();
+  }
+
+  if (typeof renderizarDiagnosticos === "function") {
+    renderizarDiagnosticos();
   }
 
   aplicarPermissoesInterface();
@@ -273,16 +278,32 @@ function iniciarMonitoresDeDados() {
     console.error("Erro ao carregar ativos:", erro);
     alert("Não foi possível carregar os ativos do Firebase.");
   });
-  monitorPlanosPreventivos = observarPlanosPreventivosFirebase(lista => {
-    planosPreventivos = lista;
+  if (usuarioEhManutencaoAutorizada()) {
+    monitorPlanosPreventivos = observarPlanosPreventivosFirebase(lista => {
+      planosPreventivos = lista;
 
-    if (typeof renderizarPlanosPreventivos === "function") {
-      renderizarPlanosPreventivos();
-    }
-  }, erro => {
-    console.error("Erro ao carregar planos preventivos:", erro);
-    alert("Não foi possível carregar os planos preventivos do Firebase.");
-  });
+      if (typeof renderizarPlanosPreventivos === "function") {
+        renderizarPlanosPreventivos();
+      }
+    }, erro => {
+      console.error("Erro ao carregar planos preventivos:", erro);
+      alert("Não foi possível carregar os planos preventivos do Firebase.");
+    });
+
+    monitorDiagnosticos = observarDiagnosticosFirebase(lista => {
+      diagnosticos = lista;
+
+      if (typeof renderizarDiagnosticos === "function") {
+        renderizarDiagnosticos();
+      }
+    }, erro => {
+      console.error("Erro ao carregar diagnóstico inicial:", erro);
+      alert("Não foi possível carregar o diagnóstico inicial do Firebase.");
+    });
+  } else {
+    planosPreventivos = [];
+    diagnosticos = [];
+  }
 
 }
 
@@ -310,6 +331,11 @@ function encerrarMonitoresDeDados() {
   if (typeof monitorPlanosPreventivos === "function") {
     monitorPlanosPreventivos();
     monitorPlanosPreventivos = null;
+  }
+
+  if (typeof monitorDiagnosticos === "function") {
+    monitorDiagnosticos();
+    monitorDiagnosticos = null;
   }
 }
 
