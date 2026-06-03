@@ -63,8 +63,8 @@ function aplicarPermissoesNaTela() {
     renderizarPlanosPreventivos();
   }
 
-  if (typeof renderizarDiagnosticos === "function") {
-    renderizarDiagnosticos();
+  if (typeof renderizarDiagnosticosManutencao === "function") {
+    renderizarDiagnosticosManutencao();
   }
 }
 
