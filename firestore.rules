@@ -122,6 +122,11 @@ service cloud.firestore {
       allow create, update, delete: if ehManutencao();
     }
 
+
+    match /diagnosticos/{id} {
+      allow read, create, update, delete: if ehManutencao();
+    }
+
     match /notificacoes/{id} {
       allow read: if ehManutencao()
         || resource.data.destinatarioUid == request.auth.uid

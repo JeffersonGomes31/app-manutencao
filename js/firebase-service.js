@@ -221,7 +221,6 @@ function normalizarPlanoPreventivoFirebase(documento) {
   };
 }
 
-
 function observarDiagnosticosManutencaoFirebase(callback, callbackErro) {
   return firebaseDb
     .collection(COLLECTIONS.DIAGNOSTICOS)

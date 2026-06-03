@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-manutencao-etapa18-identidade-colaborador-v2";
+const CACHE_NAME = "controle-tecnico-manutencao-senac-v1";
 
 const FILES_TO_CACHE = [
   "./",
@@ -68,7 +68,7 @@ self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(cacheNames => Promise.all(
       cacheNames
-        .filter(cacheName => cacheName !== CACHE_NAME && cacheName.startsWith("app-manutencao"))
+        .filter(cacheName => cacheName !== CACHE_NAME && (cacheName.startsWith("app-manutencao") || cacheName.startsWith("controle-tecnico-manutencao")))
         .map(cacheName => caches.delete(cacheName))
     ))
   );
