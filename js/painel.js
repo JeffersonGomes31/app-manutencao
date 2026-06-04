@@ -1,5 +1,13 @@
 /* =====================================================
-   PAINEL DA MANUTENÇÃO
+   PAINEL - FILTROS E RENDERIZAÇÃO PRINCIPAL
+
+   Responsabilidades:
+   - controlar busca e filtros do painel;
+   - renderizar visão operacional da manutenção/gerência;
+   - acionar atualização de indicadores e cards.
+
+   Atenção:
+   - não conceder ações operacionais à gerência neste módulo.
 ===================================================== */
 
 function pesquisarPainel(valor) {

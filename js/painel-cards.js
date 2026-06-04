@@ -88,21 +88,21 @@ function criarCardPainel(chamado) {
       </div>
 
       <div class="admin-actions">
-        <button class="admin-action-button admin-secondary-action" onclick="abrirDetalhesChamado(${formatarParametroJS(chamado.id)})">
+        <button class="admin-action-button admin-secondary-action" data-dynamic-action="abrirDetalhesChamado" data-param0="${formatarAtributoHTML(chamado.id)}">
           Ver detalhes
         </button>
 
         ${chamado.status === "CONCLUÍDO" ? `
-          <button class="admin-action-button blue" onclick="selecionarFotoFinalizacao(${formatarParametroJS(chamado.id)}, this)">
+          <button class="admin-action-button blue" data-dynamic-action="selecionarFotoFinalizacao" data-param0="${formatarAtributoHTML(chamado.id)}" data-pass-element="true">
             Adicionar foto final
           </button>
-          <button class="admin-action-button green" onclick="validarOS(${formatarParametroJS(chamado.id)}, this)">
+          <button class="admin-action-button green" data-dynamic-action="validarOS" data-param0="${formatarAtributoHTML(chamado.id)}" data-pass-element="true">
             Validar OS
           </button>
         ` : ""}
 
         ${chamado.status === "VALIDADO" ? `
-          <button class="admin-action-button green" onclick="encerrarOS(${formatarParametroJS(chamado.id)}, this)">
+          <button class="admin-action-button green" data-dynamic-action="encerrarOS" data-param0="${formatarAtributoHTML(chamado.id)}" data-pass-element="true">
             Encerrar OS
           </button>
         ` : ""}
@@ -152,7 +152,7 @@ function criarControleStatusPainel(chamado, chamadoFinalizado) {
           <option value="CANCELADO" ${chamado.status === "CANCELADO" ? "selected" : ""}>Cancelado</option>
         </select>
 
-        <button type="button" class="admin-action-button blue" onclick="salvarStatusPainel(${formatarParametroJS(chamado.id)}, this)">
+        <button type="button" class="admin-action-button blue" data-dynamic-action="salvarStatusPainel" data-param0="${formatarAtributoHTML(chamado.id)}" data-pass-element="true">
           Salvar status
         </button>
       </div>

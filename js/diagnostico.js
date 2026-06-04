@@ -1,5 +1,15 @@
 /* =====================================================
    DIAGNÓSTICO INICIAL - CHECKLIST OPERACIONAL
+
+   Responsabilidades:
+   - renderizar itens de diagnóstico da unidade;
+   - filtrar itens por status e prioridade;
+   - atualizar situação dos itens;
+   - gerar OS a partir do diagnóstico.
+
+   Atenção:
+   - funcionalidade exclusiva da manutenção;
+   - arquivo sensível para geração de OS via diagnóstico.
 ===================================================== */
 
 const CHECKLIST_DIAGNOSTICO_PADRAO = Object.freeze({
@@ -52,6 +62,10 @@ let filtroDiagnosticoStatusAtual = "TODOS";
 let filtroDiagnosticoPrioridadeAtual = "TODAS";
 let termoBuscaDiagnostico = "";
 
+/* =====================
+   Inicialização e formulário
+===================== */
+
 function inicializarFormularioDiagnostico() {
   preencherLocaisDiagnostico();
   renderizarChecklistDiagnosticoPadrao();
@@ -86,7 +100,7 @@ function renderizarChecklistDiagnosticoPadrao() {
       <summary>${escaparHTML(grupo)}</summary>
       <div class="diagnostic-checklist-items">
         ${itens.map(item => `
-          <button type="button" class="diagnostic-check-item" onclick="usarItemChecklistDiagnostico(${formatarParametroJS(grupo)}, ${formatarParametroJS(item)})">
+          <button type="button" class="diagnostic-check-item" data-dynamic-action="usarItemChecklistDiagnostico" data-param0="${formatarAtributoHTML(grupo)}" data-param1="${formatarAtributoHTML(item)}">
             ${escaparHTML(item)}
           </button>
         `).join("")}
@@ -144,6 +158,10 @@ function obterCamposDiagnostico() {
 function lerValorDiagnostico(campo) {
   return campo ? String(campo.value || "").trim() : "";
 }
+
+/* =====================
+   Cadastro e atualização de itens
+===================== */
 
 async function criarItemDiagnostico(botao) {
   if (!usuarioEhManutencaoAutorizada()) {
@@ -214,6 +232,10 @@ function limparFormularioDiagnostico() {
   if (status) status.value = "Pendente";
 }
 
+/* =====================
+   Renderização e filtros
+===================== */
+
 function renderizarDiagnosticos() {
   const lista = document.getElementById("listaDiagnostico");
   if (!lista) return;
@@ -279,8 +301,8 @@ function criarCardDiagnostico(item) {
       ${item.acao ? `<p class="diagnostic-detail"><strong>Ação recomendada:</strong> ${escaparHTML(item.acao)}</p>` : ""}
       ${item.material ? `<p class="diagnostic-detail"><strong>Material:</strong> ${escaparHTML(item.material)}</p>` : ""}
       <div class="diagnostic-actions">
-        <button type="button" class="secondary-button" onclick="prepararOSComDiagnostico(${formatarParametroJS(item.id)})">Gerar OS a partir do item</button>
-        <button type="button" class="secondary-button" onclick="marcarDiagnosticoResolvido(${formatarParametroJS(item.id)})">Marcar resolvido</button>
+        <button type="button" class="secondary-button" data-dynamic-action="prepararOSComDiagnostico" data-param0="${formatarAtributoHTML(item.id)}">Gerar OS a partir do item</button>
+        <button type="button" class="secondary-button" data-dynamic-action="marcarDiagnosticoResolvido" data-param0="${formatarAtributoHTML(item.id)}">Marcar resolvido</button>
       </div>
     </article>
   `;
@@ -311,6 +333,10 @@ function atualizarIndicadoresDiagnostico(lista) {
 function encontrarDiagnosticoPorId(id) {
   return (diagnosticos || []).find(item => String(item.id) === String(id));
 }
+
+/* =====================
+   Geração de OS pelo diagnóstico
+===================== */
 
 function prepararOSComDiagnostico(id) {
   const item = encontrarDiagnosticoPorId(id);
@@ -388,6 +414,10 @@ function montarDescricaoOSDiagnostico(item) {
     item.material ? `Material necessário: ${item.material}` : ""
   ].filter(Boolean).join("\n");
 }
+
+/* =====================
+   Atualização de status do diagnóstico
+===================== */
 
 async function marcarDiagnosticoResolvido(id) {
   const item = encontrarDiagnosticoPorId(id);

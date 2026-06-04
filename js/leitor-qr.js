@@ -177,11 +177,11 @@ function renderizarResultadoLeitorQR(codigo) {
         <h3>QR identificado: ${escaparHTML(codigo)}</h3>
         <p>Este código ainda não está cadastrado em Ativos e QR Code.</p>
         <p>Você ainda pode abrir uma OS vinculada a este código. A manutenção poderá cadastrar o ativo depois.</p>
-        <button type="button" class="primary-button" onclick="prepararOSDoAtivo(${formatarParametroJS(codigo)})">
+        <button type="button" class="primary-button" data-dynamic-action="prepararOSDoAtivo" data-param0="${formatarAtributoHTML(codigo)}">
           Abrir OS com este QR
         </button>
         ${usuarioEhManutencaoAutorizada() ? `
-          <button type="button" class="secondary-button" onclick="prepararCadastroAtivoPorQR(${formatarParametroJS(codigo)})">
+          <button type="button" class="secondary-button" data-dynamic-action="prepararCadastroAtivoPorQR" data-param0="${formatarAtributoHTML(codigo)}">
             Cadastrar ativo/local
           </button>
         ` : ""}
@@ -197,10 +197,10 @@ function renderizarResultadoLeitorQR(codigo) {
       <p><strong>Categoria:</strong> ${escaparHTML(ativo.categoria)}</p>
       <p><strong>Histórico:</strong> ${historico.length} OS vinculada(s)</p>
       <div class="qr-actions">
-        <button type="button" class="primary-button" onclick="prepararOSDoAtivo(${formatarParametroJS(ativo.codigo)})">
+        <button type="button" class="primary-button" data-dynamic-action="prepararOSDoAtivo" data-param0="${formatarAtributoHTML(ativo.codigo)}">
           Abrir nova OS deste local
         </button>
-        <button type="button" class="secondary-button" onclick="mostrarHistoricoAtivoNoLeitor(${formatarParametroJS(ativo.codigo)})">
+        <button type="button" class="secondary-button" data-dynamic-action="mostrarHistoricoAtivoNoLeitor" data-param0="${formatarAtributoHTML(ativo.codigo)}">
           Ver histórico
         </button>
       </div>
@@ -231,7 +231,7 @@ function mostrarHistoricoAtivoNoLeitor(codigo) {
   }
 
   container.innerHTML = historico.map(chamado => `
-    <div class="ticket-row" onclick="abrirDetalhesChamado(${formatarParametroJS(chamado.id)})">
+    <div class="ticket-row" data-dynamic-action="abrirDetalhesChamado" data-param0="${formatarAtributoHTML(chamado.id)}">
       <div>
         <strong>${escaparHTML(chamado.numeroOS || chamado.id)}</strong>
         <span>${escaparHTML(chamado.local || "Local não informado")}</span>

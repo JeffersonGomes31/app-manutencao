@@ -1,0 +1,46 @@
+# Controle de Versões do Projeto
+
+Este arquivo registra as bases principais do processo de recuperação, limpeza e organização do app.
+
+## Linha de versões
+
+| Versão | Arquivo | Finalidade | Status |
+|---|---|---|---|
+| Marco 0 | `app-manutencao(7).zip` | Ponto oficial de restauração funcional | Aprovado |
+| v1 | `app-manutencao-marco0-limpeza-segura-v1.zip` | Limpeza segura de arquivos mortos e residuais | Aprovado |
+| v2 | `app-manutencao-base-limpa-mapeada-v2.zip` | Mapeamento e documentação inicial | Aprovado |
+| v3 | `app-manutencao-base-limpa-organizada-v3.zip` | Padronização leve dos JS | Aprovado |
+| v4 | `app-manutencao-base-limpa-refatorada-v4.zip` | Redução de redundância controlada | Aprovado |
+| v5 | `app-manutencao-base-limpa-eventos-v5.zip` | Migração de eventos inline estáticos | Aprovado |
+| v6 | `app-manutencao-base-limpa-index-organizado-v6.zip` | Organização conservadora do `index.html` | Aprovado |
+| v7 | `app-manutencao-base-limpa-eventos-dinamicos-v7.zip` | Migração de eventos dinâmicos | Aprovado em teste inicial |
+| v8 | `app-manutencao-base-limpa-modular-v8.zip` | Organização modular controlada | Base da Etapa 9 |
+| v9 | `app-manutencao-base-limpa-processo-seguro-v9.zip` | Processo formal de teste, publicação, backup e rollback | Atual |
+
+## Como registrar próximas versões
+
+Para cada nova versão, registrar:
+
+- nome do ZIP;
+- data;
+- objetivo;
+- arquivos alterados;
+- risco da alteração;
+- resultado dos testes;
+- decisão: aprovada ou reprovada.
+
+## Regra de nomeação sugerida
+
+```txt
+app-manutencao-v10-nome-da-etapa.zip
+app-manutencao-v11-nome-da-etapa.zip
+```
+
+Evitar nomes genéricos como:
+
+```txt
+novo.zip
+corrigido.zip
+final.zip
+final2.zip
+```

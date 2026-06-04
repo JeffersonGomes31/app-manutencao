@@ -1,6 +1,15 @@
 /* =====================================================
-   AUTORIZAÇÃO E PERMISSÕES
-   Funções únicas para normalizar perfil e consultar permissões.
+   AUTH PERMISSIONS - AUTORIZAÇÃO E PERFIS
+
+   Responsabilidades:
+   - normalizar nomes de perfil;
+   - consultar permissões por perfil;
+   - identificar colaborador, gerência e manutenção;
+   - proteger ações visuais do front-end.
+
+   Atenção:
+   - arquivo sensível para controle de acesso;
+   - deve permanecer alinhado com firestore.rules e usuarios/{uid}.
 ===================================================== */
 
 function normalizarTextoPermissao(valor) {

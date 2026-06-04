@@ -1,0 +1,83 @@
+# Plano de Rollback
+
+Este documento define como voltar para uma versão estável quando uma alteração quebrar o projeto.
+
+## Versão de segurança principal
+
+O Marco 0 oficial do projeto é:
+
+```txt
+app-manutencao(7).zip
+```
+
+A base limpa aprovada para organização é:
+
+```txt
+app-manutencao-marco0-limpeza-segura-v1.zip
+```
+
+A versão modular mais recente antes desta etapa é:
+
+```txt
+app-manutencao-base-limpa-modular-v8.zip
+```
+
+## Quando fazer rollback
+
+Fazer rollback se ocorrer qualquer um destes casos:
+
+- login deixou de funcionar;
+- manutenção perdeu acesso operacional;
+- gerência ganhou acesso indevido a ações técnicas;
+- colaborador passou a ver chamados de todos;
+- diagnóstico não carrega;
+- notificações não carregam;
+- Firestore retorna `permission-denied` sem causa clara;
+- botões principais deixam de responder;
+- publicação gerou comportamento diferente do teste local.
+
+## Procedimento de rollback
+
+1. Interromper novas alterações.
+2. Identificar a última versão funcional.
+3. Restaurar o ZIP funcional em uma pasta limpa.
+4. Testar no VS Code com Live Server.
+5. Conferir se o erro era código ou Firebase.
+6. Se for código, voltar para o ZIP anterior aprovado.
+7. Se for Firebase, revisar `firestore.rules` e `usuarios/{uid}`.
+8. Rodar o checklist dos três perfis.
+9. Publicar somente depois da validação.
+
+## Diagnóstico rápido
+
+### Sintoma: `permission-denied`
+
+Verificar:
+
+- regras do Firestore;
+- documento `usuarios/{uid}`;
+- campo `ativo: true` como booleano;
+- campo `perfil` correto;
+- usuário correto autenticado.
+
+### Sintoma: botão não responde
+
+Verificar:
+
+- `js/event-bindings.js`;
+- `js/event-action-maps.js`;
+- atributos `data-action` ou `data-dynamic-action`;
+- Console do navegador.
+
+### Sintoma: app não abre ou tela fica em branco
+
+Verificar:
+
+- erro de JavaScript no Console;
+- ordem dos scripts no `index.html`;
+- arquivo ausente;
+- cache do navegador ou Service Worker.
+
+## Regra de segurança
+
+Nunca corrigir direto na versão publicada. Sempre corrigir em cópia local e testar antes.

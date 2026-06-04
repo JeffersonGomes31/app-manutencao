@@ -1,5 +1,14 @@
 /* =====================================================
-   PERFIL E PERMISSÕES
+   PERFIL - IDENTIFICAÇÃO DO USUÁRIO E VISIBILIDADE
+
+   Responsabilidades:
+   - aplicar permissões visuais;
+   - exibir dados do usuário logado;
+   - controlar cadastro/edição local de perfil quando aplicável;
+   - ajustar navegação conforme perfil.
+
+   Atenção:
+   - manter coerência com auth-permissions.js e documentos usuarios/{uid}.
 ===================================================== */
 
 const CHAVE_COLABORADOR_LOCAL = "appManutencaoColaborador";

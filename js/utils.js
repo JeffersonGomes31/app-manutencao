@@ -1,3 +1,15 @@
+/* =====================================================
+   UTILS - FUNÇÕES UTILITÁRIAS GERAIS
+
+   Responsabilidades:
+   - manipular texto/HTML com segurança;
+   - formatar datas e parâmetros;
+   - oferecer funções pequenas reutilizadas por vários módulos.
+
+   Atenção:
+   - manter funções genéricas; regras de negócio devem ficar nos módulos próprios.
+===================================================== */
+
 function setTextContent(id, valor) {
   const elemento = document.getElementById(id);
 
@@ -17,6 +29,11 @@ function escaparHTML(texto) {
     .replaceAll("'", "&#039;");
 }
 
+
+function formatarAtributoHTML(valor) {
+  return escaparHTML(String(valor ?? ""));
+}
+
 function formatarParametroJS(valor) {
   const textoSeguro = String(valor)
     .replaceAll("\\", "\\\\")
@@ -31,6 +48,65 @@ function formatarParametroJS(valor) {
     .replaceAll('"', "&quot;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
+}
+
+function criarMensagemVazia(titulo, texto) {
+  return `
+    <div class="empty-card">
+      <h3>${escaparHTML(titulo)}</h3>
+      <p>${escaparHTML(texto)}</p>
+    </div>
+  `;
+}
+
+function abrirModalPorId(id) {
+  const modal = document.getElementById(id);
+
+  if (modal) {
+    modal.classList.add("active");
+  }
+}
+
+function fecharModalPorId(id) {
+  const modal = document.getElementById(id);
+
+  if (modal) {
+    modal.classList.remove("active");
+  }
+}
+
+function formatarDataHoraBR(data) {
+  const dataValida = data instanceof Date ? data : new Date(data);
+
+  if (Number.isNaN(dataValida.getTime())) {
+    return "";
+  }
+
+  return dataValida.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function obterPrazoHoras(prioridade) {
+  const prazos = {
+    Urgente: 0,
+    Alta: 1,
+    Média: 24,
+    Baixa: 72
+  };
+
+  return prazos[prioridade] ?? 72;
+}
+
+function calcularVencimentoChamado(chamado) {
+  const criadoEm = obterDataValida(chamado.criadoEm, chamado.data);
+  const prazoHoras = obterPrazoHoras(chamado.prioridade);
+
+  return new Date(criadoEm.getTime() + prazoHoras * 60 * 60 * 1000);
 }
 
 

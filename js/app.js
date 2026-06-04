@@ -1,5 +1,15 @@
 /* =====================================================
-   INICIALIZAÇÃO DO APP
+   APP - INICIALIZAÇÃO E CICLO DE AUTENTICAÇÃO
+
+   Responsabilidades:
+   - iniciar Firebase e eventos globais;
+   - processar login/logout;
+   - carregar monitores de dados após autenticação;
+   - aplicar permissões visuais por perfil.
+
+   Atenção:
+   - arquivo sensível para login, permissões e carregamento geral;
+   - não alterar ordem de inicialização sem teste completo no VS Code.
 ===================================================== */
 
 document.addEventListener("DOMContentLoaded", inicializarAplicacao);
@@ -13,6 +23,10 @@ function inicializarAplicacao() {
     await processarEstadoAutenticacao(usuarioFirebase);
   });
 }
+
+/* =====================
+   Eventos globais de interface
+===================== */
 
 function configurarEventosGlobais() {
   document.querySelectorAll(".logout-button").forEach(botao => {
@@ -49,6 +63,10 @@ function configurarEventosGlobais() {
     });
   }
 }
+
+/* =====================
+   Estado visual sem sessão
+===================== */
 
 function prepararTelaSemSessao() {
   usuarioAtual = { ...USUARIO_PADRAO };
@@ -87,6 +105,10 @@ function prepararTelaSemSessao() {
   aplicarPermissoesInterface();
   openPage(usuarioPodeVerPainel() ? "painel" : "inicio");
 }
+
+/* =====================
+   Fluxo de autenticação
+===================== */
 
 async function processarEstadoAutenticacao(usuarioFirebase) {
   encerrarMonitoresDeDados();
@@ -235,6 +257,10 @@ function normalizarUsuarioLogado(usuarioFirebase, perfil) {
 }
 
 
+/* =====================
+   Monitores Firestore
+===================== */
+
 function iniciarMonitoresDeDados() {
   monitorChamados = observarChamadosFirebase(usuarioAtual, lista => {
     chamados = lista;
@@ -339,6 +365,10 @@ function encerrarMonitoresDeDados() {
   }
 }
 
+
+/* =====================
+   Aplicação de permissões visuais
+===================== */
 
 function aplicarPermissoesInterface() {
   const manutencao = typeof usuarioEhManutencaoAutorizada === "function"

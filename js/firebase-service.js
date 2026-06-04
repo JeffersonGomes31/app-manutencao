@@ -1,5 +1,16 @@
 /* =====================================================
-   FIREBASE
+   FIREBASE SERVICE - CAMADA DE ACESSO AO FIREBASE
+
+   Responsabilidades:
+   - inicializar Firebase/Auth/Firestore;
+   - autenticar usuários;
+   - ler e gravar chamados, notificações, comunicados, ativos,
+     preventivas e diagnósticos;
+   - manter listeners em tempo real.
+
+   Atenção:
+   - arquivo de alto risco;
+   - qualquer mudança pode afetar permissões, persistência e regras Firestore.
 ===================================================== */
 
 const firebaseConfig = {
@@ -16,6 +27,10 @@ const firebaseConfig = {
 let firebaseAuth = null;
 let firebaseDb = null;
 
+/* =====================
+   Inicialização Firebase
+===================== */
+
 function inicializarFirebaseServico() {
   if (firebase.apps.length === 0) {
     firebase.initializeApp(firebaseConfig);
@@ -24,6 +39,10 @@ function inicializarFirebaseServico() {
   firebaseAuth = firebase.auth();
   firebaseDb = firebase.firestore();
 }
+
+/* =====================
+   Autenticação
+===================== */
 
 function observarAutenticacao(callback) {
   return firebaseAuth.onAuthStateChanged(callback);
@@ -71,6 +90,10 @@ async function buscarPerfilFirebase(uid) {
     ...documento.data()
   };
 }
+
+/* =====================
+   Chamados
+===================== */
 
 function observarChamadosFirebase(usuario, callback, callbackErro) {
   const colecaoChamados = firebaseDb.collection(COLLECTIONS.CHAMADOS);
@@ -129,6 +152,10 @@ function observarChamadosFirebase(usuario, callback, callbackErro) {
   };
 }
 
+/* =====================
+   Ativos
+===================== */
+
 function observarAtivosFirebase(callback, callbackErro) {
   return firebaseDb
     .collection(COLLECTIONS.ATIVOS)
@@ -169,6 +196,10 @@ function normalizarAtivoFirebase(documento) {
   };
 }
 
+
+/* =====================
+   Preventivas
+===================== */
 
 function observarPlanosPreventivosFirebase(callback, callbackErro) {
   return firebaseDb
@@ -222,6 +253,10 @@ function normalizarPlanoPreventivoFirebase(documento) {
 }
 
 
+/* =====================
+   Diagnóstico
+===================== */
+
 function observarDiagnosticosFirebase(callback, callbackErro) {
   return firebaseDb
     .collection(COLLECTIONS.DIAGNOSTICOS || "diagnosticos")
@@ -272,6 +307,10 @@ function normalizarDiagnosticoFirebase(documento) {
   };
 }
 
+/* =====================
+   Comunicados
+===================== */
+
 function observarComunicadosFirebase(callback, callbackErro) {
   return firebaseDb
     .collection(COLLECTIONS.COMUNICADOS)
@@ -318,6 +357,10 @@ async function excluirComunicadoFirebase(id) {
 }
 
 
+/* =====================
+   Notificações
+===================== */
+
 function observarNotificacoesFirebase(usuario, callback, callbackErro) {
   let consulta = firebaseDb.collection(COLLECTIONS.NOTIFICACOES);
 
@@ -348,6 +391,10 @@ async function marcarNotificacaoComoLidaFirebase(id, uid) {
     atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
   });
 }
+
+/* =====================
+   Normalização de dados Firestore
+===================== */
 
 function normalizarChamadoFirebase(documento) {
   const dados = documento.data();

@@ -164,10 +164,8 @@ function calcularDisponibilidadeOperacional(base = chamados) {
       return true;
     }
 
-    const criadoEm = obterDataValida(chamado.criadoEm, chamado.data);
     const concluidoEm = obterDataValida(chamado.concluidoEmISO, chamado.data);
-    const prazoHoras = obterPrazoHoras(chamado.prioridade);
-    const vencimento = new Date(criadoEm.getTime() + prazoHoras * 60 * 60 * 1000);
+    const vencimento = calcularVencimentoChamado(chamado);
 
     return concluidoEm <= vencimento;
   }).length;

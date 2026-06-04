@@ -17,11 +17,11 @@
 </head>
 
 
-<!--BODY COMEÇO--> 
 <body>
-    <main class="phone-screen">
-
-    <button type="button" id="botaoNotificacoes" class="notifications-button" onclick="abrirPainelNotificacoes()" aria-label="Abrir notificações">
+  <!-- Estrutura principal do app -->
+  <main class="phone-screen">
+    <!-- Botão global de notificações -->
+    <button type="button" id="botaoNotificacoes" class="notifications-button" data-action="abrir-painel-notificacoes" aria-label="Abrir notificações">
       <svg viewBox="0 0 24 24" fill="none">
         <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" stroke-linecap="round" stroke-linejoin="round" />
         <path d="M10 21h4" stroke-linecap="round" />
@@ -29,6 +29,7 @@
       <span id="contadorNotificacoes" class="notifications-badge">0</span>
     </button>
 
+    <!-- Páginas principais -->
     <!-- ABA INÍCIO -->
     <section class="page active" id="inicio">
       <header class="header">
@@ -52,7 +53,7 @@
         </div>
 
         <div class="quick-grid">
-          <div class="quick-card" onclick="openPage('novo')">
+          <div class="quick-card" data-nav-page="novo">
             <div class="quick-icon blue-bg">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M14.7 6.3a4 4 0 0 0-5 5L4 17l3 3 5.7-5.7a4 4 0 0 0 5-5l-3 3-2.4-2.4 2.4-3Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
@@ -62,7 +63,7 @@
             <p>Abrir Ordem de Serviço</p>
           </div>
 
-          <div class="quick-card" onclick="abrirLeitorQRCode()">
+          <div class="quick-card" data-action="abrir-leitor-qr">
             <div class="quick-icon green-bg">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M4 4h6v6H4V4ZM14 4h6v6h-6V4ZM4 14h6v6H4v-6Z" stroke="currentColor" stroke-linejoin="round" />
@@ -73,7 +74,7 @@
             <p>Consultar histórico ou abrir OS</p>
           </div>
 
-          <div class="quick-card" onclick="openPage('chamados')">
+          <div class="quick-card" data-nav-page="chamados">
             <div class="quick-icon green-bg">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M9 7h11M9 12h11M9 17h11" stroke="currentColor" stroke-linecap="round" />
@@ -84,7 +85,7 @@
             <p id="textoCardChamadosRapido">Acompanhar</p>
           </div>
 
-          <div class="quick-card" onclick="openPage('comunicados')">
+          <div class="quick-card" data-nav-page="comunicados">
             <div class="quick-icon orange-bg">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M4 14h3l8 4V6L7 10H4v4Z" stroke="currentColor" stroke-linejoin="round" />
@@ -95,7 +96,7 @@
             <p>Ver avisos</p>
           </div>
 
-          <div class="quick-card" onclick="openPage('areas')">
+          <div class="quick-card" data-nav-page="areas">
             <div class="quick-icon purple-bg">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M7 4h10a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linejoin="round" />
@@ -106,7 +107,7 @@
             <p>Ver categorias</p>
           </div>
 
-          <div class="quick-card manut-only" onclick="openPage('ativos')">
+          <div class="quick-card manut-only" data-nav-page="ativos">
             <div class="quick-icon blue-bg">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M4 7h16v10H4V7Z" stroke="currentColor" stroke-linejoin="round" />
@@ -118,7 +119,7 @@
             <p>Equipamentos rastreáveis</p>
           </div>
 
-          <div class="quick-card manut-only" onclick="openPage('preventivas')">
+          <div class="quick-card manut-only" data-nav-page="preventivas">
             <div class="quick-icon green-bg">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M7 3v4M17 3v4M4 9h16" stroke="currentColor" stroke-linecap="round" />
@@ -130,7 +131,7 @@
             <p>Planos recorrentes</p>
           </div>
 
-          <div class="quick-card manut-only" onclick="openPage('diagnostico')">
+          <div class="quick-card manut-only" data-nav-page="diagnostico">
             <div class="quick-icon orange-bg">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M9 6h11M9 12h11M9 18h7" stroke="currentColor" stroke-linecap="round" />
@@ -146,7 +147,7 @@
       <section>
         <div class="section-header spacing">
           <h2>Minhas OS</h2>
-          <a href="#" onclick="openPage('chamados')">Ver todos</a>
+          <a href="#" data-nav-page="chamados">Ver todos</a>
         </div>
 
         <div class="tickets-card" id="listaOSInicio">
@@ -157,7 +158,7 @@
       <section>
         <div class="section-header spacing">
           <h2>Comunicados recentes</h2>
-          <a href="#" onclick="openPage('comunicados')">Ver todos</a>
+          <a href="#" data-nav-page="comunicados">Ver todos</a>
         </div>
 
         <div class="notice-list" id="listaComunicadosInicio">
@@ -174,13 +175,13 @@
       </header>
 
       <div class="filter-row" id="filtrosOS">
-        <button class="filter active" onclick="filtrarOS('TODOS', this)">Todos</button>
-        <button class="filter" onclick="filtrarOS('ATRASADOS', this)">Atrasados</button>
-        <button class="filter" onclick="filtrarOS('ABERTO', this)">Abertos</button>
-        <button class="filter" onclick="filtrarOS('EM ANDAMENTO', this)">Andamento</button>
-        <button class="filter" onclick="filtrarOS('AGUARDANDO', this)">Aguardando</button>
-        <button class="filter" onclick="filtrarOS('CONCLUÍDO', this)">Concluídos</button>
-        <button class="filter" onclick="filtrarOS('CANCELADO', this)">Cancelados</button>
+        <button class="filter active" data-os-filter="TODOS">Todos</button>
+        <button class="filter" data-os-filter="ATRASADOS">Atrasados</button>
+        <button class="filter" data-os-filter="ABERTO">Abertos</button>
+        <button class="filter" data-os-filter="EM ANDAMENTO">Andamento</button>
+        <button class="filter" data-os-filter="AGUARDANDO">Aguardando</button>
+        <button class="filter" data-os-filter="CONCLUÍDO">Concluídos</button>
+        <button class="filter" data-os-filter="CANCELADO">Cancelados</button>
       </div>
 
       <div class="search-box">
@@ -188,7 +189,7 @@
          type="text" 
          id="buscaOS" 
          placeholder="Buscar por nº da OS, local, categoria, descrição ou criador..."
-         oninput="pesquisarOS(this.value)"
+         data-input-action="pesquisar-os"
         />
       </div>
 
@@ -199,9 +200,9 @@
         </div>
 
         <div class="export-actions">
-          <button type="button" class="secondary-button" onclick="exportarOSFinalizadasExcel()">Excel</button>
-          <button type="button" class="secondary-button" onclick="exportarOSFinalizadasPDF()">PDF</button>
-          <button type="button" class="secondary-button" onclick="exportarOSFinalizadasWord()">Word</button>
+          <button type="button" class="secondary-button" data-action="exportar-os-excel">Excel</button>
+          <button type="button" class="secondary-button" data-action="exportar-os-pdf">PDF</button>
+          <button type="button" class="secondary-button" data-action="exportar-os-word">Word</button>
         </div>
       </div>
 
@@ -299,7 +300,7 @@
         </div>
       </div>
 
-      <button class="primary-button" onclick="openPage('novo')">Abrir OS</button>
+      <button class="primary-button" data-nav-page="novo">Abrir OS</button>
     </section>
 
 
@@ -380,7 +381,7 @@
           <textarea id="observacoesAtivo" placeholder="Ex: ambiente com grande circulação, equipamento essencial para aula, verificar histórico de reincidência..."></textarea>
         </label>
 
-        <button type="button" class="primary-button" onclick="salvarAtivo()">
+        <button type="button" class="primary-button" data-action="salvar-ativo">
           Cadastrar ativo/local
         </button>
       </div>
@@ -412,10 +413,10 @@
         <p id="statusLeitorQR" class="form-help">Clique em iniciar leitura e permita o acesso à câmera.</p>
 
         <div class="form-row">
-          <button type="button" class="primary-button" onclick="iniciarLeituraQRCode()">
+          <button type="button" class="primary-button" data-action="iniciar-leitura-qr">
             Iniciar leitura
           </button>
-          <button type="button" class="secondary-button" onclick="pararLeituraQRCode()">
+          <button type="button" class="secondary-button" data-action="parar-leitura-qr">
             Parar câmera
           </button>
         </div>
@@ -425,7 +426,7 @@
           <input id="codigoQRManual" type="text" placeholder="Digite ou cole o código do QR" />
         </label>
 
-        <button type="button" class="secondary-button" onclick="processarQRCodeManual()">
+        <button type="button" class="secondary-button" data-action="processar-qr-manual">
           Consultar código
         </button>
       </div>
@@ -469,7 +470,7 @@
         <div class="form-row">
           <label>
             Categoria técnica
-            <select id="categoriaPlanoPreventivo" onchange="atualizarSubcategoriasPlanoPreventivo()">
+            <select id="categoriaPlanoPreventivo" data-change-action="atualizar-subcategorias-plano-preventivo">
               <option value="">Selecione</option>
               <option value="Elétrica">Elétrica</option>
               <option value="Hidráulica">Hidráulica</option>
@@ -531,7 +532,7 @@
           <textarea id="observacoesPlanoPreventivo" placeholder="Ex: verificar filtros, ruídos, vazamentos, fixação e funcionamento geral..."></textarea>
         </label>
 
-        <button type="button" class="primary-button" onclick="salvarPlanoPreventivo()">
+        <button type="button" class="primary-button" data-action="salvar-plano-preventivo">
           Cadastrar plano preventivo
         </button>
       </div>
@@ -549,7 +550,7 @@
         <div class="form-row preventive-filter-grid">
           <label>
             Filtrar por situação
-            <select id="filtroSituacaoPreventiva" onchange="renderizarPlanosPreventivos()">
+            <select id="filtroSituacaoPreventiva" data-change-action="renderizar-planos-preventivos">
               <option value="TODAS">Todas</option>
               <option value="VENCIDAS">Vencidas</option>
               <option value="SEMANA">Próximos 7 dias</option>
@@ -560,7 +561,7 @@
 
           <label>
             Buscar plano
-            <input id="buscaPlanoPreventivo" type="search" placeholder="Nome, ativo, local ou categoria" oninput="renderizarPlanosPreventivos()" />
+            <input id="buscaPlanoPreventivo" type="search" placeholder="Nome, ativo, local ou categoria" data-input-action="renderizar-planos-preventivos" />
           </label>
         </div>
       </div>
@@ -672,7 +673,7 @@
           <input id="materialDiagnostico" type="text" placeholder="Ex: tomada 10A, espelho, parafusos, reparo de torneira..." />
         </label>
 
-        <button type="button" class="primary-button" onclick="criarItemDiagnostico(this)">
+        <button type="button" class="primary-button" data-action="criar-item-diagnostico">
           Salvar item do diagnóstico
         </button>
       </div>
@@ -688,7 +689,7 @@
       </div>
 
       <div class="form-card diagnostic-filters">
-        <select id="filtroStatusDiagnostico" onchange="filtrarDiagnosticoStatus(this.value)">
+        <select id="filtroStatusDiagnostico" data-change-action="filtrar-diagnostico-status">
           <option value="TODOS">Todos os status</option>
           <option value="Pendente">Pendentes</option>
           <option value="Em inspeção">Em inspeção</option>
@@ -697,7 +698,7 @@
           <option value="Resolvido">Resolvidos</option>
         </select>
 
-        <select id="filtroPrioridadeDiagnostico" onchange="filtrarDiagnosticoPrioridade(this.value)">
+        <select id="filtroPrioridadeDiagnostico" data-change-action="filtrar-diagnostico-prioridade">
           <option value="TODAS">Todas as prioridades</option>
           <option value="P1 - Urgente">P1 - Urgente</option>
           <option value="P2 - Alta">P2 - Alta</option>
@@ -706,7 +707,7 @@
           <option value="P5 - Preventiva">P5 - Preventiva</option>
         </select>
 
-        <input id="buscaDiagnostico" type="search" placeholder="Buscar por local, sistema, descrição, risco ou material" oninput="pesquisarDiagnostico(this.value)" />
+        <input id="buscaDiagnostico" type="search" placeholder="Buscar por local, sistema, descrição, risco ou material" data-input-action="pesquisar-diagnostico" />
       </div>
 
       <div class="diagnostic-list" id="listaDiagnostico">
@@ -721,11 +722,11 @@
         <p>Registre uma Ordem de Serviço para a equipe de manutenção avaliar, executar e encerrar com rastreabilidade.</p>
       </header>
 
-     <form class="form-card" onsubmit="return false;">
+     <form class="form-card" data-form-action="bloquear-submit">
 
      <label>
         Escolher o andar
-        <select id="andarChamado" onchange="atualizarLocaisPorAndarManutencao()">
+        <select id="andarChamado" data-change-action="atualizar-locais-andar-manutencao">
           <option value="">Selecione o andar</option>
           <option value="1º ANDAR">1º ANDAR</option>
           <option value="SL ANDAR">SL ANDAR</option>
@@ -756,7 +757,7 @@
 
      <label>
         Categoria da OS
-        <select id="categoriaChamado" onchange="atualizarSubcategoriasChamado(this.value)">
+        <select id="categoriaChamado" data-change-action="atualizar-subcategorias-chamado">
           <option value="">Selecione</option>
           <option value="Elétrica">Elétrica</option>
           <option value="Hidráulica">Hidráulica</option>
@@ -828,7 +829,7 @@
         <button 
         type="button" 
         class="primary-button" 
-        onclick="criarChamado()"
+        data-action="criar-chamado"
        >
         Abrir OS
        </button>
@@ -873,7 +874,7 @@
       <button 
         type="button" 
         class="primary-button" 
-        onclick="criarComunicado()"
+        data-action="criar-comunicado"
         >
         Publicar comunicado
       </button>
@@ -920,7 +921,7 @@
       <button
         type="button"
         class="primary-button"
-        onclick="entrarComoColaborador(this)"
+        data-action="entrar-colaborador"
       >
         Entrar como colaborador
       </button>
@@ -957,7 +958,7 @@
       <button
         type="button"
         class="secondary-button"
-        onclick="entrarComFirebase(this)"
+        data-action="entrar-firebase"
       >
         Entrar com e-mail
       </button>
@@ -1026,7 +1027,7 @@
     <button 
       id="botaoPainelManutencao" 
       class="primary-button" 
-      onclick="openPage('painel')"
+      data-nav-page="painel"
     >
       Painel da manutenção
     </button>
@@ -1053,7 +1054,7 @@
           <h3>Diagnóstico inicial da unidade</h3>
           <p class="form-help">Mapeie pendências, riscos, preventivas e melhorias antes de abrir OS.</p>
         </div>
-        <button type="button" class="secondary-button" onclick="openPage('diagnostico')">
+        <button type="button" class="secondary-button" data-nav-page="diagnostico">
           Abrir diagnóstico inicial
         </button>
       </div>
@@ -1062,7 +1063,7 @@
         <div class="form-row dashboard-period-grid">
           <label>
             Período dos indicadores
-            <select id="filtroPeriodoDashboard" onchange="alterarPeriodoDashboard(this.value)">
+            <select id="filtroPeriodoDashboard" data-change-action="alterar-periodo-dashboard">
               <option value="TODOS">Todo o histórico</option>
               <option value="7">Últimos 7 dias</option>
               <option value="30" selected>Últimos 30 dias</option>
@@ -1071,7 +1072,7 @@
           </label>
           <label>
             Categoria
-            <select id="filtroCategoriaDashboard" onchange="alterarCategoriaDashboard(this.value)">
+            <select id="filtroCategoriaDashboard" data-change-action="alterar-categoria-dashboard">
               <option value="TODAS">Todas as categorias</option>
               <option value="Elétrica">Elétrica</option>
               <option value="Hidráulica">Hidráulica</option>
@@ -1157,10 +1158,10 @@
     type="text" 
     id="buscaPainel" 
     placeholder="Buscar por nº da OS, local, setor, descrição ou criador..."
-    oninput="pesquisarPainel(this.value)"
+    data-input-action="pesquisar-painel"
   />
 
-  <select id="filtroPainelStatus" onchange="filtrarPainelStatus(this.value)">
+  <select id="filtroPainelStatus" data-change-action="filtrar-painel-status">
     <option value="TODOS">Todos os status</option>
     <option value="ABERTO">Abertos</option>
     <option value="EM ANDAMENTO">Em andamento</option>
@@ -1172,7 +1173,7 @@
     <option value="ATRASADOS">Atrasados</option>
   </select>
 
-  <select id="filtroPainelPrioridade" onchange="filtrarPainelPrioridade(this.value)">
+  <select id="filtroPainelPrioridade" data-change-action="filtrar-painel-prioridade">
     <option value="TODAS">Todas as prioridades</option>
     <option value="Urgente">Urgente</option>
     <option value="Alta">Alta</option>
@@ -1183,7 +1184,7 @@
   <button 
     type="button" 
     class="secondary-button admin-clear-button" 
-    onclick="limparFiltrosPainel()"
+    data-action="limpar-filtros-painel"
   >
     Limpar filtros
   </button>
@@ -1195,7 +1196,7 @@
       
       
 
-      <button type="button" class="secondary-button" onclick="openPage('perfil')">Voltar para perfil</button>
+      <button type="button" class="secondary-button" data-nav-page="perfil">Voltar para perfil</button>
     </section>
   </main>
 
@@ -1208,7 +1209,7 @@
           <p id="detalheData">OS aberta em --/--/----</p>
         </div>
 
-        <button type="button" id="botaoFecharModalX" class="modal-close" onclick="fecharDetalhesChamado()">×</button>
+        <button type="button" id="botaoFecharModalX" class="modal-close" data-action="fechar-detalhes-chamado">×</button>
       </div>
 
       <span class="status status-blue" id="detalheStatus">ABERTO</span>
@@ -1305,12 +1306,12 @@
       </div>
 
       <div id="areaControleColaborador">
-        <button type="button" id="botaoCancelarChamadoColaborador" class="danger-button" onclick="cancelarChamadoAtual(this)">
+        <button type="button" id="botaoCancelarChamadoColaborador" class="danger-button" data-action="cancelar-chamado-atual">
           Cancelar OS
         </button>
       </div>
 
-      <button type="button" id="botaoFecharModal" class="secondary-button" onclick="fecharDetalhesChamado()">
+      <button type="button" id="botaoFecharModal" class="secondary-button" data-action="fechar-detalhes-chamado">
         Fechar
       </button>
     </div>
@@ -1325,12 +1326,12 @@
           <p id="tituloFotoChamado">Foto da OS</p>
         </div>
 
-        <button type="button" class="modal-close" onclick="fecharVisualizacaoFoto()">×</button>
+        <button type="button" class="modal-close" data-action="fechar-visualizacao-foto">×</button>
       </div>
 
       <img id="imagemFotoChamado" class="image-modal-preview" alt="" />
 
-      <button type="button" class="secondary-button" onclick="fecharVisualizacaoFoto()">
+      <button type="button" class="secondary-button" data-action="fechar-visualizacao-foto">
         Fechar foto
       </button>
     </div>
@@ -1347,7 +1348,7 @@
           <p>Atualizações recentes das OS.</p>
         </div>
 
-        <button type="button" class="modal-close" onclick="fecharPainelNotificacoes()">×</button>
+        <button type="button" class="modal-close" data-action="fechar-painel-notificacoes">×</button>
       </div>
 
       <p class="notifications-help-text">As notificações ficam marcadas como lidas apenas para o usuário atual.</p>
@@ -1356,26 +1357,27 @@
         <!-- Notificações carregadas pelo JavaScript -->
       </div>
 
-      <button type="button" id="botaoMarcarTodasNotificacoes" class="secondary-button" onclick="marcarTodasNotificacoesComoLidas()">
+      <button type="button" id="botaoMarcarTodasNotificacoes" class="secondary-button" data-action="marcar-todas-notificacoes-lidas">
         Marcar todas como lidas
       </button>
 
-      <button type="button" class="secondary-button" onclick="fecharPainelNotificacoes()">
+      <button type="button" class="secondary-button" data-action="fechar-painel-notificacoes">
         Fechar
       </button>
     </div>
   </div>
 
   <!-- MENU INFERIOR -->
+  <!-- Navegação inferior -->
   <nav class="bottom-nav">
-    <div class="nav-item active" onclick="openPage('inicio', this)">
+    <div class="nav-item active" data-nav-page="inicio">
       <svg viewBox="0 0 24 24" fill="none">
         <path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-8.5Z" stroke-linejoin="round" />
       </svg>
       Início
     </div>
 
-    <div class="nav-item" onclick="openPage('chamados', this)">
+    <div class="nav-item" data-nav-page="chamados">
       <svg viewBox="0 0 24 24" fill="none">
         <path d="M9 4h6v4H9V4Z" stroke-linejoin="round" />
         <path d="M7 6H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-2" stroke-linejoin="round" />
@@ -1384,12 +1386,12 @@
       OS
     </div>
 
-    <div class="nav-item nav-item-novo" onclick="openPage('novo', this)">
+    <div class="nav-item nav-item-novo" data-nav-page="novo">
       <div class="nav-plus">+</div>
       Novo
     </div>
 
-    <div class="nav-item" onclick="openPage('comunicados', this)">
+    <div class="nav-item" data-nav-page="comunicados">
       <svg viewBox="0 0 24 24" fill="none">
         <path d="M4 14h3l8 4V6l-8 4H4v4Z" stroke-linejoin="round" />
         <path d="M18 9a4 4 0 0 1 0 6M21 7a7 7 0 0 1 0 10" stroke-linecap="round" />
@@ -1397,7 +1399,7 @@
       Comunicados
     </div>
 
-    <div class="nav-item" onclick="openPage('perfil', this)">
+    <div class="nav-item" data-nav-page="perfil">
       <svg viewBox="0 0 24 24" fill="none">
         <path d="M20 21a8 8 0 0 0-16 0" stroke-linecap="round" />
         <path d="M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" stroke-linejoin="round" />
@@ -1407,9 +1409,12 @@
   </nav>
 
 
+  <!-- Dependências externas -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+  <!-- Constantes globais do projeto -->
   <script src="src/constants/andares.js"></script>
   <script src="src/constants/locais.js"></script>
   <script src="src/constants/categorias.js"></script>
@@ -1422,6 +1427,8 @@
   <script src="src/constants/firebase.js"></script>
   <script src="src/constants/exportacoes.js"></script>
   <script src="src/constants/index.js"></script>
+
+  <!-- Módulos JavaScript do app -->
   <script src="js/state.js"></script>
   <script src="js/ui-feedback.js"></script>
   <script src="js/auth-permissions.js"></script>
@@ -1447,16 +1454,9 @@
   <script src="js/preventivas.js"></script>
   <script src="js/diagnostico.js"></script>
   <script src="js/app.js"></script>
-
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", function () {
-        navigator.serviceWorker.register("./service-worker.js").catch(function (erro) {
-          console.warn("Service worker não registrado:", erro);
-        });
-      });
-    }
-  </script>
+  <script src="js/event-action-maps.js"></script>
+  <script src="js/event-bindings.js"></script>
+  <script src="js/service-worker-register.js"></script>
 </body>
 
 </html>

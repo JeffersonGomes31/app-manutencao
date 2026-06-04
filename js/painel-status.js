@@ -1,5 +1,13 @@
 /* =====================================================
-   PAINEL - ALTERACAO DE STATUS E FINALIZACAO
+   PAINEL STATUS - ALTERAÇÃO DE STATUS E FINALIZAÇÃO
+
+   Responsabilidades:
+   - salvar mudança de status pelo painel;
+   - registrar conclusão, validação e encerramento;
+   - proteger ações exclusivas da manutenção.
+
+   Atenção:
+   - arquivo sensível para fluxo operacional da OS.
 ===================================================== */
 
 async function salvarStatusPainel(id, botao) {

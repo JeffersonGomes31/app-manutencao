@@ -1,9 +1,22 @@
 /* =====================================================
-   CHAMADOS
+   CHAMADOS - AÇÕES OPERACIONAIS DA OS
+
+   Responsabilidades:
+   - criar, pesquisar, cancelar, assumir e atualizar chamados;
+   - controlar ações da manutenção sobre OS;
+   - acionar notificações e logs técnicos relacionados.
+
+   Atenção:
+   - arquivo sensível para operação da manutenção;
+   - não alterar nomes de status ou regras de permissão sem validação.
 ===================================================== */
 
+/* =====================
+   Criação de chamado
+===================== */
+
 async function criarChamado() {
-  const botaoEnvio = document.querySelector('button[onclick="criarChamado()"]');
+  const botaoEnvio = document.querySelector('button[data-action="criar-chamado"]');
 
   if (botaoEnvio && botaoEnvio.disabled) {
     return;
@@ -96,6 +109,10 @@ async function criarChamado() {
 
 
 /* Funções auxiliares migradas para chamados-form.js e chamados-render.js. */
+
+/* =====================
+   Atalhos e filtros da tela de chamados
+===================== */
 
 function selecionarCategoriaRapida(categoria, botao) {
   const campoCategoria = document.getElementById("categoriaChamado");

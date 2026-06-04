@@ -1,3 +1,16 @@
+/* =====================================================
+   STATE - ESTADO GLOBAL DA APLICAÇÃO
+
+   Responsabilidades:
+   - manter usuário atual;
+   - armazenar coleções carregadas do Firestore;
+   - controlar filtros, seleção atual e listeners em tempo real.
+
+   Atenção:
+   - variáveis deste arquivo são compartilhadas por vários módulos globais;
+   - não renomear sem revisar todos os arquivos JS.
+===================================================== */
+
 const USUARIO_PADRAO = {
   id: "",
   nome: "Colaborador",

@@ -1,6 +1,19 @@
 /* =====================================================
-   CHAMADOS - FORMULARIO E MONTAGEM DA OS
+   CHAMADOS FORM - FORMULÁRIO E MONTAGEM DA OS
+
+   Responsabilidades:
+   - localizar campos do formulário de abertura de OS;
+   - ler, validar e normalizar valores informados;
+   - montar objeto de chamado antes da gravação;
+   - limpar campos após envio.
+
+   Atenção:
+   - depende diretamente dos IDs existentes no index.html.
 ===================================================== */
+
+/* =====================
+   Leitura dos campos do formulário
+===================== */
 
 function obterCamposFormularioChamado() {
   const campos = {
@@ -54,6 +67,10 @@ function obterValorCampoChamado(campo) {
   return String(campo.value || "").trim();
 }
 
+/* =====================
+   Validação da OS
+===================== */
+
 function validarValoresFormularioChamado(valores) {
   const regras = [
     ["Escolher o andar", valores.andar],
@@ -98,6 +115,10 @@ function marcarCamposObrigatoriosChamado(campos, camposPendentes) {
     }
   });
 }
+
+/* =====================
+   Montagem do objeto de OS
+===================== */
 
 function montarObjetoChamado({ numeroOS, dataAtual, valores, fotosAnexadas, fotoPrincipal }) {
   const usuario = usuarioAtual || {};
@@ -224,6 +245,10 @@ function gerarNumeroOS(data) {
 
   return `OS-${ano}${mes}${dia}-${hora}${minuto}${segundo}`;
 }
+
+/* =====================
+   Limpeza do formulário
+===================== */
 
 function limparFormularioChamado() {
   const campos = [

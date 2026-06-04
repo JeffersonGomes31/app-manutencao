@@ -130,9 +130,15 @@ function montarDocumentoTabelaExportacao({ titulo, lista, formato }) {
         </style>
       </head>
       <body>
-        ${formato === "pdf" ? `<div class="no-print"><button onclick="window.print()">Imprimir / salvar em PDF</button></div>` : ""}
+        ${formato === "pdf" ? `<div class="no-print"><button type="button" id="botao-imprimir-relatorio">Imprimir / salvar em PDF</button></div>` : ""}
         <h1>${escaparHTML(titulo)}</h1>
         <p class="resumo">Senac Campo Mourão • Gerado em ${escaparHTML(dataGeracao)} • Total: ${lista.length} OS • Exportação sem imagens/anexos</p>
+
+        ${formato === "pdf" ? `<script>
+          document.getElementById("botao-imprimir-relatorio")?.addEventListener("click", function () {
+            window.print();
+          });
+        <\/script>` : ""}
         <table>
           <thead>
             <tr>${cabecalho}</tr>

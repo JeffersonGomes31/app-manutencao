@@ -191,22 +191,22 @@ function criarCardAtivo(ativo) {
       <p><strong>Histórico:</strong> ${totalOS} OS vinculada(s), ${abertas} em aberto</p>
       <span class="asset-qr-link">${escaparHTML(urlQr)}</span>
       <div class="qr-actions">
-        <button type="button" class="primary-button" onclick="prepararOSDoAtivo(${formatarParametroJS(ativo.codigo)})">
+        <button type="button" class="primary-button" data-dynamic-action="prepararOSDoAtivo" data-param0="${formatarAtributoHTML(ativo.codigo)}">
           Abrir OS
         </button>
-        <button type="button" class="secondary-button" onclick="mostrarHistoricoAtivo(${formatarParametroJS(ativo.codigo)})">
+        <button type="button" class="secondary-button" data-dynamic-action="mostrarHistoricoAtivo" data-param0="${formatarAtributoHTML(ativo.codigo)}">
           Histórico
         </button>
-        <button type="button" class="secondary-button" onclick="imprimirEtiquetaAtivo(${formatarParametroJS(ativo.codigo)})">
+        <button type="button" class="secondary-button" data-dynamic-action="imprimirEtiquetaAtivo" data-param0="${formatarAtributoHTML(ativo.codigo)}">
           Imprimir etiqueta
         </button>
       </div>
       ${usuarioEhManutencaoAutorizada() ? `
         <div class="qr-actions">
-          <button type="button" class="secondary-button" onclick="prepararPlanoPreventivoDoAtivo(${formatarParametroJS(ativo.codigo)})">
+          <button type="button" class="secondary-button" data-dynamic-action="prepararPlanoPreventivoDoAtivo" data-param0="${formatarAtributoHTML(ativo.codigo)}">
             Criar preventiva
           </button>
-          <button type="button" class="danger-button" onclick="excluirAtivo(${formatarParametroJS(ativo.id)}, ${formatarParametroJS(ativo.codigo)})">
+          <button type="button" class="danger-button" data-dynamic-action="excluirAtivo" data-param0="${formatarAtributoHTML(ativo.id)}" data-param1="${formatarAtributoHTML(ativo.codigo)}">
             Excluir ativo
           </button>
         </div>
@@ -247,7 +247,7 @@ function criarHTMLHistoricoAtivo(historico, codigo) {
   }
 
   return historico.map(chamado => `
-    <div class="ticket-row" onclick="abrirDetalhesChamado(${formatarParametroJS(chamado.id)})">
+    <div class="ticket-row" data-dynamic-action="abrirDetalhesChamado" data-param0="${formatarAtributoHTML(chamado.id)}">
       <div>
         <strong>${escaparHTML(chamado.numeroOS || chamado.id)}</strong>
         <span>${escaparHTML(chamado.categoria || "Categoria não informada")}${chamado.subcategoria ? ` / ${escaparHTML(chamado.subcategoria)}` : ""}</span>

@@ -1,6 +1,19 @@
 /* =====================================================
-   PLANOS PREVENTIVOS / MANUTENÇÃO RECORRENTE
+   PREVENTIVAS - PLANOS E ROTINAS DE MANUTENÇÃO
+
+   Responsabilidades:
+   - listar planos preventivos;
+   - calcular vencimentos e indicadores;
+   - criar, editar, inativar e gerar OS preventiva;
+   - controlar rotinas restritas à manutenção.
+
+   Atenção:
+   - funcionalidade restrita; validar perfil manutenção após qualquer ajuste.
 ===================================================== */
+
+/* =====================
+   Renderização e resumo
+===================== */
 
 function renderizarPlanosPreventivos() {
   const lista = document.getElementById("listaPlanosPreventivos");
@@ -76,13 +89,13 @@ function criarCardPlanoPreventivo(plano) {
 
       <div class="preventive-actions">
         ${podeGerarOS ? `
-          <button type="button" class="primary-button" onclick="gerarOSPreventiva(${formatarParametroJS(plano.id)})">
+          <button type="button" class="primary-button" data-dynamic-action="gerarOSPreventiva" data-param0="${formatarAtributoHTML(plano.id)}">
             Gerar OS preventiva
           </button>
         ` : ""}
 
         ${podeInativar ? `
-          <button type="button" class="secondary-button" onclick="inativarPlanoPreventivo(${formatarParametroJS(plano.id)})">
+          <button type="button" class="secondary-button" data-dynamic-action="inativarPlanoPreventivo" data-param0="${formatarAtributoHTML(plano.id)}">
             Inativar plano
           </button>
         ` : ""}
@@ -90,6 +103,10 @@ function criarCardPlanoPreventivo(plano) {
     </div>
   `;
 }
+
+/* =====================
+   Criação e edição de planos
+===================== */
 
 async function salvarPlanoPreventivo() {
   if (!usuarioEhManutencaoAutorizada()) {
@@ -167,6 +184,10 @@ async function salvarPlanoPreventivo() {
     alert("Não foi possível cadastrar o plano preventivo no Firebase.");
   }
 }
+
+/* =====================
+   Geração de OS preventiva
+===================== */
 
 async function gerarOSPreventiva(planoId) {
   if (!usuarioEhManutencaoAutorizada()) {
@@ -330,6 +351,14 @@ function atualizarSubcategoriasPlanoPreventivo() {
     subcategoriaInput.appendChild(option);
   });
 }
+
+/* =====================
+   Filtros de planos
+===================== */
+
+/* =====================
+   Filtros e cálculos auxiliares
+===================== */
 
 function filtrarPlanosPreventivos(planos) {
   const filtro = document.getElementById("filtroSituacaoPreventiva")?.value || "TODAS";

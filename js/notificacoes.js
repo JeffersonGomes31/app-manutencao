@@ -1,5 +1,14 @@
 /* =====================================================
-   NOTIFICAÇÕES INTERNAS
+   NOTIFICAÇÕES - INTERFACE E AÇÕES DO USUÁRIO
+
+   Responsabilidades:
+   - renderizar notificações;
+   - marcar itens como lidos;
+   - exibir contador e popup de notificações;
+   - respeitar o perfil e o usuário autenticado.
+
+   Atenção:
+   - depende da coleção notificacoes e do usuário atual.
 ===================================================== */
 
 function renderizarNotificacoes() {
@@ -46,9 +55,9 @@ function criarCardNotificacao(notificacao) {
   const classeEstado = lida ? "read" : "unread";
   const botaoLida = lida
     ? `<button type="button" class="notification-action-button" disabled>Lida</button>`
-    : `<button type="button" class="notification-action-button" onclick="marcarNotificacaoComoLida(${formatarParametroJS(notificacao.id)}, this)">Marcar como lida</button>`;
+    : `<button type="button" class="notification-action-button" data-dynamic-action="marcarNotificacaoComoLida" data-param0="${formatarAtributoHTML(notificacao.id)}" data-pass-element="true">Marcar como lida</button>`;
   const botaoAbrirChamado = notificacao.chamadoId
-    ? `<button type="button" class="notification-action-button blue" onclick="abrirChamadoPelaNotificacao(${formatarParametroJS(notificacao.id)}, ${formatarParametroJS(notificacao.chamadoId)})">Abrir chamado</button>`
+    ? `<button type="button" class="notification-action-button blue" data-dynamic-action="abrirChamadoPelaNotificacao" data-param0="${formatarAtributoHTML(notificacao.id)}" data-param1="${formatarAtributoHTML(notificacao.chamadoId)}">Abrir chamado</button>`
     : "";
 
   return `
@@ -79,19 +88,11 @@ function abrirPainelNotificacoes() {
 
   renderizarNotificacoes();
 
-  const modal = document.getElementById("modalNotificacoes");
-
-  if (modal) {
-    modal.classList.add("active");
-  }
+  abrirModalPorId("modalNotificacoes");
 }
 
 function fecharPainelNotificacoes() {
-  const modal = document.getElementById("modalNotificacoes");
-
-  if (modal) {
-    modal.classList.remove("active");
-  }
+  fecharModalPorId("modalNotificacoes");
 }
 
 async function marcarNotificacaoComoLida(id, botao) {

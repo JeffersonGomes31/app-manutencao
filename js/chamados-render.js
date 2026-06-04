@@ -1,6 +1,19 @@
 /* =====================================================
-   CHAMADOS - LISTAGEM, FILTROS E SLA
+   CHAMADOS RENDER - LISTAGEM, FILTROS E SLA
+
+   Responsabilidades:
+   - filtrar chamados visíveis conforme perfil;
+   - renderizar cards de OS;
+   - aplicar busca, filtros, ordenação e indicadores visuais;
+   - formatar informações exibidas ao usuário.
+
+   Atenção:
+   - alterações aqui afetam a visualização de colaborador, gerência e manutenção.
 ===================================================== */
+
+/* =====================
+   Visibilidade por perfil
+===================== */
 
 function obterChamadosVisiveis() {
   if (typeof usuarioPossuiPerfil === "function"
@@ -11,6 +24,10 @@ function obterChamadosVisiveis() {
 
   return chamados;
 }
+
+/* =====================
+   Renderização das listas
+===================== */
 
 function renderizarChamados() {
   const listaChamados = document.getElementById("listaChamados") || document.getElementById("listaOS");
@@ -36,6 +53,10 @@ function renderizarChamados() {
     atualizarResumoPerfil();
   }
 }
+
+/* =====================
+   Busca, filtros e ordenação
+===================== */
 
 function obterChamadosFiltrados(lista) {
   let chamadosFiltrados = [...lista];
@@ -72,14 +93,9 @@ function montarTextoBuscaChamado(chamado) {
   ].join(" ").toLowerCase();
 }
 
-function criarMensagemVazia(titulo, texto) {
-  return `
-    <div class="empty-card">
-      <h3>${escaparHTML(titulo)}</h3>
-      <p>${escaparHTML(texto)}</p>
-    </div>
-  `;
-}
+/* =====================
+   Montagem visual do card
+===================== */
 
 function criarCardChamado(chamado) {
   const statusClasse = obterClasseStatus(chamado.status);
@@ -90,7 +106,7 @@ function criarCardChamado(chamado) {
     : `${sla.texto} • vence em ${formatarVencimentoSLA(chamado)}`;
 
   return `
-    <div class="ticket" onclick="abrirDetalhesChamado(${formatarParametroJS(chamado.id)})">
+    <div class="ticket" data-dynamic-action="abrirDetalhesChamado" data-param0="${formatarAtributoHTML(chamado.id)}">
       <div class="ticket-icon ${iconeClasse}">
         ${pegarIconeCategoria(chamado.categoria)}
       </div>
@@ -216,17 +232,6 @@ function ordenarChamadosPorPrioridade(lista) {
   });
 }
 
-function obterPrazoHoras(prioridade) {
-  const prazos = {
-    Urgente: 0,
-    Alta: 1,
-    Média: 24,
-    Baixa: 72
-  };
-
-  return prazos[prioridade] ?? 72;
-}
-
 function calcularSLA(chamado) {
   if (chamado.status === "ENCERRADO") {
     return { texto: "Encerrado", classe: "sla-green" };
@@ -248,9 +253,7 @@ function calcularSLA(chamado) {
     return { texto: "Atendimento imediato", classe: "sla-red" };
   }
 
-  const criadoEm = obterDataValida(chamado.criadoEm, chamado.data);
-  const prazoHoras = obterPrazoHoras(chamado.prioridade);
-  const vencimento = new Date(criadoEm.getTime() + prazoHoras * 60 * 60 * 1000);
+  const vencimento = calcularVencimentoChamado(chamado);
   const diferencaMs = vencimento - new Date();
   const diferencaHoras = Math.ceil(diferencaMs / (1000 * 60 * 60));
 
@@ -270,17 +273,7 @@ function formatarVencimentoSLA(chamado) {
     return "Imediatamente";
   }
 
-  const criadoEm = obterDataValida(chamado.criadoEm, chamado.data);
-  const prazoHoras = obterPrazoHoras(chamado.prioridade);
-  const vencimento = new Date(criadoEm.getTime() + prazoHoras * 60 * 60 * 1000);
-
-  return vencimento.toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
+  return formatarDataHoraBR(calcularVencimentoChamado(chamado));
 }
 
 function chamadoEstaAtrasado(chamado) {

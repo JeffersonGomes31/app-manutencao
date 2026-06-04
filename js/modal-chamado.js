@@ -273,11 +273,11 @@ function renderizarFotoDetalhe(chamado) {
       <div class="foto-preview-grid">
         ${fotos.map((foto, indice) => `
           <div class="foto-preview-wrapper">
-            <button type="button" class="foto-preview-button" onclick="abrirFotoChamadoAtual(${indice})">
+            <button type="button" class="foto-preview-button" data-dynamic-action="abrirFotoChamadoAtual" data-param0="${formatarAtributoHTML(indice)}">
               <img class="foto-preview" src="${foto.data}" alt="${escaparHTML(foto.nome)}" />
             </button>
             <small>${escaparHTML(`${indice + 1}/${fotos.length} • ${foto.nome}`)}</small>
-            <button type="button" class="foto-preview-link" onclick="abrirFotoChamadoAtual(${indice})">
+            <button type="button" class="foto-preview-link" data-dynamic-action="abrirFotoChamadoAtual" data-param0="${formatarAtributoHTML(indice)}">
               Visualizar foto
             </button>
           </div>
@@ -290,11 +290,11 @@ function renderizarFotoDetalhe(chamado) {
       <div class="foto-preview-grid">
         ${fotosFinalizacao.map((foto, indice) => `
           <div class="foto-preview-wrapper">
-            <button type="button" class="foto-preview-button" onclick="abrirFotoFinalizacaoChamadoAtual(${indice})">
+            <button type="button" class="foto-preview-button" data-dynamic-action="abrirFotoFinalizacaoChamadoAtual" data-param0="${formatarAtributoHTML(indice)}">
               <img class="foto-preview" src="${foto.data}" alt="${escaparHTML(foto.nome)}" />
             </button>
             <small>${escaparHTML(`${indice + 1}/${fotosFinalizacao.length} • ${foto.nome}`)}</small>
-            <button type="button" class="foto-preview-link" onclick="abrirFotoFinalizacaoChamadoAtual(${indice})">
+            <button type="button" class="foto-preview-link" data-dynamic-action="abrirFotoFinalizacaoChamadoAtual" data-param0="${formatarAtributoHTML(indice)}">
               Visualizar foto
             </button>
           </div>

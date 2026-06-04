@@ -73,7 +73,7 @@ function renderizarComunicados() {
 function criarCardComunicado(comunicado, mostrarAcao) {
   const botaoExcluir = usuarioEhManutencaoAutorizada() && mostrarAcao
     ? `
-      <button type="button" class="notice-delete-button" onclick="excluirComunicado(${formatarParametroJS(comunicado.id)})">
+      <button type="button" class="notice-delete-button" data-dynamic-action="excluirComunicado" data-param0="${formatarAtributoHTML(comunicado.id)}">
         Excluir
       </button>
     `
