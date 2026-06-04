@@ -1,6 +1,0 @@
-Corrige falha internal no cadastro por convite
-
-- Evita cancelar cadastro quando o envio pelo Resend falha
-- Retorna link de criação de senha para uso manual em contingência
-- Melhora diagnóstico de falha no envio de convite
-- Mantém login por e-mail e senha para todos os perfis
