@@ -180,34 +180,17 @@
   font-size: 18px;
 }
 
-/* Etapa 12 — textos institucionais da tela de login */
+/* Etapa 10 — inclusão da logo na tela de login */
 .login-header {
   text-align: center;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 
-.login-header h1 {
-  margin: 0;
-  color: var(--text-dark);
-  font-size: 28px;
-  line-height: 1.12;
-  font-weight: 900;
-}
-
-.login-header p {
-  margin: 10px 0 0;
-  color: var(--text-muted);
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.login-accent-line {
+.login-brand-logo {
   display: block;
-  width: 82px;
-  height: 3px;
-  border-radius: 999px;
-  background: #f97316;
-  margin: 12px auto 0;
+  width: min(100%, 460px);
+  height: auto;
+  margin: 0 auto;
 }
 
 .login-access-card {
@@ -229,7 +212,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 18px 0;
+  margin: 10px 0;
   color: var(--text-muted);
   font-size: 13px;
   font-weight: 900;
@@ -246,8 +229,8 @@
 .login-divider span {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   border-radius: 999px;
   background: #fff;
   border: 1px solid rgba(15, 23, 42, 0.1);
@@ -280,11 +263,190 @@
 }
 
 @media (max-width: 520px) {
-  .login-header h1 {
-    font-size: 24px;
+  .login-header {
+    margin-bottom: 16px;
+  }
+
+  .login-brand-logo {
+    width: min(100%, 420px);
   }
 
   .login-access-card {
     padding: 18px 16px;
   }
+
+  .login-divider {
+    margin: 8px 0;
+  }
+}
+
+/* Etapa 11 — ajuste fino da tela de login para melhor encaixe em telas menores */
+#areaFormularioPerfil.profile-form-card {
+  padding: 12px;
+  gap: 7px;
+}
+
+#areaFormularioPerfil .login-header {
+  margin-bottom: 2px;
+}
+
+#areaFormularioPerfil .login-brand-logo {
+  width: min(100%, 340px);
+  background: transparent;
+}
+
+#areaFormularioPerfil .login-access-card {
+  padding: 14px;
+  border-radius: 16px;
+}
+
+#areaFormularioPerfil .login-access-card h2 {
+  font-size: 17px;
+  margin-bottom: 4px;
+}
+
+#areaFormularioPerfil .login-access-card .form-help {
+  font-size: 12px;
+  line-height: 1.22;
+}
+
+#areaFormularioPerfil label {
+  gap: 4px;
+  font-size: 12.5px;
+  line-height: 1.2;
+}
+
+#areaFormularioPerfil input {
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+#areaFormularioPerfil .primary-button,
+#areaFormularioPerfil .secondary-button {
+  height: 46px;
+  border-radius: 14px;
+  font-size: 14px;
+}
+
+#areaFormularioPerfil .primary-button {
+  margin-top: 4px;
+}
+
+#areaFormularioPerfil .secondary-button {
+  margin-top: 7px;
+}
+
+#areaFormularioPerfil .login-divider {
+  margin: -1px 0;
+  gap: 10px;
+}
+
+#areaFormularioPerfil .login-divider span {
+  width: 30px;
+  height: 30px;
+  font-size: 12px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
+}
+
+#areaFormularioPerfil.profile-form-card .maintenance-login-box {
+  padding-top: 14px;
+}
+
+#areaFormularioPerfil .login-secure-note {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+}
+
+@media (max-width: 520px) {
+  #areaFormularioPerfil.profile-form-card {
+    padding: 10px;
+    gap: 6px;
+  }
+
+  #areaFormularioPerfil .login-brand-logo {
+    width: min(100%, 315px);
+  }
+
+  #areaFormularioPerfil .login-access-card {
+    padding: 12px;
+  }
+
+  #areaFormularioPerfil input {
+    padding: 9px 11px;
+  }
+
+  #areaFormularioPerfil .primary-button,
+  #areaFormularioPerfil .secondary-button {
+    height: 44px;
+  }
+
+  #areaFormularioPerfil .login-divider {
+    margin: -2px 0;
+  }
+}
+
+@media (max-height: 760px) {
+  #areaFormularioPerfil .login-brand-logo {
+    width: min(100%, 285px);
+  }
+
+  #areaFormularioPerfil .login-access-card {
+    padding: 10px 12px;
+  }
+
+  #areaFormularioPerfil input {
+    padding: 8px 10px;
+  }
+
+  #areaFormularioPerfil .primary-button,
+  #areaFormularioPerfil .secondary-button {
+    height: 42px;
+  }
+
+  #areaFormularioPerfil .login-secure-note {
+    font-size: 12px;
+  }
+}
+
+/* Etapa 12 — reforço de contraste da tela de login sem trocar fonte */
+#areaFormularioPerfil .login-access-card h2 {
+  color: #0f172a;
+}
+
+#areaFormularioPerfil .login-access-card .form-help,
+#areaFormularioPerfil .login-secure-note,
+#areaFormularioPerfil .login-divider {
+  color: #4b5563;
+}
+
+#areaFormularioPerfil label {
+  color: #111827;
+  font-weight: 850;
+}
+
+#areaFormularioPerfil input {
+  color: #111827;
+  border-color: #d6deec;
+  background: #ffffff;
+}
+
+#areaFormularioPerfil input::placeholder {
+  color: #6b7280;
+  opacity: 1;
+}
+
+#areaFormularioPerfil .login-divider::before,
+#areaFormularioPerfil .login-divider::after {
+  background: rgba(15, 23, 42, 0.16);
+}
+
+#areaFormularioPerfil .primary-button {
+  background: #1d6fe8;
+  border-color: #1d6fe8;
+}
+
+#areaFormularioPerfil .secondary-button {
+  background: #ff6a00;
+  border-color: #ff6a00;
 }
