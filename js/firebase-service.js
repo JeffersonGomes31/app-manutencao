@@ -319,20 +319,12 @@ async function excluirComunicadoFirebase(id) {
 
 
 function observarNotificacoesFirebase(usuario, callback, callbackErro) {
-  if (!usuario || !usuario.id) {
-    callback([]);
-    return function cancelarMonitorVazio() {};
-  }
-
-  const perfilNormalizado = normalizarPerfilUsuario(usuario.perfil);
   let consulta = firebaseDb.collection(COLLECTIONS.NOTIFICACOES);
 
-  if (perfilNormalizado === PERFIS_USUARIO.MANUTENCAO) {
-    consulta = consulta.where("destinatarioPerfil", "==", PERFIS_USUARIO.MANUTENCAO);
-  } else if (perfilNormalizado === PERFIS_USUARIO.GERENCIA) {
-    consulta = consulta.where("destinatarioPerfil", "==", PERFIS_USUARIO.GERENCIA);
-  } else {
+  if (!perfilPode(usuario.perfil, PERMISSOES_APP.VER_TODAS_OS)) {
     consulta = consulta.where("destinatarioUid", "==", usuario.id);
+  } else {
+    consulta = consulta.where("destinatarioPerfil", "==", PERFIS_USUARIO.MANUTENCAO);
   }
 
   return consulta.onSnapshot(snapshot => {

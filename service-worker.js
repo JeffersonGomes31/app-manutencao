@@ -1,4 +1,4 @@
-const CACHE_NAME = 'app-manutencao-spark-restaurado-v3-notificacoes';
+const CACHE_NAME = "app-manutencao-diagnostico-inicial-v1";
 
 const FILES_TO_CACHE = [
   "./",
