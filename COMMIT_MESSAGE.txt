@@ -1,0 +1,8 @@
+Restaura versão Spark com regras corretas do Firestore
+
+- Remove dependência operacional de Cloud Functions
+- Mantém fluxo original de colaborador por nome/setor
+- Mantém manutenção e gerência por e-mail/senha
+- Adiciona firebase.json sem Functions
+- Corrige regras para diagnosticos e notificacoes
+- Atualiza cache do service worker para evitar arquivos antigos
