@@ -358,7 +358,7 @@
               <option value="Baixa">Baixa</option>
               <option value="Média">Média</option>
               <option value="Alta">Alta</option>
-              <option value="Crítica">Crítica</option>
+              <option value="Urgente">Urgente</option>
             </select>
           </label>
         </div>
@@ -1304,6 +1304,21 @@
         <h3>Histórico da OS</h3>
         <div id="detalheHistorico">
           <!-- O histórico será carregado aqui -->
+        </div>
+      </div>
+
+      <div id="areaControlePrioridadeOS" class="priority-control-box priority-control-box-actions" style="display: none;">
+        <label for="seletorPrioridadeOS">Ajustar prioridade</label>
+        <div class="priority-control-row">
+          <select id="seletorPrioridadeOS">
+            <option value="Baixa">Baixa</option>
+            <option value="Média">Média</option>
+            <option value="Alta">Alta</option>
+            <option value="Urgente">Urgente</option>
+          </select>
+          <button type="button" class="secondary-button priority-control-button" data-action="alterar-prioridade-chamado">
+            Salvar
+          </button>
         </div>
       </div>
 

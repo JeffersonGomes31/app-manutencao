@@ -43,6 +43,7 @@
     "limpar-filtros-painel": () => executarAcao("limparFiltrosPainel"),
     "fechar-detalhes-chamado": () => executarAcao("fecharDetalhesChamado"),
     "cancelar-chamado-atual": elemento => executarAcao("cancelarChamadoAtual", elemento),
+    "alterar-prioridade-chamado": elemento => executarAcao("alterarPrioridadeChamadoAtual", elemento),
     "fechar-visualizacao-foto": () => executarAcao("fecharVisualizacaoFoto"),
     "fechar-painel-notificacoes": () => executarAcao("fecharPainelNotificacoes"),
     "marcar-todas-notificacoes-lidas": () => executarAcao("marcarTodasNotificacoesComoLidas")

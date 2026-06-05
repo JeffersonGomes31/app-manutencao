@@ -160,7 +160,7 @@ function criarCardChamado(chamado) {
 
 
 function obterClassePrioridade(prioridade) {
-  if (prioridade === "Urgente" || prioridade === "Alta") {
+  if (prioridade === "Urgente" || prioridade === "Crítica" || prioridade === "Alta") {
     return "priority-high";
   }
 
@@ -180,7 +180,7 @@ function obterClasseBordaPrioridade(prioridade, status) {
     return "ticket-priority-done";
   }
 
-  if (prioridade === "Urgente" || prioridade === "Alta") {
+  if (prioridade === "Urgente" || prioridade === "Crítica" || prioridade === "Alta") {
     return "ticket-priority-high";
   }
 
@@ -229,7 +229,7 @@ function obterPesoStatus(chamado) {
     return 100;
   }
 
-  if (chamado.prioridade === "Urgente") {
+  if (chamado.prioridade === "Urgente" || chamado.prioridade === "Crítica") {
     return 1;
   }
 
@@ -307,7 +307,7 @@ function calcularSLA(chamado) {
     return { texto: "Cancelado", classe: "sla-red" };
   }
 
-  if (chamado.prioridade === "Urgente") {
+  if (chamado.prioridade === "Urgente" || chamado.prioridade === "Crítica") {
     return { texto: "Atendimento imediato", classe: "sla-red" };
   }
 
@@ -327,7 +327,7 @@ function calcularSLA(chamado) {
 }
 
 function formatarVencimentoSLA(chamado) {
-  if (chamado.prioridade === "Urgente") {
+  if (chamado.prioridade === "Urgente" || chamado.prioridade === "Crítica") {
     return "Imediatamente";
   }
 

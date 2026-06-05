@@ -82,6 +82,20 @@ service cloud.firestore {
         ]);
     }
 
+    function gerenciaPodeAlterarPrioridadeChamado() {
+      return ehGerencia()
+        && resource.data.status in ["ABERTO", "EM ANDAMENTO", "AGUARDANDO"]
+        && request.resource.data.prioridade in ["Baixa", "Média", "Alta", "Crítica", "Urgente"]
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "prioridade",
+          "historico",
+          "prioridadeAlteradaPorUid",
+          "prioridadeAlteradaPorNome",
+          "prioridadeAlteradaEmISO",
+          "atualizadoEm"
+        ]);
+    }
+
     function usuarioPodeMarcarNotificacaoComoLida() {
       return estaAutenticado()
         && resource.data.destinatarioUid == request.auth.uid
@@ -108,7 +122,7 @@ service cloud.firestore {
     match /chamados/{id} {
       allow read: if podeAcompanharTodosChamados() || ehAutorChamado(resource.data);
       allow create: if ehManutencao() || gerenciaPodeCriarChamado() || colaboradorPodeCriarChamado();
-      allow update: if ehManutencao() || podeCancelarProprioChamado();
+      allow update: if ehManutencao() || podeCancelarProprioChamado() || gerenciaPodeAlterarPrioridadeChamado();
       allow delete: if ehManutencao();
     }
 

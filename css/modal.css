@@ -304,3 +304,132 @@
   font-size: 13px;
   color: #334155;
 }
+
+/* Controle administrativo de prioridade da OS */
+.detail-item-prioridade {
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.priority-control-box {
+  width: 100%;
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.priority-control-box label {
+  display: block;
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #64748b;
+}
+
+.priority-control-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 96px;
+  gap: 8px;
+  align-items: center;
+}
+
+.priority-control-row select {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid #dbe4f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--text);
+  font-weight: 800;
+  outline: none;
+}
+
+.priority-control-row select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+}
+
+.priority-control-button {
+  min-height: 36px;
+  padding: 0 12px;
+  margin: 0;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  background: #f8fbff;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+  box-shadow: none;
+}
+
+.priority-control-button:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.priority-control-button:active {
+  background: #dbeafe;
+}
+
+@media (max-width: 360px) {
+  .priority-control-row {
+    grid-template-columns: 1fr 84px;
+    gap: 6px;
+  }
+
+  .priority-control-button {
+    padding: 0 10px;
+  }
+}
+
+/* Ajuste v13 - controle de prioridade alocado junto às ações do modal */
+.priority-control-box-actions {
+  margin: 12px 0 10px;
+  padding: 12px;
+  border: 1px solid #e6edf7;
+  border-radius: 14px;
+  background: #f8fbff;
+}
+
+.priority-control-box-actions label {
+  margin-bottom: 8px;
+  color: #1f2a44;
+}
+
+.priority-control-box-actions .priority-control-row {
+  grid-template-columns: minmax(0, 1fr) 86px;
+}
+
+.priority-control-box-actions .priority-control-button {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.priority-control-box-actions .priority-control-button:hover {
+  filter: brightness(0.97);
+}
+
+@media (max-width: 430px) {
+  .priority-control-box-actions {
+    margin: 10px 0 8px;
+    padding: 10px;
+  }
+
+  .priority-control-box-actions .priority-control-row {
+    grid-template-columns: minmax(0, 1fr) 78px;
+    gap: 7px;
+  }
+
+  .priority-control-box-actions .priority-control-button {
+    min-height: 34px;
+    padding: 0 10px;
+    font-size: 11px;
+  }
+}

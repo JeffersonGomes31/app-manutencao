@@ -28,6 +28,7 @@ function abrirDetalhesChamado(id) {
   setTextContent("detalheSubcategoria", chamado.subcategoria || "Não informada");
   setTextContent("detalheTipoManutencao", chamado.tipoManutencao || "Corretiva");
   setTextContent("detalhePrioridade", chamado.prioridade);
+  configurarSeletorPrioridadeOS(chamado);
   setTextContent("detalheDescricao", chamado.descricao);
 
   preencherFotoDetalhe(chamado);
@@ -88,6 +89,155 @@ function configurarControlesDoModal(chamado) {
 
   if (areaControleColaborador) {
     areaControleColaborador.style.display = chamadoPodeSerCancelado(chamado) ? "block" : "none";
+  }
+
+  configurarSeletorPrioridadeOS(chamado);
+}
+
+function obterPrioridadesPermitidasOS(chamado) {
+  const seletorCriacaoOS = document.getElementById("prioridadeChamado");
+  const prioridadesDoFormulario = seletorCriacaoOS
+    ? Array.from(seletorCriacaoOS.options).map(opcao => opcao.value).filter(Boolean)
+    : [];
+
+  const prioridadesConstantes = window.APP_CONSTANTS && Array.isArray(window.APP_CONSTANTS.PRIORIDADES_OS_LISTA)
+    ? window.APP_CONSTANTS.PRIORIDADES_OS_LISTA
+    : [];
+
+  const prioridadesBase = prioridadesDoFormulario.length > 0
+    ? [...prioridadesDoFormulario]
+    : (prioridadesConstantes.length > 0 ? [...prioridadesConstantes] : ["Baixa", "Média", "Alta", "Urgente"]);
+
+  const prioridadeAtual = chamado && chamado.prioridade ? String(chamado.prioridade) : "";
+
+  if (prioridadeAtual && !prioridadesBase.includes(prioridadeAtual)) {
+    prioridadesBase.push(prioridadeAtual);
+  }
+
+  return prioridadesBase;
+}
+
+function statusPermiteAlterarPrioridade(chamado) {
+  if (!chamado || !chamado.status) {
+    return false;
+  }
+
+  return ["ABERTO", "EM ANDAMENTO", "AGUARDANDO"].includes(chamado.status);
+}
+
+function usuarioPodeAlterarPrioridadeOS(chamado) {
+  if (!chamado || !statusPermiteAlterarPrioridade(chamado)) {
+    return false;
+  }
+
+  return usuarioEhManutencaoAutorizada() || usuarioEhGerencia();
+}
+
+function configurarSeletorPrioridadeOS(chamado) {
+  const areaControlePrioridade = document.getElementById("areaControlePrioridadeOS");
+  const seletorPrioridade = document.getElementById("seletorPrioridadeOS");
+
+  if (!areaControlePrioridade || !seletorPrioridade) {
+    return;
+  }
+
+  if (!usuarioPodeAlterarPrioridadeOS(chamado)) {
+    areaControlePrioridade.style.display = "none";
+    return;
+  }
+
+  const prioridades = obterPrioridadesPermitidasOS(chamado);
+  seletorPrioridade.innerHTML = prioridades
+    .map(prioridade => `<option value="${formatarAtributoHTML(prioridade)}">${escaparHTML(prioridade)}</option>`)
+    .join("");
+  seletorPrioridade.value = chamado.prioridade || prioridades[0] || "Baixa";
+  areaControlePrioridade.style.display = "block";
+}
+
+async function alterarPrioridadeChamadoAtual(botao) {
+  const chamado = obterChamadoSelecionado();
+  const seletorPrioridade = document.getElementById("seletorPrioridadeOS");
+
+  if (!chamado) {
+    await appFeedback("Selecione uma OS antes de alterar a prioridade.", { tipo: "aviso", titulo: "Nenhuma OS selecionada" });
+    return;
+  }
+
+  if (!usuarioPodeAlterarPrioridadeOS(chamado)) {
+    await appFeedback("A prioridade só pode ser alterada pela gerência ou manutenção enquanto a OS estiver aberta, em andamento ou aguardando.", { tipo: "aviso", titulo: "Alteração não permitida" });
+    return;
+  }
+
+  if (!seletorPrioridade) {
+    await appFeedback("Não foi possível localizar o seletor de prioridade. Atualize a página e tente novamente.", { tipo: "erro", titulo: "Controle indisponível" });
+    return;
+  }
+
+  const prioridadeAnterior = chamado.prioridade || "Não informada";
+  const novaPrioridade = seletorPrioridade.value;
+
+  if (!novaPrioridade) {
+    await appFeedback("Escolha uma prioridade antes de salvar.", { tipo: "aviso", titulo: "Prioridade não selecionada" });
+    return;
+  }
+
+  if (novaPrioridade === prioridadeAnterior) {
+    await appFeedback("A prioridade selecionada já está aplicada nesta OS.", { tipo: "info", titulo: "Sem alteração" });
+    return;
+  }
+
+  const itemHistorico = {
+    data: new Date().toLocaleString("pt-BR"),
+    acao: "Prioridade alterada pela gerência",
+    descricao: `Prioridade alterada de "${prioridadeAnterior}" para "${novaPrioridade}" por ${usuarioAtual.nome || "usuário autorizado"}.`
+  };
+
+  if (usuarioEhManutencaoAutorizada() && !usuarioEhGerencia()) {
+    itemHistorico.acao = "Prioridade alterada pela manutenção";
+  }
+
+  try {
+    if (botao) {
+      botao.disabled = true;
+      botao.dataset.textoOriginal = botao.textContent;
+      botao.textContent = "Salvando...";
+    }
+
+    await atualizarChamadoFirebase(chamado.id, {
+      prioridade: novaPrioridade,
+      historico: adicionarItemArrayFirebase(itemHistorico),
+      prioridadeAlteradaPorUid: usuarioAtual.id,
+      prioridadeAlteradaPorNome: usuarioAtual.nome || "Usuário autorizado",
+      prioridadeAlteradaEmISO: new Date().toISOString()
+    });
+
+    chamado.prioridade = novaPrioridade;
+    chamado.historico = Array.isArray(chamado.historico) ? [...chamado.historico, itemHistorico] : [itemHistorico];
+    chamado.prioridadeAlteradaPorUid = usuarioAtual.id;
+    chamado.prioridadeAlteradaPorNome = usuarioAtual.nome || "Usuário autorizado";
+    chamado.prioridadeAlteradaEmISO = new Date().toISOString();
+
+    setTextContent("detalhePrioridade", novaPrioridade);
+    preencherSLADetalhe(chamado);
+    preencherHistoricoDetalhe(chamado);
+    renderizarChamados();
+
+    await appFeedback(`Prioridade da OS alterada para ${novaPrioridade}.\nA alteração foi registrada no histórico.`, { tipo: "sucesso", titulo: "Prioridade atualizada" });
+  } catch (erro) {
+    console.error("Erro ao alterar prioridade da OS:", erro);
+
+    if (erro && erro.code === "permission-denied") {
+      await appFeedback("Não foi possível alterar a prioridade. Verifique se as regras atualizadas do Firestore foram publicadas no Firebase Console.", { tipo: "erro", titulo: "Falha de permissão" });
+      return;
+    }
+
+    await appFeedback("Não foi possível alterar a prioridade da OS. Verifique sua conexão e tente novamente.", { tipo: "erro", titulo: "Falha ao salvar" });
+  } finally {
+    if (botao) {
+      botao.disabled = false;
+      botao.textContent = botao.dataset.textoOriginal || "Salvar";
+      delete botao.dataset.textoOriginal;
+    }
   }
 }
 
