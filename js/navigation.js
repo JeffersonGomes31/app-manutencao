@@ -14,7 +14,7 @@ function openPage(pageId, navElement) {
   const paginasRestritasManutencao = ["painel", "ativos", "preventivas"];
 
   if (paginasRestritasManutencao.includes(paginaDestino) && !usuarioEhManutencaoAutorizada()) {
-    alert("Acesso permitido somente para a manutenção autorizada.");
+    alert("Acesso restrito à manutenção autorizada.\nSeu perfil não possui permissão para abrir esta área.");
     return;
   }
 

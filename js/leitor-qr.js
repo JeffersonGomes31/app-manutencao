@@ -20,7 +20,7 @@ async function iniciarLeituraQRCode() {
   const status = document.getElementById("statusLeitorQR");
 
   if (!video || !status) {
-    alert("Área do leitor de QR Code não encontrada.");
+    alert("Área do leitor de QR Code não encontrada.\nAtualize a página e tente novamente.");
     return;
   }
 
@@ -105,7 +105,7 @@ function processarQRCodeManual() {
   const input = document.getElementById("codigoQRManual");
 
   if (!input || !input.value.trim()) {
-    alert("Digite ou cole o código do QR Code.");
+    alert("Digite ou cole o código do QR Code para continuar.");
     return;
   }
 
@@ -116,7 +116,7 @@ function processarValorQRCode(valor) {
   const codigo = extrairCodigoDoQRCode(valor);
 
   if (!codigo) {
-    alert("Não foi possível identificar o código do QR.");
+    alert("Não foi possível identificar o código do QR.\nConfira o conteúdo lido ou digite o código manualmente.");
     return;
   }
 

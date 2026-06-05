@@ -75,7 +75,7 @@ function exportarOSFinalizadasPDF() {
   const janela = window.open("", "_blank");
 
   if (!janela) {
-    alert("O navegador bloqueou a janela de impressão. Libere pop-ups para gerar o PDF.");
+    alert("O navegador bloqueou a janela de impressão.\nLibere pop-ups para gerar ou salvar o PDF.");
     return;
   }
 
@@ -91,7 +91,7 @@ function exportarOSFinalizadasPDF() {
 
 function validarExportacaoOSFinalizadas(lista) {
   if (!Array.isArray(lista) || lista.length === 0) {
-    alert("Nenhuma OS finalizada encontrada para exportação.");
+    alert("Nenhuma OS finalizada encontrada para exportação.\nAplique outro filtro ou finalize uma OS antes de exportar.");
     return false;
   }
 

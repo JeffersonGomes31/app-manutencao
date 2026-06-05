@@ -73,7 +73,7 @@ function normalizarCodigoAtivo(codigo) {
 
 async function salvarAtivo() {
   if (!usuarioEhManutencaoAutorizada()) {
-    alert("Somente a manutenção autorizada pode cadastrar ativos e locais.");
+    alert("Apenas a manutenção autorizada pode cadastrar ativos e locais.");
     return;
   }
 
@@ -86,7 +86,7 @@ async function salvarAtivo() {
   const observacoesInput = document.getElementById("observacoesAtivo");
 
   if (!codigoInput || !nomeInput || !localInput || !categoriaInput) {
-    alert("Campos do cadastro de ativo não encontrados.");
+    alert("Campos do cadastro de ativo não encontrados.\nAtualize a página e tente novamente.");
     return;
   }
 
@@ -99,12 +99,12 @@ async function salvarAtivo() {
   const observacoes = observacoesInput ? observacoesInput.value.trim() : "";
 
   if (!codigo || !nome || !localizacao) {
-    alert("Informe código, nome e localização do ativo/local.");
+    alert("Informe código, nome e localização do ativo/local para continuar.");
     return;
   }
 
   if (encontrarAtivoPorCodigo(codigo)) {
-    alert("Já existe um ativo/local cadastrado com este código.");
+    alert("Já existe um ativo/local cadastrado com este código.\nUse outro código ou consulte o cadastro existente.");
     return;
   }
 
@@ -124,10 +124,10 @@ async function salvarAtivo() {
   try {
     await criarAtivoFirebase(ativo);
     limparFormularioAtivo();
-    alert("Ativo/local cadastrado com sucesso.");
+    alert("Ativo/local cadastrado com sucesso.\nEle já pode ser vinculado a novas OS.");
   } catch (erro) {
     console.error("Erro ao cadastrar ativo:", erro);
-    alert("Não foi possível cadastrar o ativo/local no Firebase.");
+    alert("Não foi possível cadastrar o ativo/local.\nVerifique sua conexão e permissões no Firestore.");
   }
 }
 
@@ -262,13 +262,13 @@ function imprimirEtiquetaAtivo(codigo) {
   const ativo = encontrarAtivoPorCodigo(codigo);
 
   if (!ativo) {
-    alert("Ativo/local não encontrado.");
+    alert("Ativo/local não encontrado.\nAtualize a lista e tente novamente.");
     return;
   }
 
   const janela = window.open("", "_blank", "width=420,height=620");
   if (!janela) {
-    alert("O navegador bloqueou a janela de impressão.");
+    alert("O navegador bloqueou a janela de impressão.\nLibere pop-ups para imprimir a etiqueta.");
     return;
   }
 
@@ -308,19 +308,19 @@ function imprimirEtiquetaAtivo(codigo) {
 
 async function excluirAtivo(id, codigo) {
   if (!usuarioEhManutencaoAutorizada()) {
-    alert("Somente a manutenção autorizada pode excluir ativos.");
+    alert("Apenas a manutenção autorizada pode excluir ativos.");
     return;
   }
 
   if (!id) {
-    alert("Ativo não encontrado para exclusão.");
+    alert("Ativo não encontrado para exclusão.\nAtualize a lista e tente novamente.");
     return;
   }
 
   const totalOS = obterHistoricoAtivo(codigo).length;
 
   const mensagem = totalOS > 0
-    ? `Este ativo possui ${totalOS} OS vinculada(s). Excluir o ativo não apaga o histórico das OS. Deseja continuar?`
+    ? `Este ativo possui ${totalOS} OS vinculada(s).\nExcluir o ativo não apaga o histórico das OS. Deseja continuar?`
     : "Deseja excluir este ativo?";
 
   if (!(await appConfirm(mensagem, { textoConfirmar: "Excluir", textoCancelar: "Voltar" }))) {
@@ -329,9 +329,9 @@ async function excluirAtivo(id, codigo) {
 
   try {
     await excluirAtivoFirebase(id);
-    alert("Ativo excluído com sucesso.");
+    alert("Ativo excluído com sucesso.\nO histórico das OS vinculadas permanece preservado.");
   } catch (erro) {
     console.error("Erro ao excluir ativo:", erro);
-    alert("Não foi possível excluir o ativo no Firebase.");
+    alert("Não foi possível excluir o ativo.\nVerifique sua conexão e permissões no Firestore.");
   }
 }

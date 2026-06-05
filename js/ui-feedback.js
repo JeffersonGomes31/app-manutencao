@@ -2,16 +2,37 @@
    FEEDBACK VISUAL DO APP
    Substitui alert() nativo por modal próprio sem exibir
    o endereço do site no topo da mensagem.
+
+   v12:
+   - separa título e descrição para melhorar leitura;
+   - mantém compatibilidade com alert(), appFeedback(), appConfirm() e appPrompt();
+   - não altera fluxos de login, Firebase, OS ou permissões.
 ===================================================== */
 (function () {
   const TEMPO_FECHAMENTO_AUTOMATICO = 0;
+
+  const TITULOS_PADRAO = {
+    sucesso: "Ação concluída",
+    erro: "Não foi possível concluir",
+    aviso: "Atenção necessária",
+    info: "Informação",
+    confirmacao: "Confirmar ação"
+  };
+
+  const TEXTOS_BOTAO_PADRAO = {
+    sucesso: "Entendi",
+    erro: "Entendi",
+    aviso: "Entendi",
+    info: "Entendi",
+    confirmacao: "Confirmar"
+  };
 
   function normalizarMensagem(mensagem) {
     if (mensagem === undefined || mensagem === null) {
       return "";
     }
 
-    return String(mensagem);
+    return String(mensagem).trim();
   }
 
   function obterTipoFeedback(mensagem, tipoInformado) {
@@ -32,7 +53,8 @@
       texto.includes("validada") ||
       texto.includes("encerrada") ||
       texto.includes("inativado") ||
-      texto.includes("aberta com sucesso")
+      texto.includes("aberta com sucesso") ||
+      texto.includes("registrada")
     ) {
       return "sucesso";
     }
@@ -42,6 +64,7 @@
       texto.includes("erro") ||
       texto.includes("falha") ||
       texto.includes("não encontrado") ||
+      texto.includes("não encontrada") ||
       texto.includes("não possui") ||
       texto.includes("bloqueou")
     ) {
@@ -57,7 +80,8 @@
       texto.includes("não pode") ||
       texto.includes("permitido") ||
       texto.includes("confirme") ||
-      texto.includes("deseja")
+      texto.includes("deseja") ||
+      texto.includes("antes de")
     ) {
       return "aviso";
     }
@@ -77,6 +101,15 @@
     return icones[tipo] || icones.info;
   }
 
+  function montarConteudoMensagem(mensagem, tipo, opcoes) {
+    const texto = normalizarMensagem(mensagem);
+    const linhas = texto.split("\n").map(linha => linha.trim()).filter(Boolean);
+    const titulo = opcoes.titulo || TITULOS_PADRAO[tipo] || TITULOS_PADRAO.info;
+    const corpo = linhas.length > 0 ? linhas.join("\n") : "Operação processada.";
+
+    return { titulo, corpo };
+  }
+
   function garantirEstruturaModal() {
     let modal = document.getElementById("appFeedbackModal");
 
@@ -90,11 +123,14 @@
     modal.setAttribute("aria-hidden", "true");
 
     modal.innerHTML = `
-      <div class="app-feedback-card" role="dialog" aria-modal="true" aria-labelledby="appFeedbackMessage">
+      <div class="app-feedback-card" role="dialog" aria-modal="true" aria-labelledby="appFeedbackTitle" aria-describedby="appFeedbackMessage">
         <div class="app-feedback-icon" id="appFeedbackIcon">i</div>
-        <div class="app-feedback-message" id="appFeedbackMessage"></div>
+        <div class="app-feedback-content">
+          <strong class="app-feedback-title" id="appFeedbackTitle">Informação</strong>
+          <div class="app-feedback-message" id="appFeedbackMessage"></div>
+        </div>
         <div class="app-feedback-actions" id="appFeedbackActions">
-          <button type="button" class="app-feedback-button app-feedback-button-primary" id="appFeedbackOk">OK</button>
+          <button type="button" class="app-feedback-button app-feedback-button-primary" id="appFeedbackOk">Entendi</button>
         </div>
       </div>
     `;
@@ -119,13 +155,16 @@
     const modal = garantirEstruturaModal();
     const card = modal.querySelector(".app-feedback-card");
     const icone = modal.querySelector("#appFeedbackIcon");
+    const tituloElemento = modal.querySelector("#appFeedbackTitle");
     const mensagemElemento = modal.querySelector("#appFeedbackMessage");
     const acoes = modal.querySelector("#appFeedbackActions");
+    const conteudo = montarConteudoMensagem(texto, tipo, opcoes);
 
     card.className = `app-feedback-card app-feedback-${tipo}`;
     icone.className = `app-feedback-icon app-feedback-icon-${tipo}`;
     icone.textContent = obterIcone(tipo);
-    mensagemElemento.textContent = texto;
+    tituloElemento.textContent = conteudo.titulo;
+    mensagemElemento.textContent = conteudo.corpo;
 
     acoes.innerHTML = "";
 
@@ -134,12 +173,12 @@
         const botaoCancelar = document.createElement("button");
         botaoCancelar.type = "button";
         botaoCancelar.className = "app-feedback-button app-feedback-button-secondary";
-        botaoCancelar.textContent = opcoes.textoCancelar || "Cancelar";
+        botaoCancelar.textContent = opcoes.textoCancelar || "Voltar";
 
         const botaoConfirmar = document.createElement("button");
         botaoConfirmar.type = "button";
         botaoConfirmar.className = "app-feedback-button app-feedback-button-primary";
-        botaoConfirmar.textContent = opcoes.textoConfirmar || "Confirmar";
+        botaoConfirmar.textContent = opcoes.textoConfirmar || TEXTOS_BOTAO_PADRAO.confirmacao;
 
         botaoCancelar.onclick = () => fecharModal(modal, resolve, false);
         botaoConfirmar.onclick = () => fecharModal(modal, resolve, true);
@@ -150,7 +189,7 @@
         const botaoOk = document.createElement("button");
         botaoOk.type = "button";
         botaoOk.className = "app-feedback-button app-feedback-button-primary";
-        botaoOk.textContent = opcoes.textoConfirmar || "OK";
+        botaoOk.textContent = opcoes.textoConfirmar || TEXTOS_BOTAO_PADRAO[tipo] || "Entendi";
         botaoOk.onclick = () => fecharModal(modal, resolve, true);
         acoes.appendChild(botaoOk);
       }
@@ -170,18 +209,18 @@
     });
   }
 
-
-
   function solicitarTextoFeedback(mensagem, opcoes = {}) {
     const modal = garantirEstruturaModal();
     const card = modal.querySelector(".app-feedback-card");
     const icone = modal.querySelector("#appFeedbackIcon");
+    const tituloElemento = modal.querySelector("#appFeedbackTitle");
     const mensagemElemento = modal.querySelector("#appFeedbackMessage");
     const acoes = modal.querySelector("#appFeedbackActions");
 
     card.className = "app-feedback-card app-feedback-aviso";
     icone.className = "app-feedback-icon app-feedback-icon-aviso";
     icone.textContent = "!";
+    tituloElemento.textContent = opcoes.titulo || "Informação obrigatória";
     mensagemElemento.textContent = normalizarMensagem(mensagem);
 
     const campo = document.createElement("textarea");
@@ -197,7 +236,7 @@
       const botaoCancelar = document.createElement("button");
       botaoCancelar.type = "button";
       botaoCancelar.className = "app-feedback-button app-feedback-button-secondary";
-      botaoCancelar.textContent = opcoes.textoCancelar || "Cancelar";
+      botaoCancelar.textContent = opcoes.textoCancelar || "Voltar";
 
       const botaoConfirmar = document.createElement("button");
       botaoConfirmar.type = "button";
@@ -248,6 +287,7 @@
     return mostrarFeedback(mensagem, {
       ...opcoes,
       tipo: opcoes.tipo || "confirmacao",
+      titulo: opcoes.titulo || TITULOS_PADRAO.confirmacao,
       confirmacao: true
     });
   };

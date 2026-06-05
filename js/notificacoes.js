@@ -82,7 +82,7 @@ function criarCardNotificacao(notificacao) {
 
 function abrirPainelNotificacoes() {
   if (!usuarioTemPerfilSalvo()) {
-    alert("Entre no app para visualizar as notificações.");
+    alert("Entre no app para visualizar suas notificações internas.");
     return;
   }
 
@@ -116,7 +116,7 @@ async function marcarNotificacaoComoLida(id, botao) {
     await marcarNotificacaoComoLidaFirebase(id, usuarioAtual.id);
   } catch (erro) {
     console.error("Erro ao marcar notificação como lida:", erro);
-    alert("Não foi possível marcar a notificação como lida.");
+    alert("Não foi possível marcar a notificação como lida.\nVerifique sua conexão e tente novamente.");
 
     if (botao) {
       botao.disabled = false;
@@ -138,7 +138,7 @@ async function marcarTodasNotificacoesComoLidas() {
     }));
   } catch (erro) {
     console.error("Erro ao marcar todas as notificações:", erro);
-    alert("Não foi possível marcar todas as notificações como lidas.");
+    alert("Não foi possível marcar todas as notificações como lidas.\nVerifique sua conexão e tente novamente.");
   }
 }
 
@@ -164,7 +164,7 @@ async function abrirChamadoPelaNotificacao(notificacaoId, chamadoId) {
       return;
     }
 
-    alert("O chamado relacionado não está disponível para este usuário.");
+    alert("A OS relacionada não está disponível para este usuário.\nVerifique se seu perfil possui permissão para visualizá-la.");
   }, 150);
 }
 

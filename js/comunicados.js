@@ -4,7 +4,7 @@
 
 async function criarComunicado() {
   if (!usuarioEhManutencaoAutorizada()) {
-    alert("Somente a manutenção autorizada pode publicar comunicados.");
+    alert("Apenas a manutenção autorizada pode publicar comunicados.");
     return;
   }
 
@@ -13,7 +13,7 @@ async function criarComunicado() {
   const origemInput = document.getElementById("origemComunicado");
 
   if (!tituloInput || !textoInput || !origemInput) {
-    alert("Campos do comunicado não encontrados.");
+    alert("Campos do comunicado não encontrados.\nAtualize a página e tente novamente.");
     return;
   }
 
@@ -22,7 +22,7 @@ async function criarComunicado() {
   const origem = origemInput.value;
 
   if (!titulo || !texto || !origem) {
-    alert("Preencha título, mensagem e origem do comunicado.");
+    alert("Preencha título, mensagem e origem do comunicado antes de publicar.");
     return;
   }
 
@@ -38,10 +38,10 @@ async function criarComunicado() {
   try {
     await criarComunicadoFirebase(novoComunicado);
     limparFormularioComunicado(tituloInput, textoInput, origemInput);
-    alert("Comunicado publicado com sucesso.");
+    alert("Comunicado publicado com sucesso.\nEle já está disponível para os usuários autorizados.");
   } catch (erro) {
     console.error("Erro ao publicar comunicado:", erro);
-    alert("Não foi possível publicar o comunicado no Firebase.");
+    alert("Não foi possível publicar o comunicado.\nVerifique sua conexão e permissões no Firestore.");
   }
 }
 
@@ -107,11 +107,11 @@ function criarCardComunicado(comunicado, mostrarAcao) {
 
 async function excluirComunicado(id) {
   if (!usuarioEhManutencaoAutorizada()) {
-    alert("Somente a equipe de manutenção pode excluir comunicados.");
+    alert("Apenas a equipe de manutenção pode excluir comunicados.");
     return;
   }
 
-  const confirmar = await appConfirm("Deseja excluir este comunicado?", { textoConfirmar: "Excluir", textoCancelar: "Voltar" });
+  const confirmar = await appConfirm("Deseja excluir este comunicado?\nEssa ação removerá o aviso da área de comunicados.", { titulo: "Excluir comunicado", textoConfirmar: "Excluir", textoCancelar: "Voltar" });
 
   if (!confirmar) {
     return;
@@ -122,6 +122,6 @@ async function excluirComunicado(id) {
     alert("Comunicado excluído com sucesso.");
   } catch (erro) {
     console.error("Erro ao excluir comunicado:", erro);
-    alert("Não foi possível excluir o comunicado no Firebase.");
+    alert("Não foi possível excluir o comunicado.\nVerifique sua conexão e permissões no Firestore.");
   }
 }

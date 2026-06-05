@@ -6,7 +6,7 @@ function abrirDetalhesChamado(id) {
   const chamado = chamados.find(item => idsIguais(item.id, id));
 
   if (!chamado) {
-    appFeedback("Chamado não encontrado.", { tipo: "erro" });
+    appFeedback("Não foi possível localizar esta OS.\nAtualize a lista e tente novamente.", { tipo: "erro", titulo: "OS não encontrada" });
     return;
   }
 
@@ -179,16 +179,17 @@ async function cancelarChamadoAtual(botao) {
   const chamado = obterChamadoSelecionado();
 
   if (!chamado) {
-    await appFeedback("Nenhum chamado selecionado para cancelamento.", { tipo: "aviso" });
+    await appFeedback("Selecione uma OS antes de solicitar o cancelamento.", { tipo: "aviso", titulo: "Nenhuma OS selecionada" });
     return;
   }
 
   if (!chamadoPodeSerCancelado(chamado)) {
-    await appFeedback("Este chamado não pode ser cancelado.", { tipo: "aviso" });
+    await appFeedback("Esta OS não pode ser cancelada no status atual.\nVerifique o histórico ou as permissões do seu perfil.", { tipo: "aviso", titulo: "Cancelamento não permitido" });
     return;
   }
 
-  const motivo = await appPrompt("Informe o motivo do cancelamento. Esta ação não poderá ser desfeita pelo colaborador.", {
+  const motivo = await appPrompt("Informe o motivo do cancelamento.\nEsta ação ficará registrada no histórico da OS.", {
+    titulo: "Motivo do cancelamento",
     placeholder: "Descreva o motivo do cancelamento",
     textoCancelar: "Voltar",
     textoConfirmar: "Confirmar cancelamento",
@@ -211,7 +212,7 @@ async function executarCancelamentoChamado(id, motivo, acaoHistorico, botao) {
   const chamado = chamados.find(item => idsIguais(item.id, id));
 
   if (!chamado) {
-    appFeedback("Chamado não encontrado.", { tipo: "erro" });
+    appFeedback("Não foi possível localizar esta OS.\nAtualize a lista e tente novamente.", { tipo: "erro", titulo: "OS não encontrada" });
     return;
   }
 
@@ -241,16 +242,16 @@ async function executarCancelamentoChamado(id, motivo, acaoHistorico, botao) {
     }
 
     fecharDetalhesChamado();
-    await appFeedback("Chamado cancelado com sucesso.", { tipo: "sucesso" });
+    await appFeedback("OS cancelada com sucesso.\nO motivo foi registrado no histórico.", { tipo: "sucesso", titulo: "Cancelamento registrado" });
   } catch (erro) {
     console.error("Erro ao cancelar chamado:", erro);
 
     if (erro && erro.code === "permission-denied") {
-      await appFeedback("Não foi possível cancelar o chamado no Firebase. Verifique se as regras do Firestore desta versão foram publicadas no Firebase Console.", { tipo: "erro" });
+      await appFeedback("Não foi possível cancelar a OS.\nVerifique se as regras do Firestore desta versão foram publicadas no Firebase Console.", { tipo: "erro", titulo: "Falha de permissão no Firestore" });
       return;
     }
 
-    await appFeedback("Não foi possível cancelar o chamado no Firebase.", { tipo: "erro" });
+    await appFeedback("Não foi possível cancelar a OS.\nVerifique sua conexão e tente novamente.", { tipo: "erro", titulo: "Falha ao cancelar" });
   }
 
 }
@@ -349,7 +350,7 @@ function abrirFotoChamadoAtual(indiceFoto = 0) {
   const chamado = obterChamadoSelecionado();
 
   if (!chamado) {
-    appFeedback("Nenhum chamado selecionado.", { tipo: "aviso" });
+    appFeedback("Selecione uma OS antes de visualizar as fotos.", { tipo: "aviso", titulo: "Nenhuma OS selecionada" });
     return;
   }
 
@@ -357,7 +358,7 @@ function abrirFotoChamadoAtual(indiceFoto = 0) {
   const foto = fotos[indiceFoto];
 
   if (!foto) {
-    appFeedback("Este chamado não possui uma foto disponível para visualização.", { tipo: "aviso" });
+    appFeedback("Esta OS não possui foto de abertura disponível para visualização.", { tipo: "aviso", titulo: "Foto indisponível" });
     return;
   }
 
@@ -368,7 +369,7 @@ function abrirFotoFinalizacaoChamadoAtual(indiceFoto = 0) {
   const chamado = obterChamadoSelecionado();
 
   if (!chamado) {
-    appFeedback("Nenhum chamado selecionado.", { tipo: "aviso" });
+    appFeedback("Selecione uma OS antes de visualizar as fotos.", { tipo: "aviso", titulo: "Nenhuma OS selecionada" });
     return;
   }
 
@@ -376,7 +377,7 @@ function abrirFotoFinalizacaoChamadoAtual(indiceFoto = 0) {
   const foto = fotos[indiceFoto];
 
   if (!foto) {
-    appFeedback("Este chamado não possui uma foto de finalização disponível para visualização.", { tipo: "aviso" });
+    appFeedback("Esta OS ainda não possui foto de finalização disponível para visualização.", { tipo: "aviso", titulo: "Foto de finalização indisponível" });
     return;
   }
 

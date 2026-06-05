@@ -29,7 +29,7 @@ async function criarChamado() {
   const campos = obterCamposFormularioChamado();
 
   if (!campos.formularioValido) {
-    await appFeedback("Erro: alguns campos do formulário de OS não foram encontrados no HTML. Atualize a página e tente novamente.", { tipo: "erro" });
+    await appFeedback("Alguns campos do formulário da OS não foram encontrados.\nAtualize a página e tente novamente.", { tipo: "erro", titulo: "Formulário incompleto" });
     console.error("Campos ausentes na OS:", campos.ausentes);
     return;
   }
@@ -53,7 +53,7 @@ async function criarChamado() {
   }
 
   if (valores.arquivosFotos.length > LIMITE_FOTOS_CHAMADO) {
-    await appFeedback(`Selecione no máximo ${LIMITE_FOTOS_CHAMADO} imagens por chamado.`, { tipo: "aviso" });
+    await appFeedback(`Selecione no máximo ${LIMITE_FOTOS_CHAMADO} imagens por chamado.\nRemova imagens excedentes e tente novamente.`, { tipo: "aviso", titulo: "Limite de imagens" });
     return;
   }
 
@@ -70,7 +70,7 @@ async function criarChamado() {
   const fotoPrincipal = fotosAnexadas[0] || null;
 
   if (resultadoFotos.falhas > 0) {
-    await appFeedback("Uma ou mais imagens não puderam ser anexadas. A OS será criada com as imagens válidas.", { tipo: "aviso" });
+    await appFeedback("Uma ou mais imagens não puderam ser anexadas.\nA OS será criada apenas com as imagens válidas.", { tipo: "aviso", titulo: "Anexos parcialmente processados" });
   }
 
   const numeroOS = gerarNumeroOS(agora);
@@ -90,14 +90,14 @@ async function criarChamado() {
       await registrarNotificacaoNovoChamado(chamadoId, novoChamado);
     }
 
-    await appFeedback(`OS ${numeroOS} aberta com sucesso!`, { tipo: "sucesso" });
+    await appFeedback(`OS ${numeroOS} aberta com sucesso.\nA solicitação já está disponível para acompanhamento.`, { tipo: "sucesso", titulo: "OS registrada" });
     limparFormularioChamado();
     prepararAbaChamadosAposEnvio();
     openPage("chamados");
   } catch (erro) {
     console.error("Erro ao enviar OS:", erro);
     const detalheErro = erro && (erro.code || erro.message) ? `\nDetalhe técnico: ${erro.code || erro.message}` : "";
-    await appFeedback(`Não foi possível enviar a OS para o Firebase. Verifique conexão, login e permissões.${detalheErro}`, { tipo: "erro" });
+    await appFeedback(`Não foi possível enviar a OS.\nVerifique sua conexão, login e permissões.${detalheErro}`, { tipo: "erro", titulo: "Falha ao abrir OS" });
   } finally {
     if (botaoEnvio) {
       botaoEnvio.disabled = false;

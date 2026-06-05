@@ -130,7 +130,7 @@ async function processarEstadoAutenticacao(usuarioFirebase) {
       await garantirVinculoColaboradorAtual();
     } catch (erro) {
       console.error("Erro ao registrar vínculo do colaborador:", erro);
-      alert("Não foi possível validar o vínculo do colaborador no Firebase. Verifique as regras publicadas e tente novamente.");
+      alert("Não foi possível validar o vínculo do colaborador.\nVerifique as regras publicadas no Firebase e tente novamente.");
       return;
     }
 
@@ -145,13 +145,13 @@ async function processarEstadoAutenticacao(usuarioFirebase) {
     const perfil = await buscarPerfilFirebase(usuarioFirebase.uid);
 
     if (!perfil) {
-      alert("Login realizado, mas este usuário ainda não possui cadastro na coleção usuarios do Firestore.");
+      alert("Login realizado, mas este usuário ainda não possui cadastro em usuarios/{uid}.\nCrie o documento do usuário no Firestore para liberar o acesso.");
       await encerrarSessaoFirebase();
       return;
     }
 
     if (perfil.ativo !== true) {
-      alert("Este usuário está inativo. Procure o administrador do sistema.");
+      alert("Este usuário está inativo.\nProcure o responsável pelo sistema para liberar o acesso.");
       await encerrarSessaoFirebase();
       return;
     }
@@ -165,7 +165,7 @@ async function processarEstadoAutenticacao(usuarioFirebase) {
     openPage(usuarioEhManutencaoAutorizada() ? "painel" : "inicio");
   } catch (erro) {
     console.error("Erro ao carregar usuário:", erro);
-    alert("Não foi possível carregar o perfil do usuário no Firebase.");
+    alert("Não foi possível carregar o perfil do usuário.\nVerifique conexão, Firestore Rules e o documento usuarios/{uid}.");
     await encerrarSessaoFirebase();
   }
 }
@@ -268,7 +268,7 @@ function iniciarMonitoresDeDados() {
     atualizarPainelSeAberto();
   }, erro => {
     console.error("Erro ao carregar chamados:", erro);
-    alert("Não foi possível carregar os chamados do Firebase.");
+    alert("Não foi possível carregar as OS.\nVerifique sua conexão e tente atualizar a página.");
   });
 
   monitorComunicados = observarComunicadosFirebase(lista => {
@@ -279,7 +279,7 @@ function iniciarMonitoresDeDados() {
     }
   }, erro => {
     console.error("Erro ao carregar comunicados:", erro);
-    alert("Não foi possível carregar os comunicados do Firebase.");
+    alert("Não foi possível carregar os comunicados.\nVerifique sua conexão e tente atualizar a página.");
   });
 
   monitorNotificacoes = observarNotificacoesFirebase(usuarioAtual, lista => {
@@ -290,7 +290,7 @@ function iniciarMonitoresDeDados() {
     }
   }, erro => {
     console.error("Erro ao carregar notificações:", erro);
-    alert("Não foi possível carregar as notificações do Firebase.");
+    alert("Não foi possível carregar as notificações internas.\nVerifique sua conexão e tente atualizar a página.");
   });
 
   monitorAtivos = observarAtivosFirebase(lista => {
@@ -305,7 +305,7 @@ function iniciarMonitoresDeDados() {
     }
   }, erro => {
     console.error("Erro ao carregar ativos:", erro);
-    alert("Não foi possível carregar os ativos do Firebase.");
+    alert("Não foi possível carregar ativos e QR Codes.\nVerifique sua conexão e tente atualizar a página.");
   });
   monitorPlanosPreventivos = observarPlanosPreventivosFirebase(lista => {
     planosPreventivos = lista;
@@ -315,7 +315,7 @@ function iniciarMonitoresDeDados() {
     }
   }, erro => {
     console.error("Erro ao carregar planos preventivos:", erro);
-    alert("Não foi possível carregar os planos preventivos do Firebase.");
+    alert("Não foi possível carregar as preventivas.\nVerifique sua conexão e tente atualizar a página.");
   });
 
   if (usuarioEhManutencaoAutorizada() && typeof observarDiagnosticosFirebase === "function") {
@@ -327,7 +327,7 @@ function iniciarMonitoresDeDados() {
       }
     }, erro => {
       console.error("Erro ao carregar diagnóstico inicial:", erro);
-      alert("Não foi possível carregar o diagnóstico inicial do Firebase.");
+      alert("Não foi possível carregar o Diagnóstico Inicial.\nVerifique sua conexão, permissões e regras do Firestore.");
     });
   }
 

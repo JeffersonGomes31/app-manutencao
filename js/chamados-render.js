@@ -38,7 +38,7 @@ function renderizarChamados() {
   if (listaChamados) {
     listaChamados.innerHTML = chamadosFiltrados.length > 0
       ? chamadosFiltrados.map(criarCardChamado).join("")
-      : criarMensagemVazia("Nenhum chamado encontrado", "Não há chamados para o filtro ou busca selecionada.");
+      : criarMensagemVazia("Nenhuma OS encontrada", "Não há ordens de serviço para o filtro ou busca selecionada.");
   }
 
   if (listaChamadosInicio) {

@@ -379,8 +379,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
-  background: rgba(8, 16, 28, 0.62);
+  padding: 20px;
+  background: rgba(8, 16, 28, 0.58);
   backdrop-filter: blur(5px);
   opacity: 0;
   pointer-events: none;
@@ -393,13 +393,14 @@
 }
 
 .app-feedback-card {
-  width: min(100%, 420px);
+  width: min(100%, 430px);
   background: #ffffff;
-  color: #111827;
-  border-radius: 28px;
-  box-shadow: 0 22px 55px rgba(15, 23, 42, 0.28);
+  color: #101828;
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  box-shadow: 0 22px 55px rgba(15, 23, 42, 0.24);
   overflow: hidden;
-  text-align: center;
+  text-align: left;
   transform: translateY(10px) scale(0.98);
   transition: transform 0.2s ease;
 }
@@ -409,73 +410,109 @@
 }
 
 .app-feedback-icon {
-  width: 74px;
-  height: 74px;
-  margin: 34px auto 18px;
+  width: 62px;
+  height: 62px;
+  margin: 26px auto 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  font-size: 42px;
-  font-weight: 800;
+  font-size: 34px;
+  font-weight: 900;
   line-height: 1;
 }
 
 .app-feedback-icon-sucesso {
-  color: #16a34a;
+  color: #15803d;
   background: #dcfce7;
+  box-shadow: inset 0 0 0 1px #86efac;
 }
 
 .app-feedback-icon-erro {
-  color: #dc2626;
+  color: #b91c1c;
   background: #fee2e2;
+  box-shadow: inset 0 0 0 1px #fecaca;
 }
 
 .app-feedback-icon-aviso,
 .app-feedback-icon-confirmacao {
-  color: #d97706;
-  background: #fef3c7;
+  color: #c2410c;
+  background: #ffedd5;
+  box-shadow: inset 0 0 0 1px #fed7aa;
 }
 
 .app-feedback-icon-info {
   color: #0b5ed7;
   background: #dbeafe;
+  box-shadow: inset 0 0 0 1px #bfdbfe;
+}
+
+.app-feedback-content {
+  padding: 0 28px 26px;
+  text-align: center;
+}
+
+.app-feedback-title {
+  display: block;
+  color: #0b1f3a;
+  font-size: 1.08rem;
+  font-weight: 900;
+  line-height: 1.25;
+  margin-bottom: 8px;
 }
 
 .app-feedback-message {
-  padding: 0 30px 30px;
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1.45;
+  color: #475467;
+  font-size: 0.96rem;
+  font-weight: 650;
+  line-height: 1.48;
   white-space: pre-line;
+}
+
+.app-feedback-sucesso {
+  border-top: 5px solid #16a34a;
+}
+
+.app-feedback-erro {
+  border-top: 5px solid #dc2626;
+}
+
+.app-feedback-aviso,
+.app-feedback-confirmacao {
+  border-top: 5px solid #f97316;
+}
+
+.app-feedback-info {
+  border-top: 5px solid #0b5ed7;
 }
 
 .app-feedback-actions {
   display: flex;
   gap: 12px;
-  padding: 22px 28px 26px;
+  padding: 20px 24px 24px;
   border-top: 1px solid #e5e7eb;
+  background: #f8fafc;
 }
 
 .app-feedback-button {
   flex: 1;
-  min-height: 48px;
+  min-height: 46px;
   border: 0;
   border-radius: 999px;
-  font-size: 0.95rem;
-  font-weight: 800;
+  font-size: 0.94rem;
+  font-weight: 850;
   cursor: pointer;
 }
 
 .app-feedback-button-primary {
   color: #ffffff;
   background: linear-gradient(135deg, #0b5ed7, #003f9e);
-  box-shadow: 0 12px 24px rgba(11, 94, 215, 0.24);
+  box-shadow: 0 12px 24px rgba(11, 94, 215, 0.22);
 }
 
 .app-feedback-button-secondary {
   color: #0f172a;
-  background: #eef2f7;
+  background: #e9eef6;
 }
 
 .app-feedback-button:focus-visible {
@@ -483,15 +520,16 @@
   outline-offset: 3px;
 }
 
-
 .app-feedback-input {
   width: 100%;
   margin-top: 16px;
   padding: 12px 14px;
-  border: 1px solid #d1d5db;
+  border: 1px solid #cbd5e1;
   border-radius: 14px;
+  background: #ffffff;
+  color: #111827;
   font: inherit;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.4;
   resize: vertical;
 }
@@ -501,7 +539,6 @@
   border-color: #0b5ed7;
 }
 
-
 .app-feedback-input-error {
   border-color: #c0392b;
   box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.12);
@@ -510,6 +547,21 @@
 .app-feedback-field-error {
   display: block;
   margin-top: 8px;
-  color: #c0392b;
-  font-weight: 600;
+  color: #b42318;
+  font-weight: 700;
 }
+
+@media (max-width: 480px) {
+  .app-feedback-overlay {
+    padding: 16px;
+  }
+
+  .app-feedback-card {
+    border-radius: 22px;
+  }
+
+  .app-feedback-actions {
+    padding: 18px 18px 20px;
+  }
+}
+

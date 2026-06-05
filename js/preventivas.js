@@ -110,7 +110,7 @@ function criarCardPlanoPreventivo(plano) {
 
 async function salvarPlanoPreventivo() {
   if (!usuarioEhManutencaoAutorizada()) {
-    alert("Somente a manutenção pode cadastrar planos preventivos.");
+    alert("Apenas a manutenção pode cadastrar planos preventivos.");
     return;
   }
 
@@ -145,14 +145,14 @@ async function salvarPlanoPreventivo() {
   }
 
   if (!Number.isFinite(quantidadeFrequencia) || quantidadeFrequencia <= 0 || !frequenciaDias) {
-    alert("Informe uma frequência válida para a preventiva.");
+    alert("Informe uma frequência válida para a preventiva.\nUse um número maior que zero.");
     return;
   }
 
   const dataExecucao = new Date(`${proximaExecucao}T09:00:00`);
 
   if (Number.isNaN(dataExecucao.getTime())) {
-    alert("Informe uma data válida para a próxima execução.");
+    alert("Informe uma data válida para a próxima execução da preventiva.");
     return;
   }
 
@@ -178,10 +178,10 @@ async function salvarPlanoPreventivo() {
   try {
     await criarPlanoPreventivoFirebase(plano);
     limparFormularioPlanoPreventivo();
-    alert("Plano preventivo cadastrado com sucesso.");
+    alert("Plano preventivo cadastrado com sucesso.\nA rotina já aparece na lista de preventivas.");
   } catch (erro) {
     console.error("Erro ao cadastrar plano preventivo:", erro);
-    alert("Não foi possível cadastrar o plano preventivo no Firebase.");
+    alert("Não foi possível cadastrar o plano preventivo.\nVerifique sua conexão e permissões no Firestore.");
   }
 }
 
@@ -191,14 +191,14 @@ async function salvarPlanoPreventivo() {
 
 async function gerarOSPreventiva(planoId) {
   if (!usuarioEhManutencaoAutorizada()) {
-    alert("Somente a manutenção pode gerar OS preventiva.");
+    alert("Apenas a manutenção pode gerar OS preventiva.");
     return;
   }
 
   const plano = planosPreventivos.find(item => idsIguais(item.id, planoId));
 
   if (!plano) {
-    alert("Plano preventivo não encontrado.");
+    alert("Plano preventivo não encontrado.\nAtualize a lista e tente novamente.");
     return;
   }
 
@@ -257,17 +257,17 @@ async function gerarOSPreventiva(planoId) {
       proximaExecucaoISO: proximaExecucao.toISOString()
     });
 
-    alert(`OS preventiva ${numeroOS} gerada com sucesso.`);
+    alert(`OS preventiva ${numeroOS} gerada com sucesso.\nA próxima execução da rotina foi atualizada.`);
     openPage("painel");
   } catch (erro) {
     console.error("Erro ao gerar OS preventiva:", erro);
-    alert("Não foi possível gerar a OS preventiva no Firebase.");
+    alert("Não foi possível gerar a OS preventiva.\nVerifique sua conexão e permissões no Firestore.");
   }
 }
 
 async function inativarPlanoPreventivo(planoId) {
   if (!usuarioEhManutencaoAutorizada()) {
-    alert("Somente a manutenção pode inativar planos preventivos.");
+    alert("Apenas a manutenção pode inativar planos preventivos.");
     return;
   }
 
@@ -277,10 +277,10 @@ async function inativarPlanoPreventivo(planoId) {
 
   try {
     await atualizarPlanoPreventivoFirebase(planoId, { ativo: false });
-    alert("Plano preventivo inativado.");
+    alert("Plano preventivo inativado com sucesso.");
   } catch (erro) {
     console.error("Erro ao inativar plano preventivo:", erro);
-    alert("Não foi possível inativar o plano preventivo.");
+    alert("Não foi possível inativar o plano preventivo.\nVerifique sua conexão e tente novamente.");
   }
 }
 

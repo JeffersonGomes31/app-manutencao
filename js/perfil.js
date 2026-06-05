@@ -265,7 +265,7 @@ async function entrarComoColaborador(botao) {
     openPage("inicio");
   } catch (erro) {
     console.error("Erro ao entrar como colaborador:", erro);
-    alert("Não foi possível entrar como colaborador. Verifique se o login anônimo está habilitado no Firebase Authentication.");
+    alert("Não foi possível entrar como colaborador.\nVerifique se o login anônimo está habilitado no Firebase Authentication.");
   } finally {
     if (botao) {
       botao.disabled = false;
@@ -279,7 +279,7 @@ async function entrarComFirebase(botao) {
   const senhaInput = document.getElementById("loginSenhaUsuario");
 
   if (!emailInput || !senhaInput) {
-    alert("Campos de login não encontrados no HTML.");
+    alert("Campos de login não encontrados na tela.\nAtualize a página e tente novamente.");
     return;
   }
 
@@ -287,7 +287,7 @@ async function entrarComFirebase(botao) {
   const senha = senhaInput.value;
 
   if (!email || !senha) {
-    alert("Informe e-mail e senha para entrar com acesso autorizado.");
+    alert("Informe e-mail e senha para acessar como manutenção ou gerência.");
     return;
   }
 
@@ -301,7 +301,7 @@ async function entrarComFirebase(botao) {
     await autenticarUsuario(email, senha);
   } catch (erro) {
     console.error("Erro de login:", erro);
-    alert("Não foi possível entrar. Confira o e-mail e a senha cadastrados no Firebase.");
+    alert("Não foi possível entrar.\nConfira o e-mail, a senha e o cadastro do usuário no Firebase.");
   } finally {
     if (botao) {
       botao.disabled = false;
@@ -325,10 +325,10 @@ async function sairDaConta() {
       fecharPainelNotificacoes();
     }
 
-    alert("Sessão encerrada.");
+    alert("Sessão encerrada com segurança.");
   } catch (erro) {
     console.error("Erro ao sair:", erro);
-    alert("Não foi possível sair da conta.");
+    alert("Não foi possível encerrar a sessão.\nTente novamente em alguns instantes.");
   }
 }
 

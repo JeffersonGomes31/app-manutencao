@@ -12,14 +12,14 @@
 
 async function salvarStatusPainel(id, botao) {
   if (!usuarioEhManutencaoAutorizada()) {
-    alert("Somente a manutenção autorizada pode alterar o status do chamado.");
+    alert("Apenas a manutenção autorizada pode alterar o status da OS.");
     return;
   }
 
   const selectStatus = document.getElementById(`statusPainel-${id}`);
 
   if (!selectStatus) {
-    alert("Campo de status não encontrado para este chamado.");
+    alert("Campo de status não encontrado para esta OS.\nAtualize a página e tente novamente.");
     return;
   }
 
@@ -27,17 +27,17 @@ async function salvarStatusPainel(id, botao) {
   const chamadoAtual = chamados.find(chamado => idsIguais(chamado.id, id));
 
   if (!chamadoAtual) {
-    alert("Chamado não encontrado.");
+    alert("OS não encontrada.\nAtualize a lista e tente novamente.");
     return;
   }
 
   if (statusFinalizado(chamadoAtual.status)) {
-    alert("Este chamado já está finalizado e não pode ser alterado.");
+    alert("Esta OS já está finalizada e não pode ser alterada.");
     return;
   }
 
   if (novoStatus === chamadoAtual.status) {
-    alert("O chamado já está com este status.");
+    alert("Esta OS já está com o status selecionado.");
     return;
   }
 
@@ -51,24 +51,24 @@ async function salvarStatusPainel(id, botao) {
 
 async function alterarStatusPainel(id, novoStatus, botao) {
   if (!usuarioEhManutencaoAutorizada()) {
-    alert("Somente a manutenção autorizada pode alterar o status do chamado.");
+    alert("Apenas a manutenção autorizada pode alterar o status da OS.");
     return;
   }
 
   const chamadoAtual = chamados.find(chamado => idsIguais(chamado.id, id));
 
   if (!chamadoAtual) {
-    alert("Chamado não encontrado.");
+    alert("OS não encontrada.\nAtualize a lista e tente novamente.");
     return;
   }
 
   if (statusFinalizado(chamadoAtual.status)) {
-    alert("Este chamado já está finalizado e não pode ser alterado.");
+    alert("Esta OS já está finalizada e não pode ser alterada.");
     return;
   }
 
   if (!novoStatus) {
-    alert("Selecione um status válido.");
+    alert("Selecione um status válido para continuar.");
     return;
   }
 
@@ -77,7 +77,7 @@ async function alterarStatusPainel(id, novoStatus, botao) {
     return;
   }
 
-  const justificativaAguardando = obterJustificativaAguardando(novoStatus);
+  const justificativaAguardando = await obterJustificativaAguardando(novoStatus);
 
   if (justificativaAguardando === null) {
     renderizarPainelManutencao();
@@ -117,23 +117,29 @@ async function alterarStatusPainel(id, novoStatus, botao) {
     }
 
     aplicarFeedbackSucesso(botao, "Status salvo", "Salvar status");
-    alert(`Status atualizado para: ${novoStatus}`);
+    alert(`Status atualizado para: ${novoStatus}.\nA alteração foi registrada no histórico da OS.`);
   } catch (erro) {
     console.error("Erro ao alterar status:", erro);
-    alert("Não foi possível alterar o status no Firebase.");
+    alert("Não foi possível alterar o status da OS.\nVerifique sua conexão e permissões no Firestore.");
   }
 
 }
 
-function obterJustificativaAguardando(novoStatus) {
+async function obterJustificativaAguardando(novoStatus) {
   if (novoStatus !== "AGUARDANDO") {
     return "";
   }
 
-  const justificativa = prompt("Informe a justificativa para deixar o chamado em aguardando:");
+  const justificativa = await appPrompt("Explique por que a OS ficará em aguardando.\nExemplo: aguardando peça, material, autorização ou acesso ao local.", {
+    titulo: "Justificativa obrigatória",
+    placeholder: "Descreva o motivo do status aguardando",
+    textoCancelar: "Voltar",
+    textoConfirmar: "Salvar justificativa",
+    obrigatorio: true,
+    mensagemObrigatorio: "Informe a justificativa para continuar."
+  });
 
   if (!justificativa || !justificativa.trim()) {
-    alert("Para deixar o chamado em aguardando, é obrigatório informar a justificativa.");
     return null;
   }
 
@@ -154,24 +160,30 @@ async function cancelarChamado(id, botao) {
   const chamado = chamados.find(item => idsIguais(item.id, id));
 
   if (!chamado) {
-    alert("Chamado não encontrado.");
+    alert("OS não encontrada.\nAtualize a lista e tente novamente.");
     return;
   }
 
   if (!usuarioEhManutencaoAutorizada()) {
-    alert("Somente a manutenção autorizada pode cancelar chamados pelo painel.");
+    alert("Apenas a manutenção autorizada pode cancelar OS pelo painel.");
     return;
   }
 
   if (statusFinalizado(chamado.status)) {
-    alert("Este chamado não pode ser cancelado, pois já está concluído ou cancelado.");
+    alert("Esta OS não pode ser cancelada, pois já está concluída ou cancelada.");
     return;
   }
 
-  const motivo = prompt("Informe o motivo do cancelamento:");
+  const motivo = await appPrompt("Informe o motivo do cancelamento.\nEssa informação ficará registrada no histórico da OS.", {
+    titulo: "Motivo do cancelamento",
+    placeholder: "Descreva o motivo do cancelamento",
+    textoCancelar: "Voltar",
+    textoConfirmar: "Confirmar cancelamento",
+    obrigatorio: true,
+    mensagemObrigatorio: "Informe o motivo para cancelar a OS."
+  });
 
   if (!motivo || !motivo.trim()) {
-    alert("Para cancelar o chamado, é obrigatório informar o motivo.");
     return;
   }
 
@@ -181,14 +193,14 @@ async function cancelarChamado(id, botao) {
 
 async function validarOS(id, botao) {
   if (!usuarioEhManutencaoAutorizada()) {
-    alert("Somente a manutenção autorizada pode validar OS.");
+    alert("Apenas a manutenção autorizada pode validar OS.");
     return;
   }
 
   const chamado = chamados.find(item => idsIguais(item.id, id));
 
   if (!chamado) {
-    alert("OS não encontrada.");
+    alert("OS não encontrada.\nAtualize a lista e tente novamente.");
     return;
   }
 
@@ -197,7 +209,19 @@ async function validarOS(id, botao) {
     return;
   }
 
-  const observacao = prompt("Informe uma observação de validação da OS:") || "Validação registrada sem observação adicional.";
+  const observacaoDigitada = await appPrompt("Registre uma observação de validação da execução.\nSe não houver observação específica, você pode confirmar em branco.", {
+    titulo: "Observação de validação",
+    placeholder: "Ex.: serviço conferido e aprovado",
+    textoCancelar: "Voltar",
+    textoConfirmar: "Registrar validação",
+    linhas: 3
+  });
+
+  if (observacaoDigitada === null) {
+    return;
+  }
+
+  const observacao = observacaoDigitada.trim() || "Validação registrada sem observação adicional.";
   const agora = new Date();
   const itemHistorico = {
     data: agora.toLocaleString("pt-BR"),
@@ -217,23 +241,23 @@ async function validarOS(id, botao) {
     });
 
     aplicarFeedbackSucesso(botao, "Validada", "Validar OS");
-    alert("OS validada com sucesso.");
+    alert("OS validada com sucesso.\nA validação foi registrada no histórico.");
   } catch (erro) {
     console.error("Erro ao validar OS:", erro);
-    alert("Não foi possível validar a OS no Firebase.");
+    alert("Não foi possível validar a OS.\nVerifique sua conexão e permissões no Firestore.");
   }
 }
 
 async function encerrarOS(id, botao) {
   if (!usuarioEhManutencaoAutorizada()) {
-    alert("Somente a manutenção autorizada pode encerrar OS.");
+    alert("Apenas a manutenção autorizada pode encerrar OS.");
     return;
   }
 
   const chamado = chamados.find(item => idsIguais(item.id, id));
 
   if (!chamado) {
-    alert("OS não encontrada.");
+    alert("OS não encontrada.\nAtualize a lista e tente novamente.");
     return;
   }
 
@@ -242,7 +266,7 @@ async function encerrarOS(id, botao) {
     return;
   }
 
-  if (!(await appConfirm("Confirmar encerramento definitivo desta OS?", { textoConfirmar: "Encerrar", textoCancelar: "Voltar" }))) {
+  if (!(await appConfirm("Confirmar o encerramento definitivo desta OS?\nApós encerrar, o ciclo da ordem de serviço será considerado finalizado.", { titulo: "Encerrar OS", textoConfirmar: "Encerrar OS", textoCancelar: "Voltar" }))) {
     return;
   }
 
@@ -264,28 +288,28 @@ async function encerrarOS(id, botao) {
     });
 
     aplicarFeedbackSucesso(botao, "Encerrada", "Encerrar OS");
-    alert("OS encerrada com sucesso.");
+    alert("OS encerrada com sucesso.\nO ciclo da ordem de serviço foi finalizado.");
   } catch (erro) {
     console.error("Erro ao encerrar OS:", erro);
-    alert("Não foi possível encerrar a OS no Firebase.");
+    alert("Não foi possível encerrar a OS.\nVerifique sua conexão e permissões no Firestore.");
   }
 }
 
 async function selecionarFotoFinalizacao(id, botao) {
   if (!usuarioEhManutencaoAutorizada()) {
-    alert("Somente a manutenção autorizada pode incluir foto de finalização.");
+    alert("Apenas a manutenção autorizada pode incluir foto de finalização.");
     return;
   }
 
   const chamado = chamados.find(item => idsIguais(item.id, id));
 
   if (!chamado) {
-    alert("Chamado não encontrado.");
+    alert("OS não encontrada.\nAtualize a lista e tente novamente.");
     return;
   }
 
   if (chamado.status !== "CONCLUÍDO") {
-    alert("A foto de finalização só pode ser incluída depois que o chamado estiver concluído.");
+    alert("A foto de finalização só pode ser incluída depois que a OS estiver concluída.");
     return;
   }
 
@@ -308,7 +332,7 @@ async function selecionarFotoFinalizacao(id, botao) {
 
 async function anexarFotoFinalizacao(id, arquivo, botao) {
   if (!usuarioEhManutencaoAutorizada()) {
-    alert("Somente a manutenção autorizada pode incluir foto de finalização.");
+    alert("Apenas a manutenção autorizada pode incluir foto de finalização.");
     return;
   }
 
@@ -337,10 +361,10 @@ async function anexarFotoFinalizacao(id, arquivo, botao) {
     });
 
     aplicarFeedbackSucesso(botao, "Foto anexada", "Adicionar foto final");
-    alert("Foto de finalização anexada com sucesso.");
+    alert("Foto de finalização anexada com sucesso.\nO registro visual foi salvo no histórico da OS.");
   } catch (erro) {
     console.error("Erro ao anexar foto de finalização:", erro);
-    alert("Não foi possível anexar a foto de finalização.");
+    alert("Não foi possível anexar a foto de finalização.\nVerifique a imagem, sua conexão e tente novamente.");
 
     if (botao) {
       botao.disabled = false;
