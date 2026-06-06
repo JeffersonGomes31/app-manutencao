@@ -10,16 +10,16 @@ O Marco 0 oficial do projeto é:
 app-manutencao(7).zip
 ```
 
-A versão oficial imediatamente anterior a esta entrega é:
-
-```txt
-app-manutencao-v15-comunicados-sla-exportacao.zip
-```
-
-A versão atual de trabalho após esta limpeza é:
+A versão funcional anterior a esta entrega é:
 
 ```txt
 app-manutencao-v16-limpeza-organizacao-codigo.zip
+```
+
+A versão atual de trabalho é:
+
+```txt
+app-manutencao-v17-icone-instalacao.zip
 ```
 
 ## Quando fazer rollback
