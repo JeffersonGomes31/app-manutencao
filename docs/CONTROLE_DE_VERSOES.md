@@ -27,6 +27,7 @@ Este arquivo registra as bases principais do processo de recuperação, limpeza 
 | v19 | `app-manutencao-v19-local-ocorrencia-card-os.zip` | Exibe Local da ocorrência abaixo da Descrição nos cards de OS | Base anterior |
 | v20 | `app-manutencao-v20-cadastro-colaboradores(5)(1).zip` | Cadastro de colaboradores no app com primeiro acesso por e-mail autorizado | Base oficial anterior |
 | v21 | `app-manutencao-v21-edicao-exclusao-preventivas-diagnostico.zip` | Edição/exclusão em Preventivas e Diagnóstico; Telhado com local Toda unidade | Pronto para teste/publicação |
+| v22 | `app-manutencao-v22-url-sistemamanutencao.zip` | Consolidação da URL GitHub Pages após mudança de username para sistemamanutencao e renovação do cache PWA | Pronto para teste/publicação |
 
 ## Como registrar próximas versões
 

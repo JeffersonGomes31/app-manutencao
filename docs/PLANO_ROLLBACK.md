@@ -125,3 +125,25 @@ Critério específico de rollback da v21:
 - voltar para a v20 se editar ou excluir preventiva/diagnóstico gerar erro de permissão inesperado;
 - revisar `js/event-action-maps.js` e `js/event-bindings.js` se os novos botões não responderem;
 - revisar `src/constants/locais.js` e `js/categorias.js` se o andar Telhado não mostrar o local Toda unidade.
+
+
+## Atualização v22
+
+Versão atual de trabalho:
+
+```txt
+app-manutencao-v22-url-sistemamanutencao.zip
+```
+
+Versão funcional anterior para rollback imediato:
+
+```txt
+app-manutencao-v21-edicao-exclusao-preventivas-diagnostico.zip
+```
+
+Critério específico de rollback da v22:
+
+- voltar para a v21 se o app deixar de carregar após publicação no GitHub Pages;
+- revisar `service-worker.js` se o PWA continuar usando cache antigo;
+- confirmar `sistemamanutencao.github.io` no Firebase Authentication > Settings > Authorized domains se o login falhar na nova URL;
+- confirmar o remote do GitHub Desktop se houver falha de publicação ou sincronização.

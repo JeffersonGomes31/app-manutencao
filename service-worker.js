@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-manutencao-v21-edicao-exclusao-preventivas-diagnostico-r2";
+const CACHE_NAME = "app-manutencao-v22-url-sistemamanutencao";
 
 const FILES_TO_CACHE = [
   "./",
