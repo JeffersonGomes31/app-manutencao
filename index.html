@@ -96,7 +96,7 @@
             <p>Ver avisos</p>
           </div>
 
-          <div class="quick-card" data-nav-page="areas">
+          <div class="quick-card hide-for-manut" data-nav-page="areas">
             <div class="quick-icon purple-bg">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M7 4h10a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-linejoin="round" />
@@ -105,6 +105,17 @@
             </div>
             <h3>Áreas e serviços</h3>
             <p>Ver categorias</p>
+          </div>
+
+          <div class="quick-card manut-only" data-nav-page="painel">
+            <div class="quick-icon purple-bg">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M5 7h14M5 12h14M5 17h9" stroke="currentColor" stroke-linecap="round" />
+                <path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-13Z" stroke="currentColor" stroke-linejoin="round" />
+              </svg>
+            </div>
+            <h3>Fila operacional de OS</h3>
+            <p>Atender chamados</p>
           </div>
 
           <div class="quick-card manut-only" data-nav-page="ativos">
@@ -1198,7 +1209,7 @@
         <p>Gerencie as OS recebidas com indicadores por período, categoria, prioridade, setor crítico e preventivas.</p>
       </header>
 
-      <details class="form-card painel-collapsible-card painel-fila-topo painel-fila-operacional-card">
+      <details class="form-card painel-collapsible-card painel-fila-topo painel-fila-operacional-card" open>
         <summary class="painel-collapsible-summary">
           <span>
             <strong>Fila operacional de OS</strong>

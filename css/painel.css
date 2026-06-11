@@ -484,3 +484,84 @@
 .painel-indicadores-operacionais .insight-grid {
   margin-bottom: 0;
 }
+
+/* v24-ajuste-fila-operacional
+   Cards recolhíveis na Fila operacional de OS.
+   Alteração visual/interativa; não altera Firebase nem regras de negócio. */
+.admin-card-collapsible {
+  padding: 0;
+  overflow: hidden;
+}
+
+.admin-card-collapsible > summary {
+  list-style: none;
+}
+
+.admin-card-collapsible > summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-card-summary {
+  cursor: pointer;
+  margin-bottom: 0;
+  padding: 15px;
+  user-select: none;
+}
+
+.admin-card-summary-text {
+  min-width: 0;
+}
+
+.admin-card-summary-status {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.admin-card-toggle {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+.admin-card-collapsible:not([open]) .admin-card-toggle {
+  color: var(--blue);
+}
+
+.admin-card-collapsible:not([open]) .admin-card-toggle::before {
+  content: "Expandir";
+  font-size: 11px;
+}
+
+.admin-card-collapsible:not([open]) .admin-card-toggle {
+  font-size: 0;
+}
+
+.admin-card-content {
+  padding: 0 15px 15px;
+}
+
+.admin-card-collapsible.admin-card-critical::before {
+  margin: 15px 15px 0;
+}
+
+.admin-card-collapsible.admin-card-critical .admin-card-summary {
+  padding-top: 10px;
+}
+
+@media (max-width: 430px) {
+  .admin-card-summary {
+    display: grid;
+    gap: 10px;
+  }
+
+  .admin-card-summary-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    justify-items: stretch;
+  }
+}

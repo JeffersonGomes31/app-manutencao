@@ -412,6 +412,10 @@ function aplicarPermissoesInterface() {
     elemento.style.display = gerencia ? "" : "none";
   });
 
+  document.querySelectorAll(".hide-for-manut").forEach((elemento) => {
+    elemento.style.display = manutencao ? "none" : "";
+  });
+
   atualizarRotulosVisaoChamados();
 
   document.querySelectorAll("[data-permissao]").forEach(elemento => {

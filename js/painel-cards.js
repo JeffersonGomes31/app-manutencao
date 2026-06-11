@@ -48,64 +48,70 @@ function criarCardPainel(chamado) {
   const cardCritico = chamado.prioridade === "Urgente" || sla.status === "ATRASADO";
   const textoSLA = formatarTextoSLAChamado(chamado, sla);
   const chamadoFinalizado = statusFinalizado(chamado.status);
+  const numeroOS = chamado.numeroOS || "OS";
+  const descricao = chamado.descricao || "Sem descrição informada";
+  const resumoLinha = [
+    chamado.categoria,
+    chamado.subcategoria,
+    chamado.tipoManutencao || "Corretiva",
+    chamado.local,
+    chamado.data
+  ].filter(Boolean).join(" • ");
 
   return `
-    <div class="admin-card ${cardCritico ? "admin-card-critical" : ""}">
-      <div class="admin-card-header">
-        <div>
-          <h3>${escaparHTML(chamado.numeroOS || "OS")}: ${escaparHTML(chamado.descricao)}</h3>
-          <p>
-            ${escaparHTML(chamado.categoria)}${chamado.subcategoria ? ` / ${escaparHTML(chamado.subcategoria)}` : ""}
-            •
-            ${escaparHTML(chamado.tipoManutencao || "Corretiva")}
-            •
-            ${escaparHTML(chamado.local)}
-            •
-            ${escaparHTML(chamado.data)}
-          </p>
+    <details class="admin-card admin-card-collapsible ${cardCritico ? "admin-card-critical" : ""}" open>
+      <summary class="admin-card-header admin-card-summary">
+        <div class="admin-card-summary-text">
+          <h3>${escaparHTML(numeroOS)}: ${escaparHTML(descricao)}</h3>
+          <p>${escaparHTML(resumoLinha || "Dados principais não informados")}</p>
         </div>
 
-        <span class="status ${statusClasse}">${escaparHTML(chamado.status)}</span>
-      </div>
+        <div class="admin-card-summary-status">
+          <span class="status ${statusClasse}">${escaparHTML(chamado.status || "ABERTO")}</span>
+          <span class="admin-card-toggle" aria-hidden="true">Recolher</span>
+        </div>
+      </summary>
 
-      <div class="admin-card-body">
-        <p><strong>Número da OS:</strong> ${escaparHTML(chamado.numeroOS || "Não informado")}</p>
-        <p><strong>Etapa:</strong> ${escaparHTML(chamado.etapaFluxo || obterEtapaFluxoPorStatus(chamado.status))}</p>
-        <p><strong>Responsável manutenção:</strong> ${escaparHTML(chamado.responsavelManutencao || "A definir")}</p>
-        <p><strong>Ativo / QR:</strong> ${escaparHTML(chamado.equipamentoCodigo || "Não vinculado")}${chamado.equipamentoNome ? ` • ${escaparHTML(chamado.equipamentoNome)}` : ""}</p>
-        <p><strong>Categoria técnica:</strong> ${escaparHTML(chamado.categoria || "Não informada")}${chamado.subcategoria ? ` / ${escaparHTML(chamado.subcategoria)}` : ""}</p>
-        <p><strong>Tipo de manutenção:</strong> ${escaparHTML(chamado.tipoManutencao || "Corretiva")}</p>
-        <p><strong>Prioridade:</strong> ${escaparHTML(chamado.prioridade)}</p>
-        <p><strong>SLA:</strong> ${escaparHTML(textoSLA)}</p>
-        <p><strong>Criado por:</strong> ${escaparHTML(chamado.criadoPorNome || "Não informado")}</p>
-        <p><strong>Andar:</strong> ${escaparHTML(chamado.andar || "Não informado")}</p>
-        <p><strong>Melhor horário:</strong> ${escaparHTML(chamado.horario || "Não informado")}</p>
-        <p><strong>Necessário acompanhar:</strong> ${escaparHTML(chamado.precisaAcompanhamento || "Não informado")}</p>
+      <div class="admin-card-content">
+        <div class="admin-card-body">
+          <p><strong>Número da OS:</strong> ${escaparHTML(chamado.numeroOS || "Não informado")}</p>
+          <p><strong>Etapa:</strong> ${escaparHTML(chamado.etapaFluxo || obterEtapaFluxoPorStatus(chamado.status))}</p>
+          <p><strong>Responsável manutenção:</strong> ${escaparHTML(chamado.responsavelManutencao || "A definir")}</p>
+          <p><strong>Ativo / QR:</strong> ${escaparHTML(chamado.equipamentoCodigo || "Não vinculado")}${chamado.equipamentoNome ? ` • ${escaparHTML(chamado.equipamentoNome)}` : ""}</p>
+          <p><strong>Categoria técnica:</strong> ${escaparHTML(chamado.categoria || "Não informada")}${chamado.subcategoria ? ` / ${escaparHTML(chamado.subcategoria)}` : ""}</p>
+          <p><strong>Tipo de manutenção:</strong> ${escaparHTML(chamado.tipoManutencao || "Corretiva")}</p>
+          <p><strong>Prioridade:</strong> ${escaparHTML(chamado.prioridade || "Não informada")}</p>
+          <p><strong>SLA:</strong> ${escaparHTML(textoSLA)}</p>
+          <p><strong>Criado por:</strong> ${escaparHTML(chamado.criadoPorNome || "Não informado")}</p>
+          <p><strong>Andar:</strong> ${escaparHTML(chamado.andar || "Não informado")}</p>
+          <p><strong>Melhor horário:</strong> ${escaparHTML(chamado.horario || "Não informado")}</p>
+          <p><strong>Necessário acompanhar:</strong> ${escaparHTML(chamado.precisaAcompanhamento || "Não informado")}</p>
 
-        ${criarControleStatusPainel(chamado, chamadoFinalizado)}
-      </div>
+          ${criarControleStatusPainel(chamado, chamadoFinalizado)}
+        </div>
 
-      <div class="admin-actions">
-        <button class="admin-action-button admin-secondary-action" data-dynamic-action="abrirDetalhesChamado" data-param0="${formatarAtributoHTML(chamado.id)}">
-          Ver detalhes
-        </button>
-
-        ${chamado.status === "CONCLUÍDO" ? `
-          <button class="admin-action-button blue" data-dynamic-action="selecionarFotoFinalizacao" data-param0="${formatarAtributoHTML(chamado.id)}" data-pass-element="true">
-            Adicionar foto final
+        <div class="admin-actions">
+          <button type="button" class="admin-action-button admin-secondary-action" data-dynamic-action="abrirDetalhesChamado" data-param0="${formatarAtributoHTML(chamado.id)}">
+            Ver detalhes
           </button>
-          <button class="admin-action-button green" data-dynamic-action="validarOS" data-param0="${formatarAtributoHTML(chamado.id)}" data-pass-element="true">
-            Validar OS
-          </button>
-        ` : ""}
 
-        ${chamado.status === "VALIDADO" ? `
-          <button class="admin-action-button green" data-dynamic-action="encerrarOS" data-param0="${formatarAtributoHTML(chamado.id)}" data-pass-element="true">
-            Encerrar OS
-          </button>
-        ` : ""}
+          ${chamado.status === "CONCLUÍDO" ? `
+            <button type="button" class="admin-action-button blue" data-dynamic-action="selecionarFotoFinalizacao" data-param0="${formatarAtributoHTML(chamado.id)}" data-pass-element="true">
+              Adicionar foto final
+            </button>
+            <button type="button" class="admin-action-button green" data-dynamic-action="validarOS" data-param0="${formatarAtributoHTML(chamado.id)}" data-pass-element="true">
+              Validar OS
+            </button>
+          ` : ""}
+
+          ${chamado.status === "VALIDADO" ? `
+            <button type="button" class="admin-action-button green" data-dynamic-action="encerrarOS" data-param0="${formatarAtributoHTML(chamado.id)}" data-pass-element="true">
+              Encerrar OS
+            </button>
+          ` : ""}
+        </div>
       </div>
-    </div>
+    </details>
   `;
 }
 
