@@ -108,6 +108,13 @@ function renderizarPainelManutencao() {
   listaPainel.innerHTML = filaFiltrada.length > 0
     ? filaFiltrada.map(criarCardPainel).join("")
     : criarMensagemVazia(tituloVazio, textoVazio);
+
+  // Garante que cada OS da fila sempre seja exibida recolhida após qualquer
+  // renderização, troca de aba, busca, filtro ou atualização de status.
+  listaPainel.querySelectorAll("details.admin-card-collapsible").forEach(card => {
+    card.open = false;
+    card.removeAttribute("open");
+  });
 }
 
 

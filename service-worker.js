@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-manutencao-v24-fila-os-recolhida-padrao";
+const CACHE_NAME = "app-manutencao-v24-correcao-recolhimento-layout";
 
 const FILES_TO_CACHE = [
   "./",

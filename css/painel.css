@@ -620,3 +620,40 @@
     padding-inline: 8px;
   }
 }
+
+
+/* v24 - correção definitiva do recolhimento e alinhamento visual */
+.admin-card-collapsible:not([open]) > .admin-card-content {
+  display: none !important;
+}
+
+.painel-fila-tabs {
+  padding: 5px;
+  gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: #f4f7fb;
+}
+
+.painel-fila-tab {
+  flex: 1 1 0;
+  justify-content: center;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  font-size: 13px;
+  transition: background-color .18s ease, color .18s ease, box-shadow .18s ease;
+}
+
+.painel-fila-tab.active {
+  border-color: #d7e4fa;
+  background: #fff;
+  color: var(--blue);
+  box-shadow: 0 5px 14px rgba(20, 40, 80, 0.09);
+}
+
+.painel-fila-tab.active span {
+  background: #eaf2ff;
+  color: var(--blue);
+}

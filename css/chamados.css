@@ -521,3 +521,66 @@
     padding-inline: 8px;
   }
 }
+
+
+/* v24 - componentes novos alinhados ao padrão visual do aplicativo */
+.os-quick-action {
+  min-height: 42px;
+  padding: 9px 15px;
+  border-radius: 13px;
+  font-size: 13px;
+  font-weight: 850;
+  transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+}
+
+.os-quick-action.primary {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+  box-shadow: 0 7px 16px rgba(31, 111, 229, 0.24);
+}
+
+.os-quick-action.primary:hover,
+.os-quick-action.success:hover,
+.os-quick-action.secondary:hover {
+  transform: translateY(-1px);
+}
+
+.os-quick-action.primary:focus-visible,
+.os-quick-action.success:focus-visible,
+.os-quick-action.secondary:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.chamados-tabs {
+  padding: 5px;
+  gap: 6px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  background: #f4f7fb;
+}
+
+.chamados-tab {
+  flex: 1 1 0;
+  justify-content: center;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  font-size: 13px;
+  transition: background-color .18s ease, color .18s ease, box-shadow .18s ease;
+}
+
+.chamados-tab.active {
+  border-color: #d7e4fa;
+  background: #fff;
+  color: var(--blue);
+  box-shadow: 0 5px 14px rgba(20, 40, 80, 0.09);
+}
+
+.chamados-tab.active span {
+  background: #eaf2ff;
+  color: var(--blue);
+}
