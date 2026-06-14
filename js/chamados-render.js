@@ -33,16 +33,23 @@ function renderizarChamados() {
   const listaChamados = document.getElementById("listaChamados") || document.getElementById("listaOS");
   const listaChamadosInicio = document.getElementById("listaChamadosInicio") || document.getElementById("listaOSInicio");
   const chamadosVisiveis = obterChamadosVisiveis();
-  const chamadosFiltrados = obterChamadosFiltrados(chamadosVisiveis);
+  const chamadosDaAba = filtrarChamadosPorAba(chamadosVisiveis);
+  const chamadosFiltrados = obterChamadosFiltrados(chamadosDaAba);
+
+  atualizarAbasChamados(chamadosVisiveis);
 
   if (listaChamados) {
     listaChamados.innerHTML = chamadosFiltrados.length > 0
       ? chamadosFiltrados.map(criarCardChamado).join("")
-      : criarMensagemVazia("Nenhuma OS encontrada", "Não há ordens de serviço para o filtro ou busca selecionada.");
+      : abaChamadosAtual === "ENCERRADAS"
+        ? criarMensagemVazia("Nenhuma OS encerrada", "As ordens encerradas aparecerão nesta aba.")
+        : criarMensagemVazia("Nenhuma OS ativa", "Não há ordens de serviço ativas para o filtro ou busca selecionada.");
   }
 
   if (listaChamadosInicio) {
-    const chamadosInicio = ordenarChamadosPorPrioridade([...chamadosVisiveis]).slice(0, 3);
+    const chamadosInicio = ordenarChamadosPorPrioridade(
+      chamadosVisiveis.filter(chamado => chamado.status !== "ENCERRADO")
+    ).slice(0, 3);
 
     listaChamadosInicio.innerHTML = chamadosInicio.length > 0
       ? chamadosInicio.map(criarCardChamado).join("")
@@ -51,6 +58,58 @@ function renderizarChamados() {
 
   if (typeof atualizarResumoPerfil === "function") {
     atualizarResumoPerfil();
+  }
+}
+
+/* =====================
+   Separação entre OS ativas e encerradas
+===================== */
+
+function filtrarChamadosPorAba(lista) {
+  return lista.filter(chamado => {
+    const encerrado = chamado.status === "ENCERRADO";
+    return abaChamadosAtual === "ENCERRADAS" ? encerrado : !encerrado;
+  });
+}
+
+function selecionarAbaChamados(aba) {
+  abaChamadosAtual = aba === "ENCERRADAS" ? "ENCERRADAS" : "ATIVAS";
+  filtroStatusAtual = "TODOS";
+
+  document.querySelectorAll("#filtrosOS .filter, #filtrosChamados .filter").forEach((botaoFiltro, indice) => {
+    botaoFiltro.classList.toggle("active", indice === 0);
+    botaoFiltro.disabled = abaChamadosAtual === "ENCERRADAS";
+  });
+
+  renderizarChamados();
+}
+
+function atualizarAbasChamados(listaVisivel) {
+  const totalEncerradas = listaVisivel.filter(chamado => chamado.status === "ENCERRADO").length;
+  const totalAtivas = listaVisivel.length - totalEncerradas;
+  const abaAtivas = document.getElementById("abaChamadosAtivas");
+  const abaEncerradas = document.getElementById("abaChamadosEncerradas");
+  const contadorAtivas = document.getElementById("contadorChamadosAtivas");
+  const contadorEncerradas = document.getElementById("contadorChamadosEncerradas");
+  const filtros = document.getElementById("filtrosOS") || document.getElementById("filtrosChamados");
+
+  if (contadorAtivas) contadorAtivas.textContent = totalAtivas;
+  if (contadorEncerradas) contadorEncerradas.textContent = totalEncerradas;
+
+  if (abaAtivas) {
+    const ativa = abaChamadosAtual === "ATIVAS";
+    abaAtivas.classList.toggle("active", ativa);
+    abaAtivas.setAttribute("aria-selected", String(ativa));
+  }
+
+  if (abaEncerradas) {
+    const ativa = abaChamadosAtual === "ENCERRADAS";
+    abaEncerradas.classList.toggle("active", ativa);
+    abaEncerradas.setAttribute("aria-selected", String(ativa));
+  }
+
+  if (filtros) {
+    filtros.classList.toggle("is-disabled", abaChamadosAtual === "ENCERRADAS");
   }
 }
 
@@ -107,6 +166,7 @@ function criarCardChamado(chamado) {
   const setorOuLocal = chamado.setor || chamado.local || "Não informado";
   const localOcorrencia = formatarLocalOcorrenciaChamado(chamado);
   const horario = chamado.horario || "--:--";
+  const acoesRapidas = criarAcoesRapidasChamado(chamado);
 
   return `
     <div class="ticket ticket-operational ${classeBordaPrioridade}" data-dynamic-action="abrirDetalhesChamado" data-param0="${formatarAtributoHTML(chamado.id)}">
@@ -151,6 +211,7 @@ function criarCardChamado(chamado) {
         </div>
 
         <small class="sla-badge ${sla.classe}">${escaparHTML(textoSLA)}</small>
+        ${acoesRapidas}
       </div>
 
       <span class="ticket-chevron" aria-hidden="true">›</span>
@@ -158,6 +219,46 @@ function criarCardChamado(chamado) {
   `;
 }
 
+
+function criarAcoesRapidasChamado(chamado) {
+  if (typeof usuarioEhManutencaoAutorizada !== "function" || !usuarioEhManutencaoAutorizada()) {
+    return "";
+  }
+
+  const id = formatarAtributoHTML(chamado.id);
+  const status = String(chamado.status || "ABERTO").toUpperCase();
+  const botoes = [];
+
+  const adicionarBotao = (acao, rotulo, classe = "primary") => {
+    botoes.push(`
+      <button type="button" class="os-quick-action ${classe}"
+        data-dynamic-action="executarAcaoRapidaOS"
+        data-param0="${id}"
+        data-param1="${acao}"
+        data-pass-element="true">${rotulo}</button>
+    `);
+  };
+
+  if (status === "ABERTO") {
+    adicionarBotao("EM ANDAMENTO", "Iniciar OS", "primary");
+  } else if (status === "EM ANDAMENTO") {
+    adicionarBotao("AGUARDANDO", "Aguardar", "secondary");
+    adicionarBotao("CONCLUÍDO", "Concluir", "success");
+  } else if (status === "AGUARDANDO") {
+    adicionarBotao("EM ANDAMENTO", "Retomar", "primary");
+    adicionarBotao("CONCLUÍDO", "Concluir", "success");
+  } else if (status === "CONCLUÍDO") {
+    adicionarBotao("VALIDAR", "Validar OS", "success");
+  } else if (status === "VALIDADO") {
+    adicionarBotao("ENCERRAR", "Encerrar OS", "success");
+  }
+
+  if (botoes.length === 0) {
+    return "";
+  }
+
+  return `<div class="os-quick-actions" aria-label="Ações rápidas da OS">${botoes.join("")}</div>`;
+}
 
 function formatarLocalOcorrenciaChamado(chamado) {
   const partesLocal = [chamado.andar, chamado.local]

@@ -9,6 +9,10 @@ function obterOSFinalizadasParaExportacao() {
     ? obterChamadosVisiveis()
     : [...chamados];
 
+  if (typeof filtrarChamadosPorAba === "function") {
+    lista = filtrarChamadosPorAba(lista);
+  }
+
   if (filtroStatusAtual === "ATRASADOS") {
     lista = lista.filter(chamadoEstaAtrasado);
   } else if (filtroStatusAtual !== "TODOS") {

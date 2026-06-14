@@ -3,7 +3,10 @@
 ===================================================== */
 
 function obterFilaPainelFiltrada() {
-  let filaFiltrada = [...chamados];
+  let filaFiltrada = chamados.filter(chamado => {
+    const encerrado = chamado.status === "ENCERRADO";
+    return abaFilaPainelAtual === "ENCERRADAS" ? encerrado : !encerrado;
+  });
 
   if (filtroPainelStatusAtual === "ATRASADOS") {
     filaFiltrada = filaFiltrada.filter(chamadoEstaAtrasado);
@@ -59,7 +62,7 @@ function criarCardPainel(chamado) {
   ].filter(Boolean).join(" • ");
 
   return `
-    <details class="admin-card admin-card-collapsible ${cardCritico ? "admin-card-critical" : ""}" open>
+    <details class="admin-card admin-card-collapsible ${cardCritico ? "admin-card-critical" : ""}">
       <summary class="admin-card-header admin-card-summary">
         <div class="admin-card-summary-text">
           <h3>${escaparHTML(numeroOS)}: ${escaparHTML(descricao)}</h3>

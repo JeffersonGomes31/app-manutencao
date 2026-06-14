@@ -10,6 +10,45 @@
    - arquivo sensível para fluxo operacional da OS.
 ===================================================== */
 
+
+async function executarAcaoRapidaOS(id, acao, botao) {
+  if (!usuarioEhManutencaoAutorizada()) {
+    alert("Apenas a manutenção autorizada pode executar ações rápidas na OS.");
+    return;
+  }
+
+  const chamado = chamados.find(item => idsIguais(item.id, id));
+
+  if (!chamado) {
+    alert("OS não encontrada.\nAtualize a lista e tente novamente.");
+    return;
+  }
+
+  if (acao === "VALIDAR") {
+    await validarOS(id, botao);
+    return;
+  }
+
+  if (acao === "ENCERRAR") {
+    await encerrarOS(id, botao);
+    return;
+  }
+
+  const transicoesPermitidas = {
+    ABERTO: ["EM ANDAMENTO"],
+    "EM ANDAMENTO": ["AGUARDANDO", "CONCLUÍDO"],
+    AGUARDANDO: ["EM ANDAMENTO", "CONCLUÍDO"]
+  };
+  const permitidas = transicoesPermitidas[chamado.status] || [];
+
+  if (!permitidas.includes(acao)) {
+    alert("Esta ação não está disponível para o status atual da OS.");
+    return;
+  }
+
+  await alterarStatusPainel(id, acao, botao);
+}
+
 async function salvarStatusPainel(id, botao) {
   if (!usuarioEhManutencaoAutorizada()) {
     alert("Apenas a manutenção autorizada pode alterar o status da OS.");

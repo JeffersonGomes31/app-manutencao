@@ -32,12 +32,14 @@ let diagnosticos = [];
 let cadastrosColaboradores = [];
 
 let filtroStatusAtual = "TODOS";
+let abaChamadosAtual = "ATIVAS";
 let chamadoSelecionadoId = null;
 
 let termoBuscaChamados = "";
 let termoBuscaPainel = "";
 let filtroPainelStatusAtual = "TODOS";
 let filtroPainelPrioridadeAtual = "TODAS";
+let abaFilaPainelAtual = "ATIVAS";
 let filtroPeriodoDashboardAtual = "30";
 let filtroCategoriaDashboardAtual = "TODAS";
 

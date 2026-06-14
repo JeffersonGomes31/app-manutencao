@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-manutencao-v24-ajuste-tela-redefinicao";
+const CACHE_NAME = "app-manutencao-v24-fila-os-recolhida-padrao";
 
 const FILES_TO_CACHE = [
   "./",

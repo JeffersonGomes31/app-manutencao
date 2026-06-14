@@ -186,6 +186,15 @@
         <p id="textoPaginaChamados">Acompanhe as OS abertas, em triagem, execução, validação e encerramento.</p>
       </header>
 
+      <div class="chamados-tabs" role="tablist" aria-label="Separar ordens de serviço por situação">
+        <button type="button" class="chamados-tab active" id="abaChamadosAtivas" data-action="selecionar-aba-chamados-ativas" role="tab" aria-selected="true">
+          OS ativas <span id="contadorChamadosAtivas">0</span>
+        </button>
+        <button type="button" class="chamados-tab" id="abaChamadosEncerradas" data-action="selecionar-aba-chamados-encerradas" role="tab" aria-selected="false">
+          OS encerradas <span id="contadorChamadosEncerradas">0</span>
+        </button>
+      </div>
+
       <div class="filter-row" id="filtrosOS">
         <button class="filter active" data-os-filter="TODOS">Todos</button>
         <button class="filter" data-os-filter="ATRASADOS">Atrasados</button>
@@ -193,8 +202,8 @@
         <button class="filter" data-os-filter="EM ANDAMENTO">Andamento</button>
         <button class="filter" data-os-filter="AGUARDANDO">Aguardando</button>
         <button class="filter" data-os-filter="CONCLUÍDO">Concluídos</button>
+        <button class="filter" data-os-filter="VALIDADO">Validados</button>
         <button class="filter" data-os-filter="CANCELADO">Cancelados</button>
-        <button class="filter" data-os-filter="ENCERRADO">Encerrados</button>
       </div>
 
       <div class="search-box">
@@ -1217,6 +1226,15 @@
           </span>
         </summary>
 
+        <div class="painel-fila-tabs" role="tablist" aria-label="Separar ordens de serviço por situação">
+          <button type="button" class="painel-fila-tab active" id="abaFilaAtivas" data-action="selecionar-aba-fila-ativas" role="tab" aria-selected="true">
+            OS ativas <span id="contadorFilaAtivas">0</span>
+          </button>
+          <button type="button" class="painel-fila-tab" id="abaFilaEncerradas" data-action="selecionar-aba-fila-encerradas" role="tab" aria-selected="false">
+            OS encerradas <span id="contadorFilaEncerradas">0</span>
+          </button>
+        </div>
+
         <div class="admin-controls">
           <input 
             type="text" 
@@ -1232,7 +1250,6 @@
             <option value="AGUARDANDO">Aguardando</option>
             <option value="CONCLUÍDO">Concluídos / aguardando validação</option>
             <option value="VALIDADO">Validados</option>
-            <option value="ENCERRADO">Encerrados</option>
             <option value="CANCELADO">Cancelados</option>
             <option value="ATRASADOS">Atrasados</option>
           </select>
